@@ -21,9 +21,9 @@ Makefile.config
 __pycache__
 
 # Unit test / Coverage reports
+.pytest_cache
 .cache
 .coverage
-.pytest_cache
 .tox
 nosetests.xml
 unit_tests/testdata.json
@@ -67,7 +67,7 @@ docs/html/
 docs/build/
 
 # External Sources
-src/
+#src/external
 
 # tests
 *.log
@@ -82,7 +82,3 @@ testdata.json
 *.a
 *.mod
 *.out
-
-# snappy
-esa-snap_sentinel_unix_6_0.sh
-response.varfile
