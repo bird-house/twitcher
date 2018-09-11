@@ -8,3 +8,8 @@ extends = buildout.cfg
 hostname = localhost
 https-port = 5000
 log-level = WARN
+
+## deployment options
+#prefix =  /opt/birdhouse
+#user = www-data
+#etc-user = root
