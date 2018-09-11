@@ -1,12 +1,17 @@
 Changes
 *******
 
-Current
-=======
+0.3.8 (2018-09-11)
+==================
+
+Fixes:
+
+* Fixed the wps DataInputs params encoding (#42).
+* Fixed error 400 Contradictory scheme headers (#40).
 
 New Features:
 
-* Feature #36: make protected path configurable.
+* make protected path configurable (#36).
 
 0.3.7 (2018-03-13)
 ==================
