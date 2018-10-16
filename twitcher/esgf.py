@@ -36,7 +36,7 @@ def fetch_certificate(workdir='.', data={}):
         mgr.logon(access_token, test_credentials)
         LOGGER.debug('Prepared twitcher workdir %s', workdir)
     except Exception:
-        LOGGER.exception("Could not fetch certificate.")
+        LOGGER.warn("Could not fetch certificate.")
         return False
     return True
 
