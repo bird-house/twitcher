@@ -1,3 +1,4 @@
+import os
 import tempfile
 
 from six.moves.urllib.parse import quote
