@@ -18,7 +18,7 @@ from twitcher.store import servicestore_factory
 
 
 import logging
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger('TWITCHER')
 
 
 allowed_content_types = (
@@ -71,6 +71,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
     h = dict(request.headers)
     h.pop("Host", h)
     h['Accept-Encoding'] = None
+    LOGGER.debug('headers=%s', h.keys())
 
     #
     service_type = service['type']
@@ -87,7 +88,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
                         headers={k: v for k, v in resp_iter.headers.iteritems() if k not in HopbyHop})
     else:
         try:
-            resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h)
+            resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h, verify=False)
         except Exception, e:
             return OWSAccessFailed("Request failed: {}".format(e.message))
 
