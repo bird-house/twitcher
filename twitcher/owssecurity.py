@@ -1,5 +1,7 @@
 import tempfile
 
+from six.moves.urllib.parse import quote
+
 from twitcher.exceptions import AccessTokenNotFound
 from twitcher.exceptions import ServiceNotFound
 from twitcher.owsexceptions import OWSAccessForbidden, OWSInvalidParameterValue
@@ -48,9 +50,8 @@ class OWSSecurity(object):
         if "esgf_access_token" in access_token.data or "esgf_credentials" in access_token.data:
             workdir = tempfile.mkdtemp(prefix=request.prefix, dir=request.workdir)
             if fetch_certificate(workdir=workdir, data=access_token.data):
-                request.headers['X-Requested-Workdir'] = workdir
-                request.headers['X-X509-User-Proxy'] = workdir + '/' + ESGF_CREDENTIALS
-                LOGGER.debug("Prepared request headers.")
+                with open(os.path.join(workdir, ESGF_CREDENTIALS), 'r') as fh:
+                    request.headers['X_SSL_CLIENT_CERT'] = quote(fh.read())
         return request
 
     def verify_access(self, request, service):
