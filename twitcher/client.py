@@ -1,8 +1,12 @@
 import ssl
 from datetime import datetime
 
-from twitcher._compat import urlparse
-from twitcher._compat import xmlrpclib
+import six
+if six.PY2:
+    import xmlrpclib
+else:
+    import xmlrpc.client as xmlrpclib
+from six.moves.urllib import parse as urlparse
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
@@ -21,7 +25,7 @@ def _create_server(url, username=None, password=None, verify=True):
     username = username or 'nouser'
     password = password or 'nopass'
 
-    parsed = urlparse(url)
+    parsed = urlparse.urlparse(url)
     url = "%s://%s:%s@%s%s" % (parsed.scheme, username, password, parsed.netloc, parsed.path)
     context = _create_https_context(verify=verify)
     server = xmlrpclib.ServerProxy(url, context=context)

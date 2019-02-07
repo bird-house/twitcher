@@ -5,7 +5,7 @@ from lxml import etree
 
 from twitcher.exceptions import ServiceNotFound
 
-from twitcher._compat import urlparse
+from six.moves.urllib import parse as urlparse
 
 import logging
 logger = logging.getLogger(__name__)
@@ -13,14 +13,14 @@ logger = logging.getLogger(__name__)
 
 def is_valid_url(url):
     try:
-        parsed_url = urlparse(url)
+        parsed_url = urlparse.urlparse(url)
         return True if all([parsed_url.scheme, ]) else False
     except Exception:
         return False
 
 
 def parse_service_name(url, protected_path):
-    parsed_url = urlparse(url)
+    parsed_url = urlparse.urlparse(url)
     service_name = None
     if parsed_url.path.startswith(protected_path):
         parts_without_protected_path = parsed_url.path[len(protected_path)::].strip('/').split('/')
@@ -66,7 +66,7 @@ def baseurl(url):
     """
     return baseurl of given url
     """
-    parsed_url = urlparse(url)
+    parsed_url = urlparse.urlparse(url)
     if not parsed_url.netloc or parsed_url.scheme not in ("http", "https"):
         raise ValueError('bad url')
     service_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, parsed_url.path.strip())
@@ -98,7 +98,7 @@ def replace_caps_url(xml, url, prev_url=None):
     if 'WMT_MS_Capabilities' in doc.tag:
         logger.debug("replace proxy urls in wms 1.1.1")
         for element in doc.findall('.//OnlineResource[@xlink:href]', namespaces=ns):
-            parsed_url = urlparse(element.get('{http://www.w3.org/1999/xlink}href'))
+            parsed_url = urlparse.urlparse(element.get('{http://www.w3.org/1999/xlink}href'))
             new_url = url
             if parsed_url.query:
                 new_url += '?' + parsed_url.query
@@ -108,7 +108,7 @@ def replace_caps_url(xml, url, prev_url=None):
     elif 'WMS_Capabilities' in doc.tag:
         logger.debug("replace proxy urls in wms 1.3.0")
         for element in doc.findall('.//{http://www.opengis.net/wms}OnlineResource[@xlink:href]', namespaces=ns):
-            parsed_url = urlparse(element.get('{http://www.w3.org/1999/xlink}href'))
+            parsed_url = urlparse.urlparse(element.get('{http://www.w3.org/1999/xlink}href'))
             new_url = url
             if parsed_url.query:
                 new_url += '?' + parsed_url.query

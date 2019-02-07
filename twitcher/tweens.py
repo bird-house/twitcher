@@ -31,7 +31,7 @@ def ows_security_tween_factory(handler, registry):
             return err
         except Exception as err:
             logger.exception("unknown error")
-            return OWSNoApplicableCode(err.message)
+            return OWSNoApplicableCode("{}".format(err))
 
     return ows_security_tween
 

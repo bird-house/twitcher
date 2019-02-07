@@ -6,8 +6,11 @@ import unittest
 import webtest
 import pyramid.testing
 
-from twitcher._compat import PY2
-from twitcher._compat import xmlrpclib
+import six
+if six.PY2:
+    import xmlrpclib
+else:
+    import xmlrpc.client as xmlrpclib
 
 from .common import setup_with_mongodb
 from .common import setup_mongodb_tokenstore
@@ -27,15 +30,15 @@ class XMLRPCInterfaceAppTest(unittest.TestCase):
         pyramid.testing.tearDown()
 
     def _callFUT(self, method, params):
-        if PY2:
+        if six.PY2:
             xml = xmlrpclib.dumps(params, methodname=method)
         else:
             xml = xmlrpclib.dumps(params, methodname=method).encode('utf-8')
-        print xml
+        print(xml)
         resp = self.app.post('/RPC2', content_type='text/xml', params=xml)
         assert resp.status_int == 200
         assert resp.content_type == 'text/xml'
-        print resp.body
+        print(resp.body)
         return xmlrpclib.loads(resp.body)[0][0]
 
     @pytest.mark.online
