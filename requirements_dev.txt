@@ -4,4 +4,4 @@ mock
 WebTest
 flake8
 # internal WPS
-pywps>=4.0.0
+pywps>=4.2.0

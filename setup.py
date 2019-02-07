@@ -8,6 +8,7 @@ README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 reqs = [line.strip() for line in open('requirements.txt')]
+extra_reqs = [line.strip() for line in open('requirements_dev.txt')]
 
 setup(name='pyramid_twitcher',
       version=version,
@@ -20,16 +21,17 @@ setup(name='pyramid_twitcher',
           "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
           "Development Status :: 4 - Beta",
       ],
-      author='Birdhouse Developers',
-      author_email='wps-dev@lists.dkrz.de',
+      author='Carsten Ehbrecht',
+      author_email='ehbrecht@dkrz.de',
       url='https://github.com/bird-house/twitcher.git',
       license='Apache License 2.0',
-      keywords='buildout pyramid twitcher birdhouse wps pywps security proxy ows ogc',
+      keywords='pyramid twitcher birdhouse wps security proxy ows ogc',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
       test_suite='twitcher',
       install_requires=reqs,
+      extra_requires=extra_reqs,
       entry_points="""\
       [paste.app_factory]
       main = twitcher:main
