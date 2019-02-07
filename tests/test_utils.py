@@ -2,7 +2,7 @@ import pytest
 from lxml import etree
 from twitcher import utils
 from twitcher.exceptions import ServiceNotFound
-from twitcher.tests.common import WPS_CAPS_EMU_XML, WMS_CAPS_NCWMS2_111_XML, WMS_CAPS_NCWMS2_130_XML
+from .common import WPS_CAPS_EMU_XML, WMS_CAPS_NCWMS2_111_XML, WMS_CAPS_NCWMS2_130_XML
 
 
 def test_is_url_valid():

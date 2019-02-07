@@ -10,7 +10,7 @@ import pytest
 import unittest
 import webtest
 import pyramid.testing
-from twitcher.tests.functional.common import setup_with_mongodb, setup_mongodb_tokenstore
+from .common import setup_with_mongodb, setup_mongodb_tokenstore
 
 
 class WpsAppTest(unittest.TestCase):

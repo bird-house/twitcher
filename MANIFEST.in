@@ -1,5 +1,7 @@
-include *.rst *.txt
-graft twitcher
+include Makefile
+include *.txt
+include *.rst
+recursive-include twitcher *
 global-exclude *.*~
 global-exclude __pycache__
 global-exclude *.py[co]

@@ -9,9 +9,9 @@ import pyramid.testing
 from twitcher._compat import PY2
 from twitcher._compat import xmlrpclib
 
-from twitcher.tests.functional.common import setup_with_mongodb
-from twitcher.tests. functional.common import setup_mongodb_tokenstore
-from twitcher.tests.functional.common import setup_mongodb_servicestore
+from .common import setup_with_mongodb
+from .common import setup_mongodb_tokenstore
+from .common import setup_mongodb_servicestore
 
 
 class XMLRPCInterfaceAppTest(unittest.TestCase):
