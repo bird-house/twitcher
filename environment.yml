@@ -5,6 +5,7 @@ channels:
 - conda-forge
 dependencies:
 - python=2.7
+- six
 - curl
 - pyopenssl
 - cryptography

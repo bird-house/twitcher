@@ -30,7 +30,7 @@ def pywps_view(environ, start_response):
     * TODO: fix exceptions ... use OWSException (raise ...)
     """
     from pywps.app.Service import Service
-    LOGGER.debug('pywps env: %s', environ.keys())
+    LOGGER.debug('pywps env: %s', list(environ.keys()))
 
     # call pywps application
     if 'PYWPS_CFG' not in environ:

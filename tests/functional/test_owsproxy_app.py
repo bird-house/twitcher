@@ -49,5 +49,5 @@ class OWSProxyAppTest(unittest.TestCase):
         resp = self.app.get('/ows/proxy/twitcher?service=wps&request=execute&version=1.0.0&identifier=dummyprocess')
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
-        print resp.body
+        print(resp.body)
         resp.mustcontain('<Exception exceptionCode="NoApplicableCode" locator="AccessForbidden">')

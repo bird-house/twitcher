@@ -4,13 +4,12 @@ The owsproxy is based on `papyrus_ogcproxy <https://github.com/elemoine/papyrus_
 See also: https://github.com/nive/outpost/blob/master/outpost/proxy.py
 """
 
-import urllib
+from six.moves.urllib import parse as urlparse
+
 import requests
 
 from pyramid.response import Response
 from pyramid.settings import asbool
-
-from twitcher._compat import urlparse
 
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
 from twitcher.utils import replace_caps_url
@@ -84,15 +83,15 @@ def _send_request(request, service, extra_path=None, request_params=None):
         # Headers meaningful only for a single transport-level connection
         HopbyHop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
-                        headers={k: v for k, v in resp_iter.headers.iteritems() if k not in HopbyHop})
+                        headers={k: v for k, v in resp_iter.headers.items() if k not in HopbyHop})
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h)
-        except Exception, e:
+        except Exception as e:
             return OWSAccessFailed("Request failed: {}".format(e.message))
 
         if resp.ok is False:
-            if 'ExceptionReport' in resp.content:
+            if 'ExceptionReport' in resp.text:
                 pass
             else:
                 return OWSAccessFailed("Response is not ok: {}".format(resp.reason))
@@ -135,7 +134,7 @@ def owsproxy_url(request):
 
     service_type = request.GET.get('service', 'wps') or request.GET.get('SERVICE', 'wps')
     # check for full url
-    parsed_url = urlparse(url)
+    parsed_url = urlparse.urlparse(url)
     if not parsed_url.netloc or parsed_url.scheme not in ("http", "https"):
         return OWSAccessFailed("Not a valid URL.")
     return _send_request(request, service=dict(url=url, name='external', service_type=service_type))
@@ -167,7 +166,7 @@ def owsproxy_delegate(request):
         url += '/' + request.matchdict.get('service_name')
         if request.matchdict.get('access_token'):
             url += '/' + request.matchdict.get('service_name')
-    url += '?' + urllib.urlencode(request.params)
+    url += '?' + urlparse.urlencode(request.params)
     LOGGER.debug("delegate to owsproxy: %s", url)
     # forward request to target (without Host Header)
     # h = dict(request.headers)
