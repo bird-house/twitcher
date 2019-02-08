@@ -6,15 +6,11 @@ import unittest
 import webtest
 import pyramid.testing
 
-import six
-if six.PY2:
-    import xmlrpclib
-else:
-    import xmlrpc.client as xmlrpclib
-
+from .common import call_FUT
 from .common import setup_with_mongodb
 from .common import setup_mongodb_tokenstore
 from .common import setup_mongodb_servicestore
+from .common import WPS_TEST_SERVICE
 
 
 class XMLRPCInterfaceAppTest(unittest.TestCase):
@@ -29,58 +25,46 @@ class XMLRPCInterfaceAppTest(unittest.TestCase):
     def tearDown(self):
         pyramid.testing.tearDown()
 
-    def _callFUT(self, method, params):
-        if six.PY2:
-            xml = xmlrpclib.dumps(params, methodname=method)
-        else:
-            xml = xmlrpclib.dumps(params, methodname=method).encode('utf-8')
-        print(xml)
-        resp = self.app.post('/RPC2', content_type='text/xml', params=xml)
-        assert resp.status_int == 200
-        assert resp.content_type == 'text/xml'
-        print(resp.body)
-        return xmlrpclib.loads(resp.body)[0][0]
-
     @pytest.mark.online
     def test_generate_token_and_revoke_it(self):
         # gentoken
-        resp = self._callFUT('generate_token', (1, {}))
+        resp = call_FUT(self.app, 'generate_token', (1, {}))
         assert 'access_token' in resp
         assert 'expires_at' in resp
         # revoke
-        resp = self._callFUT('revoke_token', (resp['access_token'],))
+        resp = call_FUT(self.app, 'revoke_token', (resp['access_token'],))
         assert resp is True
         # revoke all
-        resp = self._callFUT('revoke_all_tokens', ())
+        resp = call_FUT(self.app, 'revoke_all_tokens', ())
         assert resp is True
 
     @pytest.mark.online
     def test_register_service_and_unregister_it(self):
-        service = {'url': 'http://localhost/wps', 'name': 'test_emu',
+        service = {'url': WPS_TEST_SERVICE, 'name': 'test_emu',
                    'type': 'wps', 'public': False, 'auth': 'token'}
         # register
-        resp = self._callFUT('register_service', (
+        resp = call_FUT(self.app, 'register_service', (
             service['url'],
             service,
             False))
         assert resp == service
 
         # get by name
-        resp = self._callFUT('get_service_by_name', (service['name'],))
+        resp = call_FUT(self.app, 'get_service_by_name', (service['name'],))
         assert resp == service
 
         # get by url
-        resp = self._callFUT('get_service_by_url', (service['url'],))
+        resp = call_FUT(self.app, 'get_service_by_url', (service['url'],))
         assert resp == service
 
         # list
-        resp = self._callFUT('list_services', ())
+        resp = call_FUT(self.app, 'list_services', ())
         assert resp == [service]
 
         # unregister
-        resp = self._callFUT('unregister_service', (service['name'],))
+        resp = call_FUT(self.app, 'unregister_service', (service['name'],))
         assert resp is True
 
         # clear
-        resp = self._callFUT('clear_services', ())
+        resp = call_FUT(self.app, 'clear_services', ())
         assert resp is True

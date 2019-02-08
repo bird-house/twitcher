@@ -22,8 +22,6 @@ The twitcher service is controlled by `supervisor <http://supervisord.org/>`_. T
     $ make stop    # stop ...
     $ make restart    # restart ...
 
-
-
 Running `twitcherctl`
 =====================
 
@@ -95,13 +93,6 @@ Generate an access token valid for 24 hours (use ``-k`` to avoid validation of H
    $ bin/twitcherctl -k gentoken -H 24
 
 
-Generate an access token and set the ``PYWPS_CFG`` environment variable used by the PyWPS implementation via the *wsgi environ*:
-
-.. code-block:: sh
-
-   $ bin/twitcherctl -k gentoken -H 12 -e PYWPS_CFG=/path/to/my/pywps.cfg
-
-
 Register an OWS Service for the OWS Proxy
 -----------------------------------------
 
@@ -115,7 +106,7 @@ Register a local WPS service:
 
 .. code-block:: sh
 
-   $ bin/twitcherctl -k register http://localhost:8094/wps
+   $ bin/twitcherctl -k register http://localhost:5000/wps
    tiny_buzzard
 
 You can use the ``--name`` option to provide a name (used by the OWS proxy). Otherwise a nice name will be generated.
@@ -129,7 +120,7 @@ Currently the ``status`` command shows only the registered OWS services:
 .. code-block:: sh
 
    $ bin/twitcherctl -k list
-   [{'url': 'http://localhost:8094/wps', 'proxy_url': 'https://localhost:38083/ows/proxy/tiny_buzzard', 'type': 'wps', 'name': 'tiny_buzzard'}]
+   [{'url': 'http://localhost:5000/wps', 'proxy_url': 'https://localhost:38083/ows/proxy/tiny_buzzard', 'type': 'wps', 'name': 'tiny_buzzard'}]
 
 Using OWSProxy
 ==============

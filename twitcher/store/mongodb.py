@@ -57,7 +57,7 @@ class MongodbServiceStore(ServiceStore, MongodbStore):
 
         service_url = baseurl(service.url)
         # check if service is already registered
-        if self.collection.count({'url': service_url}) > 0:
+        if self.collection.count_documents({'url': service_url}) > 0:
             if overwrite:
                 self.collection.delete_one({'url': service_url})
             else:
@@ -66,9 +66,9 @@ class MongodbServiceStore(ServiceStore, MongodbStore):
         name = namesgenerator.get_sane_name(service.name)
         if not name:
             name = namesgenerator.get_random_name()
-            if self.collection.count({'name': name}) > 0:
+            if self.collection.count_documents({'name': name}) > 0:
                 name = namesgenerator.get_random_name(retry=True)
-        if self.collection.count({'name': name}) > 0:
+        if self.collection.count_documents({'name': name}) > 0:
             if overwrite:
                 self.collection.delete_one({'name': name})
             else:

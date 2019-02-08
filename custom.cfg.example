@@ -6,7 +6,7 @@ extends = buildout.cfg
 
 [settings]
 hostname = localhost
-https-port = 5000
+https-port = 8000
 log-level = WARN
 
 ## deployment options

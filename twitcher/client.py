@@ -46,16 +46,14 @@ def xmlrpc_error_handler(wrapped):
             raise
         except xmlrpclib.ResponseError as e:
             LOGGER.error(
-                "A response error occured. Maybe service needs authentication with username and password? %s",
-                e.message)
+                "A response error occured. Maybe service needs authentication with username and password? {}".format(e))
             raise
         except Exception as e:
             LOGGER.error(
                 " Unknown error occured. "
                 "Maybe you need to use the \"--insecure\" option to access the service on HTTPS? "
                 "Is your service running and did you specify the correct service url (port)? "
-                "%s",
-                e.message)
+                "{}".format(e))
             raise
         else:
             return result

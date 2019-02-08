@@ -19,8 +19,7 @@ After you have installed twitcher you can customize the default twitcher configu
 
    [settings]
    hostname = localhost
-   http-port = 8083
-   https-port = 5000
+   https-port = 8000
    log-level = WARN
    username =
    password =
@@ -28,8 +27,6 @@ After you have installed twitcher you can customize the default twitcher configu
    ows-security = true
    ows-proxy = true
    rpcinterface = true
-   wps = true
-   wps-cfg = /path/to/my/default/pywps.cfg
 
 After your have made a change in ``custom.cfg`` you *need to update* the installation and restart the twitcher service:
 
@@ -42,20 +39,13 @@ After your have made a change in ``custom.cfg`` you *need to update* the install
 Set hostname and port
 =====================
 
-Edit the options ``hostname``, ``http-port`` and ``https-port``.
+Edit the options ``hostname`` and ``https-port``.
 
 
 Activate basic-auth for XML-RPC control interface
 =================================================
 
 Set ``username`` and ``password``.
-
-
-Configure the default WPS configuration
-=======================================
-
-Edit the ``wps-cfg`` option to set the default PyWPS configuration for the capabilities of the internal WPS (PyWPS) application.
-
 
 Deactivate twitcher components
 ==============================
@@ -68,8 +58,6 @@ ows-proxy
    A proxy wsgi application for OWS services
 rpcinterface
    An XML-RPC interface to control token generation and service registration
-wps
-   An internal WPS wsgi application (PyWPS)
 
 By setting a component option to ``false`` you can deactivate it:
 

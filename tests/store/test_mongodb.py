@@ -58,8 +58,8 @@ class MongodbServiceStoreTestCase(unittest.TestCase):
         assert isinstance(service, dict)
 
     def test_save_service_default(self):
-        collection_mock = mock.Mock(spec=["insert_one", "find_one", "count"])
-        collection_mock.count.return_value = 0
+        collection_mock = mock.Mock(spec=["insert_one", "find_one", "count_documents"])
+        collection_mock.count_documents.return_value = 0
         collection_mock.find_one.return_value = self.service
 
         store = MongodbServiceStore(collection=collection_mock)
@@ -68,8 +68,8 @@ class MongodbServiceStoreTestCase(unittest.TestCase):
         collection_mock.insert_one.assert_called_with(self.service)
 
     def test_save_service_with_special_name(self):
-        collection_mock = mock.Mock(spec=["insert_one", "find_one", "count"])
-        collection_mock.count.return_value = 0
+        collection_mock = mock.Mock(spec=["insert_one", "find_one", "count_documents"])
+        collection_mock.count_documents.return_value = 0
         collection_mock.find_one.return_value = self.service_special
 
         store = MongodbServiceStore(collection=collection_mock)
@@ -79,8 +79,8 @@ class MongodbServiceStoreTestCase(unittest.TestCase):
             'url': 'http://wonderload', 'type': 'wps', 'name': 'a_special_name', 'public': False, 'auth': 'token'})
 
     def test_save_service_public(self):
-        collection_mock = mock.Mock(spec=["insert_one", "find_one", "count"])
-        collection_mock.count.return_value = 0
+        collection_mock = mock.Mock(spec=["insert_one", "find_one", "count_documents"])
+        collection_mock.count_documents.return_value = 0
         collection_mock.find_one.return_value = self.service_public
 
         store = MongodbServiceStore(collection=collection_mock)
