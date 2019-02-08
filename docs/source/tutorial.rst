@@ -116,7 +116,7 @@ In the following example we provide the token as HTTP parameter:
 Use x509 certificates to control client access
 ==================================================
 
-Since version 0.3.6 Twitcher is prepared to use x509 certificates for control client access.
+Since version 0.3.6 Twitcher is prepared to use x509 certificates to control client access.
 By default it is configured to accept x509 proxy certificates from `ESGF`_.
 
 Register the Emu WPS service at the Twitcher ``OWSProxy`` with ``auth`` option ``cert``:
