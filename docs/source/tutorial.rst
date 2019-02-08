@@ -8,134 +8,6 @@ Tutorial
     :local:
     :depth: 2
 
-
-Using the WPS application included in Twitcher
-==============================================
-
-Install twitcher (see: :ref:`installation`) and make sure it is started with ``make status``:
-
-.. code-block:: sh
-
-    $ cd twitcher  # cd into the installation folder
-    $ make status
-    Supervisor status ...
-    mongodb                          RUNNING   pid 6863, uptime 0:00:19
-    nginx                            RUNNING   pid 6865, uptime 0:00:19
-    twitcher                         RUNNING   pid 6864, uptime 0:00:19
-
-If twitcher (or nginx, mongodb) is not running then start it with ``make start``.
-
-By default the twitcher WPS application is available at the URL https://localhost:5000/ows/wps.
-
-Run a ``GetCapabilities`` request:
-
-.. code-block:: sh
-
-    $ curl -k "https://localhost:5000/ows/wps?service=wps&request=getcapabilities"
-
-Run a ``DescribeProcess`` request:
-
-.. code-block:: sh
-
-    $ curl -k "https://localhost:5000/ows/wps?service=wps&request=describeprocess&identifier=hello&version=1.0.0"
-
-Use token to run an execute request
------------------------------------
-
-By default the WPS service is protected by the ``OWSSecurity`` wsgi middleware. You need to provide an access token to run an execute request.
-
-Run an ``Exceute`` request:
-
-.. code-block:: sh
-
-    $ curl -k "https://localhost:5000/ows/wps?service=wps&request=execute&identifier=hello&version=1.0.0"
-
-Now you should get an XML error response with a message that you need to provide an access token:
-
-.. code-block:: xml
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <ExceptionReport version="1.0.0" xmlns="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd">
-        <Exception exceptionCode="NoApplicableCode" locator="AccessForbidden">
-            <ExceptionText>Access token is required to access this service.</ExceptionText>
-        </Exception>
-    </ExceptionReport>
-
-First we need to generate an access token with ``twitcherctl``:
-
-.. code-block:: sh
-
-    $ bin/twitcherctl -k gentoken
-    abc123
-
-There are three ways how you can provide the access token:
-
-1. as ``token`` HTTP query parameter
-
-.. code-block:: sh
-
-    $ curl -k "https://localhost:5000/ows/wps?token=abc123&service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
-
-2. as the last part of the HTTP path
-
-.. code-block:: sh
-
-    $ curl -k "https://localhost:5000/ows/wps/abc123?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
-
-3. as ``Access-Token`` header variable
-
-.. code-block:: sh
-
-   $ curl -k -H Access-Token:abc123 "https://localhost:5000/ows/wps?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
-
-
-Change the default WPS configuration
-------------------------------------
-
-To change the default WPS configuration edit the ``custom.cfg`` and set the ``wps-cfg`` option:
-
-.. code-block:: sh
-
-   $ vim custom.cfg
-   [settings]
-   wps-cfg = /path/to/my/default/pywps.cfg
-
-
-After you have changed the configuration file you must update the installation and restart the twitcher service:
-
-.. code-block:: sh
-
-   $ make update
-   $ make restart
-
-
-Use tokens to set user environment
-----------------------------------
-
-When you generate an access token you can also set enviroment variables with the ``-e`` option. Currently only the environment variables used by the WPS component (PyWPS) are possible. These are:
-
-PYWPS_CFG
-   Configuration file location
-
-In the following we set a PyWPS configuration:
-
-.. code-block:: sh
-
-   $ bin/twitcherctl -k gentoken -e PYWPS_CFG=/path/to/my/pywps.cfg
-   321bca
-
-
-When you access the wps with the generated token you will get the capabilites corresponding to the provided PyWPS configuration:
-
-.. code-block:: sh
-
-    $ curl -k "https://localhost:5000/ows/wps?service=wps&request=getcapabilities&token=321bca"
-
-.. note::
-
-   Without the access token you will get the default capabilities of the WPS service.
-
-
 Using the OWSProxy with an external WPS application
 ===================================================
 
@@ -153,7 +25,7 @@ Get it from GitHub and run the installation:
     $ make start
 
 The Emu WPS service is available by default at the URL:
-http://localhost:8094/wps?service=WPS&version=1.0.0&request=GetCapabilities
+http://localhost:5000/wps?service=WPS&version=1.0.0&request=GetCapabilities
 
 
 Make sure Twitcher is installed and running:
@@ -171,7 +43,7 @@ Register the Emu WPS service at the Twitcher ``OWSProxy``:
 
 .. code-block:: sh
 
-   $ bin/twitcherctl -k register --name emu http://localhost:8094/wps
+   $ bin/twitcherctl -k register --name emu http://localhost:5000/wps
 
 If you don't provide a name with ``--name`` option then a nice name will be generated, for example ``sleepy_flamingo``.
 
@@ -180,27 +52,27 @@ Use the ``list`` command to see which WPS services are registered with OWSProxy:
 .. code-block:: sh
 
    $ bin/twitcherctl -k list
-   [{'url': 'http://localhost:8094/wps', 'proxy_url': 'https://localhost:5000/ows/proxy/emu', 'type': 'wps', 'name': 'emu'}]
+   [{'url': 'http://localhost:5000/wps', 'proxy_url': 'https://localhost:8000/ows/proxy/emu', 'type': 'wps', 'name': 'emu'}]
 
 
 Access a registered service
 ---------------------------
 
-By default the registered service is available at the URL ``https://localhost:5000/ows/proxy/{service_name}``.
+By default the registered service is available at the URL ``https://localhost:8000/ows/proxy/{service_name}``.
 Replace the ``service_name`` with the registered name.
 
 Run a ``GetCapabilities`` request for the registered Emu WPS service:
 
 .. code-block:: sh
 
-    $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=getcapabilities"
+    $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=getcapabilities"
 
 
 Run a ``DescribeProcess`` request:
 
 .. code-block:: sh
 
-    $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=describeprocess&identifier=hello&version=1.0.0"
+    $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=describeprocess&identifier=hello&version=1.0.0"
 
 Use tokens to run an execute request
 ------------------------------------
@@ -211,7 +83,7 @@ Run an ``Exceute`` request:
 
 .. code-block:: sh
 
-    $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
+    $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
 
 Now you should get an XML error response with a message that you need to provide an access token (see section above).
 
@@ -234,7 +106,7 @@ In the following example we provide the token as HTTP parameter:
 
 .. code-block:: sh
 
-    $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux&token=def456"
+    $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux&token=def456"
 
 .. warning::
 
@@ -251,20 +123,20 @@ Register the Emu WPS service at the Twitcher ``OWSProxy`` with ``auth`` option `
 
 .. code-block:: sh
 
-   $ bin/twitcherctl -k register --name emu --auth cert http://localhost:8094/wps
+   $ bin/twitcherctl -k register --name emu --auth cert http://localhost:5000/wps
 
 The ``GetCapabilities``  and ``DescribeProcess`` requests are not blocked:
 
 .. code-block:: sh
 
-  $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=getcapabilities"
-  $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=describeprocess&identifier=hello&version=1.0.0"
+  $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=getcapabilities"
+  $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=describeprocess&identifier=hello&version=1.0.0"
 
 When you run an ``Exceute`` request without a certificate you should get an exception report:
 
 .. code-block:: sh
 
-  $ curl -k "https://localhost:5000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
+  $ curl -k "https://localhost:8000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
 
 Now you should get an XML error response with a message that you need to provide a valid X509 certificate.
 
@@ -273,7 +145,7 @@ Let's say your proxy certificate is ``cert.pem``, then run the exceute request a
 
 .. code-block:: sh
 
-  $ curl --cert cert.pem --key cert.pem -k "https://localhost:5000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
+  $ curl --cert cert.pem --key cert.pem -k "https://localhost:8000/ows/proxy/emu?service=wps&request=execute&identifier=hello&version=1.0.0&datainputs=name=tux"
 
 
 Use Birdy WPS command line client to run a Process
@@ -301,14 +173,14 @@ Check which WPS is registered (or register one as described above):
 .. code-block:: sh
 
    $ bin/twitcherctl -k list
-   [{'url': 'http://localhost:8094/wps', 'proxy_url': 'https://localhost:5000/ows/proxy/emu', 'type': 'wps', 'name': 'emu'}]
+   [{'url': 'http://localhost:5000/wps', 'proxy_url': 'https://localhost:8000/ows/proxy/emu', 'type': 'wps', 'name': 'emu'}]
 
 
 Set the ``WPS_SERVICE`` environment variable for birdy with the ``proxy_url`` and extended with **access token**:
 
 .. code-block:: sh
 
-   $ export WPS_SERVICE=https://localhost:5000/ows/proxy/emu/98765
+   $ export WPS_SERVICE=https://localhost:8000/ows/proxy/emu/98765
 
 
 Now, run birdy:
@@ -352,7 +224,6 @@ You get a list of available WPS processes::
                             sources ...
         chomsky             Chomsky text generator: Generates a random chomsky
                             text ...
-        zonal_mean          Zonal Mean: zonal mean in NetCDF File.
 
 
 Show params of ``helloworld process``:

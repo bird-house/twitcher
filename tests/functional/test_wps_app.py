@@ -10,7 +10,10 @@ import pytest
 import unittest
 import webtest
 import pyramid.testing
+
+from .common import call_FUT
 from .common import setup_with_mongodb, setup_mongodb_tokenstore
+from .common import WPS_TEST_SERVICE
 
 
 class WpsAppTest(unittest.TestCase):
@@ -18,46 +21,62 @@ class WpsAppTest(unittest.TestCase):
     def setUp(self):
         config = setup_with_mongodb()
         self.token = setup_mongodb_tokenstore(config)
-        config.include('twitcher.wps')
+        config.include('twitcher.rpcinterface')
+        config.include('twitcher.owsproxy')
         config.include('twitcher.tweens')
         self.app = webtest.TestApp(config.make_wsgi_app())
-        self.protected_path = '/ows'
+        self.wps_path = '/ows/proxy/test_emu'
+        # register
+        service = {'url': WPS_TEST_SERVICE, 'name': 'test_emu',
+                   'type': 'wps', 'public': True}
+        try:
+            call_FUT(self.app, 'register_service', (
+                service['url'],
+                service,
+                False))
+        except Exception:
+            pass
 
     def tearDown(self):
         pyramid.testing.tearDown()
 
     @pytest.mark.online
     def test_getcaps(self):
-        resp = self.app.get(self.protected_path+'/wps?service=wps&request=getcapabilities')
+        url = '{}?service=wps&request=getcapabilities'
+        resp = self.app.get(url.format(self.wps_path))
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         resp.mustcontain('</wps:Capabilities>')
 
     @pytest.mark.online
     def test_getcaps_with_invalid_token(self):
-        resp = self.app.get(self.protected_path+'/wps?service=wps&request=getcapabilities&access_token=invalid')
+        url = '{}?service=wps&request=getcapabilities&access_token=invalid'
+        resp = self.app.get(url.format(self.wps_path))
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         resp.mustcontain('</wps:Capabilities>')
 
     @pytest.mark.online
     def test_describeprocess(self):
-        resp = self.app.get(self.protected_path+'/wps?service=wps&request=describeprocess&version=1.0.0&identifier=hello')
+        url = '{}?service=wps&request=describeprocess&version=1.0.0&identifier=hello'
+        resp = self.app.get(url.format(self.wps_path))
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         resp.mustcontain('</wps:ProcessDescriptions>')
 
     @pytest.mark.online
     def test_describeprocess_with_invalid_token(self):
-        resp = self.app.get(
-            self.protected_path+'/wps?service=wps&request=describeprocess&version=1.0.0&identifier=hello&access_token=invalid')
+        url = '{}?service=wps&request=describeprocess&version=1.0.0&identifier=hello&access_token=invalid'
+        resp = self.app.get(url.format(self.wps_path))
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         resp.mustcontain('</wps:ProcessDescriptions>')
 
     @pytest.mark.online
+    @pytest.mark.skip(reason="not configured")
     def test_execute_not_allowed(self):
-        resp = self.app.get(self.protected_path+'/wps?service=wps&request=execute&version=1.0.0&identifier=hello&datainputs=name=tux')
+        url = '{}?service=wps&request=execute&version=1.0.0&identifier=hello&datainputs=name=tux'
+        resp = self.app.get(url.format(self.wps_path))
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         print(resp.body)
@@ -65,9 +84,8 @@ class WpsAppTest(unittest.TestCase):
 
     @pytest.mark.online
     def test_execute_allowed(self):
-        url = self.protected_path+"/wps?service=wps&request=execute&version=1.0.0&identifier=hello&datainputs=name=tux"
-        url += "&access_token={}".format(self.token)
-        resp = self.app.get(url)
+        url = "{}?service=wps&request=execute&version=1.0.0&identifier=hello&datainputs=name=tux&access_token={}"
+        resp = self.app.get(url.format(self.wps_path, self.token))
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         print(resp.body)

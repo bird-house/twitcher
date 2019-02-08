@@ -19,14 +19,14 @@ To use the XML-RPC interface, connect to twitcher’s HTTPS port with any XML-RP
 .. code-block:: python
 
    import xmlrpclib
-   server = xmlrpclib.Server('https://localhost:5000/RPC2')
+   server = xmlrpclib.Server('https://localhost:8000/RPC2')
 
 .. warning::
 
    When accessing the default HTTPS service you need to deactivate SSL verfication. See ``twitcher/client.py`` how this can be done. You may also use the following code::
 
    >> from twitcher import client
-   >> server = client._create_server('https://localhost:5000/RPC2', verify_ssl=False)
+   >> server = client._create_server('https://localhost:8000/RPC2', verify_ssl=False)
 
 The `XML-RPC <http://xmlrpc.scripting.com/>`_ interface can also be accessed from Java and other languages.
 
