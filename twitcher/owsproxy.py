@@ -15,7 +15,6 @@ from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
 from twitcher.utils import replace_caps_url
 from twitcher.store import servicestore_factory
 
-
 import logging
 LOGGER = logging.getLogger(__name__)
 
@@ -70,13 +69,12 @@ def _send_request(request, service, extra_path=None, request_params=None):
     h = dict(request.headers)
     h.pop("Host", h)
     h['Accept-Encoding'] = None
-
     #
     service_type = service['type']
     if service_type and (service_type.lower() != 'wps'):
         try:
             resp_iter = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
-                                         stream=True)
+                                         stream=True, verify=service.verify)
         except Exception as e:
             return OWSAccessFailed("Request failed: {}".format(e.message))
 
@@ -86,7 +84,8 @@ def _send_request(request, service, extra_path=None, request_params=None):
                         headers={k: v for k, v in resp_iter.headers.items() if k not in HopbyHop})
     else:
         try:
-            resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h)
+            resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
+                                    verify=service.verify)
         except Exception as e:
             return OWSAccessFailed("Request failed: {}".format(e.message))
 
@@ -150,7 +149,8 @@ def owsproxy(request):
         store = servicestore_factory(request.registry)
         service = store.fetch_by_name(service_name)
     except Exception as err:
-        return OWSAccessFailed("Could not find service: {}.".format(err.message))
+        # TODO: Store impl should raise appropriate exception like not authorized
+        return OWSAccessFailed("Could not find service {0} : {1}.".format(service_name, err.message))
     else:
         return _send_request(request, service, extra_path, request_params=request.query_string)
 

@@ -78,7 +78,8 @@ class MongodbServiceStore(ServiceStore, MongodbStore):
             name=name,
             type=service.type,
             public=service.public,
-            auth=service.auth))
+            auth=service.auth,
+            verify=service.verify))
         return self.fetch_by_url(url=service_url)
 
     def delete_service(self, name):

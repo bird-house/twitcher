@@ -84,6 +84,8 @@ class TwitcherCtl(object):
                                help="If set then service has no access restrictions.")
         subparser.add_argument('--auth', default='token',
                                help="Authentication method (token, cert). Default: token.")
+        subparser.add_argument('--verify', default='true',
+                               help="Verify SSL service certificate (true, false, /path/to/cert). Default: true.")
 
         # unregister
         subparser = subparsers.add_parser('unregister', help="Removes OWS service from the registry.")
@@ -116,7 +118,8 @@ class TwitcherCtl(object):
             elif args.cmd == 'register':
                 result = service.register_service(
                     url=args.url,
-                    data={'name': args.name, 'type': args.type, 'public': args.public, 'auth': args.auth})
+                    data={'name': args.name, 'type': args.type, 'public': args.public, 'auth': args.auth,
+                          'verify': args.verify})
             elif args.cmd == 'unregister':
                 result = service.unregister_service(name=args.name)
             elif args.cmd == 'clear':

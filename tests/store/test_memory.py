@@ -29,6 +29,7 @@ class MemoryServiceStoreTestCase(unittest.TestCase):
                              'public': False,
                              'auth': 'token',
                              'type': 'WPS',
+                             'verify': True,
                              }
         self.test_store = MemoryServiceStore()
 
