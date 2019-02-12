@@ -44,13 +44,28 @@ class Service(dict):
         return self.get('auth', 'token')
 
     @property
+    def verify(self):
+        """Verify ssl service certificate."""
+        value = self.get('verify', 'true')
+        if isinstance(value, bool):
+            verify = value
+        elif value.lower() == 'true':
+            verify = True
+        elif value.lower() == 'false':
+            verify = False
+        else:
+            verify = value
+        return verify
+
+    @property
     def params(self):
         return {
             'url': self.url,
             'name': self.name,
             'type': self.type,
             'public': self.public,
-            'auth': self.auth}
+            'auth': self.auth,
+            'verify': self.verify}
 
     def __str__(self):
         return self.name

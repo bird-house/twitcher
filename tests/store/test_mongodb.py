@@ -41,11 +41,11 @@ from twitcher.store.mongodb import MongodbServiceStore
 class MongodbServiceStoreTestCase(unittest.TestCase):
     def setUp(self):
         self.service = dict(name="loving_flamingo", url="http://somewhere.over.the/ocean", type="wps",
-                            public=False, auth='token')
+                            public=False, auth='token', verify=True)
         self.service_public = dict(name="open_pingu", url="http://somewhere.in.the/deep_ocean", type="wps",
-                                   public=True, auth='token')
+                                   public=True, auth='token', verify=True)
         self.service_special = dict(url="http://wonderload", name="A special Name", type='wps',
-                                    auth='token')
+                                    auth='token', verify=False)
 
     def test_fetch_by_name(self):
         collection_mock = mock.Mock(spec=["find_one"])
@@ -76,7 +76,8 @@ class MongodbServiceStoreTestCase(unittest.TestCase):
         store.save_service(Service(self.service_special))
 
         collection_mock.insert_one.assert_called_with({
-            'url': 'http://wonderload', 'type': 'wps', 'name': 'a_special_name', 'public': False, 'auth': 'token'})
+            'url': 'http://wonderload', 'type': 'wps', 'name': 'a_special_name', 'public': False, 'auth': 'token',
+            'verify': False})
 
     def test_save_service_public(self):
         collection_mock = mock.Mock(spec=["insert_one", "find_one", "count_documents"])

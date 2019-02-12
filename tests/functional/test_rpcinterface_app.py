@@ -41,7 +41,8 @@ class XMLRPCInterfaceAppTest(unittest.TestCase):
     @pytest.mark.online
     def test_register_service_and_unregister_it(self):
         service = {'url': WPS_TEST_SERVICE, 'name': 'test_emu',
-                   'type': 'wps', 'public': False, 'auth': 'token'}
+                   'type': 'wps', 'public': False, 'auth': 'token',
+                   'verify': True}
         # register
         resp = call_FUT(self.app, 'register_service', (
             service['url'],

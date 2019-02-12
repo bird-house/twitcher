@@ -58,4 +58,5 @@ class ServiceTestCase(unittest.TestCase):
                                   'public': False,
                                   'auth': 'token',
                                   'type': 'WPS',
-                                  'url': 'http://nowhere/wps'}
+                                  'url': 'http://nowhere/wps',
+                                  'verify': True}
