@@ -7,6 +7,14 @@ from twitcher.store.base import AccessTokenStore
 from twitcher.datatype import AccessToken
 from twitcher.exceptions import AccessTokenNotFound
 
+from twitcher.store.base import ServiceStore
+from twitcher.datatype import Service
+from twitcher.exceptions import ServiceRegistrationError
+from twitcher.exceptions import ServiceNotFound
+from twitcher import namesgenerator
+from twitcher.utils import baseurl
+
+
 import logging
 LOGGER = logging.getLogger(__name__)
 
@@ -37,14 +45,6 @@ class MongodbTokenStore(AccessTokenStore, MongodbStore):
         self.collection.drop()
 
 
-from twitcher.store.base import ServiceStore
-from twitcher.datatype import Service
-from twitcher.exceptions import ServiceRegistrationError
-from twitcher.exceptions import ServiceNotFound
-from twitcher import namesgenerator
-from twitcher.utils import baseurl
-
-
 class MongodbServiceStore(ServiceStore, MongodbStore):
     """
     Registry for OWS services. Uses mongodb to store service url and attributes.
@@ -54,33 +54,25 @@ class MongodbServiceStore(ServiceStore, MongodbStore):
         """
         Stores an OWS service in mongodb.
         """
-
-        service_url = baseurl(service.url)
-        # check if service is already registered
-        if self.collection.count_documents({'url': service_url}) > 0:
-            if overwrite:
-                self.collection.delete_one({'url': service_url})
-            else:
-                raise ServiceRegistrationError("service url already registered.")
-
         name = namesgenerator.get_sane_name(service.name)
         if not name:
             name = namesgenerator.get_random_name()
             if self.collection.count_documents({'name': name}) > 0:
                 name = namesgenerator.get_random_name(retry=True)
+        # check if service is already registered
         if self.collection.count_documents({'name': name}) > 0:
             if overwrite:
                 self.collection.delete_one({'name': name})
             else:
                 raise Exception("service name already registered.")
         self.collection.insert_one(Service(
-            url=service_url,
             name=name,
+            url=baseurl(service.url),
             type=service.type,
             public=service.public,
             auth=service.auth,
             verify=service.verify))
-        return self.fetch_by_url(url=service_url)
+        return self.fetch_by_name(name=name)
 
     def delete_service(self, name):
         """
@@ -111,7 +103,7 @@ class MongodbServiceStore(ServiceStore, MongodbStore):
         """
         Gets service for given ``url`` from mongodb storage.
         """
-        service = self.collection.find_one({'url': baseurl(url)})
+        service = self.collection.find_one({'url': url})
         if not service:
             raise ServiceNotFound
         return Service(service)

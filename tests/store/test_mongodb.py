@@ -10,6 +10,9 @@ from twitcher.datatype import AccessToken
 from twitcher.utils import expires_at
 from twitcher.store.mongodb import MongodbTokenStore
 
+from twitcher.datatype import Service
+from twitcher.store.mongodb import MongodbServiceStore
+
 
 class MongodbTokenStoreTestCase(unittest.TestCase):
     def setUp(self):
@@ -32,10 +35,6 @@ class MongodbTokenStoreTestCase(unittest.TestCase):
         store.save_token(self.access_token)
 
         collection_mock.insert_one.assert_called_with(self.access_token)
-
-
-from twitcher.datatype import Service
-from twitcher.store.mongodb import MongodbServiceStore
 
 
 class MongodbServiceStoreTestCase(unittest.TestCase):

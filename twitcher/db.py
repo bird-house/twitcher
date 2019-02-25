@@ -13,7 +13,7 @@ def mongodb(registry):
     client = pymongo.MongoClient(settings['mongodb.host'], int(settings['mongodb.port']))
     db = client[settings['mongodb.db_name']]
     db.services.create_index("name", unique=True)
-    db.services.create_index("url", unique=True)
+    # db.services.create_index("url", unique=True)
     return db
 
 
