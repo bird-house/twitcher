@@ -126,19 +126,6 @@ def _send_request(request, service, extra_path=None, request_params=None):
         return Response(content, status=resp.status_code, headers=headers)
 
 
-def owsproxy_url(request):
-    url = request.params.get("url")
-    if url is None:
-        return OWSAccessFailed("URL param is missing.")
-
-    service_type = request.GET.get('service', 'wps') or request.GET.get('SERVICE', 'wps')
-    # check for full url
-    parsed_url = urlparse.urlparse(url)
-    if not parsed_url.netloc or parsed_url.scheme not in ("http", "https"):
-        return OWSAccessFailed("Not a valid URL.")
-    return _send_request(request, service=dict(url=url, name='external', service_type=service_type))
-
-
 def owsproxy(request):
     """
     TODO: use ows exceptions
@@ -200,8 +187,3 @@ def includeme(config):
             config.add_view(owsproxy, route_name='owsproxy')
             config.add_view(owsproxy, route_name='owsproxy_secured')
             config.add_view(owsproxy, route_name='owsproxy_extra')
-        # use /owsproxy?
-        if asbool(settings.get('twitcher.ows_proxy_url', True)):
-            LOGGER.debug('Twitcher /owsproxy enabled.')
-            config.add_route('owsproxy_url', '/owsproxy')
-            config.add_view(owsproxy_url, route_name='owsproxy_url')
