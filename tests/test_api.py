@@ -8,6 +8,9 @@ from twitcher.api import TokenManager
 from twitcher.tokengenerator import UuidTokenGenerator
 from twitcher.store.memory import MemoryTokenStore
 
+from twitcher.api import Registry
+from twitcher.store.memory import MemoryServiceStore
+
 
 class TokenManagerTest(unittest.TestCase):
 
@@ -39,10 +42,6 @@ class TokenManagerTest(unittest.TestCase):
         assert access_token.data == {'esgf_token': 'abcdef'}
 
 
-from twitcher.api import Registry
-from twitcher.store.memory import MemoryServiceStore
-
-
 class RegistryTest(unittest.TestCase):
 
     def setUp(self):
@@ -60,10 +59,6 @@ class RegistryTest(unittest.TestCase):
 
         # get by name
         resp = self.reg.get_service_by_name(service['name'])
-        assert resp == service
-
-        # get by url
-        resp = self.reg.get_service_by_url(service['url'])
         assert resp == service
 
         # list
