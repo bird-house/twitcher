@@ -9,7 +9,6 @@ from twitcher.exceptions import AccessTokenNotFound
 
 from twitcher.store.base import ServiceStore
 from twitcher.datatype import Service
-from twitcher.exceptions import ServiceRegistrationError
 from twitcher.exceptions import ServiceNotFound
 from twitcher import namesgenerator
 from twitcher.utils import baseurl
