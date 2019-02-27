@@ -68,6 +68,7 @@ class MongodbServiceStore(ServiceStore, MongodbStore):
             name=name,
             url=baseurl(service.url),
             type=service.type,
+            purl=service.purl,
             public=service.public,
             auth=service.auth,
             verify=service.verify))

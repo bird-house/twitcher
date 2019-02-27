@@ -111,9 +111,13 @@ def _send_request(request, service, extra_path=None, request_params=None):
         try:
             if ct in ['text/xml', 'application/xml', 'text/xml;charset=ISO-8859-1']:
                 # replace urls in xml content
-                proxy_url = request.route_url('owsproxy', service_name=service['name'])
+                # ... if public URL is not configured use proxy url.
+                if service.has_purl():
+                    public_url = service.get('purl')
+                else:
+                    public_url = request.route_url('owsproxy', service_name=service['name'])
                 # TODO: where do i need to replace urls?
-                content = replace_caps_url(resp.content, proxy_url, service.get('url'))
+                content = replace_caps_url(resp.content, public_url, service.get('url'))
             else:
                 # raw content
                 content = resp.content

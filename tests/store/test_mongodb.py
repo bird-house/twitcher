@@ -40,11 +40,11 @@ class MongodbTokenStoreTestCase(unittest.TestCase):
 class MongodbServiceStoreTestCase(unittest.TestCase):
     def setUp(self):
         self.service = dict(name="loving_flamingo", url="http://somewhere.over.the/ocean", type="wps",
-                            public=False, auth='token', verify=True)
+                            public=False, auth='token', verify=True, purl="http://purl/wps")
         self.service_public = dict(name="open_pingu", url="http://somewhere.in.the/deep_ocean", type="wps",
-                                   public=True, auth='token', verify=True)
+                                   public=True, auth='token', verify=True, purl="http://purl/wps")
         self.service_special = dict(url="http://wonderload", name="A special Name", type='wps',
-                                    auth='token', verify=False)
+                                    auth='token', verify=False, purl="http://purl/wps")
 
     def test_fetch_by_name(self):
         collection_mock = mock.Mock(spec=["find_one"])
@@ -76,7 +76,7 @@ class MongodbServiceStoreTestCase(unittest.TestCase):
 
         collection_mock.insert_one.assert_called_with({
             'url': 'http://wonderload', 'type': 'wps', 'name': 'a_special_name', 'public': False, 'auth': 'token',
-            'verify': False})
+            'verify': False, 'purl': "http://purl/wps"})
 
     def test_save_service_public(self):
         collection_mock = mock.Mock(spec=["insert_one", "find_one", "count_documents"])
