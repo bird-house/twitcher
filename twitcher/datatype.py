@@ -4,13 +4,13 @@ Definitions of types used by tokens.
 
 import time
 
-from twitcher.utils import now_secs
+from twitcher.utils import now_secs, is_valid_url
 from twitcher.exceptions import AccessTokenNotFound
 
 
 class Service(dict):
     """
-    Dictionary that contains OWS services. It always has ``'url'`` key.
+    Dictionary that contains OWS services. It always has the ``'url'`` key.
     """
     def __init__(self, *args, **kwargs):
         super(Service, self).__init__(*args, **kwargs)
@@ -31,6 +31,15 @@ class Service(dict):
     def type(self):
         """Service type."""
         return self.get('type', 'WPS')
+
+    @property
+    def purl(self):
+        """Service optional public URL (purl)."""
+        return self.get('purl', '')
+
+    def has_purl(self):
+        """Return true if we have a valid public URL (purl)."""
+        return is_valid_url(self.purl)
 
     @property
     def public(self):
@@ -63,6 +72,7 @@ class Service(dict):
             'url': self.url,
             'name': self.name,
             'type': self.type,
+            'purl': self.purl,
             'public': self.public,
             'auth': self.auth,
             'verify': self.verify}

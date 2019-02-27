@@ -42,6 +42,7 @@ class ServiceTestCase(unittest.TestCase):
         service = Service(url='http://nowhere/wps')
         assert service.url == 'http://nowhere/wps'
         assert service.name == 'unknown'
+        assert service.has_purl() is False
 
     def test_missing_url(self):
         with pytest.raises(TypeError) as e_info:
@@ -51,12 +52,15 @@ class ServiceTestCase(unittest.TestCase):
         service = Service(url='http://nowhere/wps', name="test_wps")
         assert service.url == 'http://nowhere/wps'
         assert service.name == 'test_wps'
+        assert service.has_purl() is False
 
     def test_service_params(self):
-        service = Service(url='http://nowhere/wps', name="test_wps")
+        service = Service(url='http://nowhere/wps', name="test_wps", purl='http://myservice/wps')
         assert service.params == {'name': 'test_wps',
                                   'public': False,
                                   'auth': 'token',
                                   'type': 'WPS',
                                   'url': 'http://nowhere/wps',
-                                  'verify': True}
+                                  'verify': True,
+                                  'purl': 'http://myservice/wps'}
+        assert service.has_purl() is True

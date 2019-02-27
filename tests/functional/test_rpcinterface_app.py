@@ -42,7 +42,7 @@ class XMLRPCInterfaceAppTest(unittest.TestCase):
     def test_register_service_and_unregister_it(self):
         service = {'url': WPS_TEST_SERVICE, 'name': 'test_emu',
                    'type': 'wps', 'public': False, 'auth': 'token',
-                   'verify': True}
+                   'verify': True, 'purl': 'http://purl/wps'}
         # register
         resp = call_FUT(self.app, 'register_service', (
             service['url'],

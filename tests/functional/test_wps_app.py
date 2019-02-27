@@ -28,7 +28,7 @@ class WpsAppTest(unittest.TestCase):
         self.wps_path = '/ows/proxy/test_emu'
         # register
         service = {'url': WPS_TEST_SERVICE, 'name': 'test_emu',
-                   'type': 'wps', 'public': True}
+                   'type': 'wps', 'public': True, 'purl': 'http://purl/wps'}
         try:
             call_FUT(self.app, 'register_service', (
                 service['url'],

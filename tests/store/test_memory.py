@@ -25,6 +25,7 @@ class MemoryServiceStoreTestCase(unittest.TestCase):
     def setUp(self):
         self.service_data = {'url': 'http://localhost:5000/wps',
                              'name': 'emu',
+                             'purl': 'http://myservice/wps',
                              'public': False,
                              'auth': 'token',
                              'type': 'WPS',

@@ -49,7 +49,8 @@ class RegistryTest(unittest.TestCase):
 
     def test_register_service_and_unregister_it(self):
         service = {'url': 'http://localhost/wps', 'name': 'test_emu',
-                   'type': 'wps', 'public': False, 'auth': 'token', 'verify': True}
+                   'type': 'wps', 'public': False, 'auth': 'token', 'verify': True,
+                   'purl': 'http://myservice/wps'}
         # register
         resp = self.reg.register_service(
             service['url'],

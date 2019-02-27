@@ -80,6 +80,8 @@ class TwitcherCtl(object):
         subparser.add_argument('--name', help="Service name. If not set then a name will be generated.")
         subparser.add_argument('--type', default='wps',
                                help="Service type (wps, wms). Default: wps.")
+        subparser.add_argument('--purl', default='',
+                               help="Service optional public URL.")
         subparser.add_argument('--public', action='store_true',
                                help="If set then service has no access restrictions.")
         subparser.add_argument('--auth', default='token',
@@ -116,10 +118,16 @@ class TwitcherCtl(object):
             if args.cmd == 'list':
                 result = service.list_services()
             elif args.cmd == 'register':
+                data = {'name': args.name,
+                        'type': args.type,
+                        'purl': args.purl,
+                        'public': args.public,
+                        'auth': args.auth,
+                        'verify': args.verify}
                 result = service.register_service(
                     url=args.url,
-                    data={'name': args.name, 'type': args.type, 'public': args.public, 'auth': args.auth,
-                          'verify': args.verify})
+                    data=data,
+                )
             elif args.cmd == 'unregister':
                 result = service.unregister_service(name=args.name)
             elif args.cmd == 'clear':
