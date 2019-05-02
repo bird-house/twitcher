@@ -1,17 +1,12 @@
+dist: xenial   # required for Python >= 3.7
 language: python
-# branches:
-#  only:
-#    - master
 os:
   - linux
 python:
-  - "2.7"
+  - "3.7"
 sudo: false
 install:
   - make install
-  #- make start
-#before_script:
-#  - sleep 5
 script:
   - make test
   - make pep8

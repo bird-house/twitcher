@@ -5,7 +5,7 @@ from lxml import etree
 
 from twitcher.exceptions import ServiceNotFound
 
-from six.moves.urllib import parse as urlparse
+from urllib import parse as urlparse
 
 import logging
 logger = logging.getLogger(__name__)

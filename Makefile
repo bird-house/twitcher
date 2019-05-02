@@ -1,5 +1,4 @@
-VERSION := 0.3.17
-RELEASE := master
+VERSION := 0.4.0
 
 # Include custom config if it is available
 -include Makefile.config
@@ -13,9 +12,9 @@ OS_NAME := $(shell uname -s 2>/dev/null || echo "unknown")
 CPU_ARCH := $(shell uname -m 2>/dev/null || uname -p 2>/dev/null || echo "unknown")
 
 # Python
-SETUPTOOLS_VERSION := 36.5.0
+SETUPTOOLS_VERSION := 41
 CONDA_VERSION := 4.5
-BUILDOUT_VERSION := 2.12.1
+BUILDOUT_VERSION := 2.13.1
 
 # Anaconda
 ANACONDA_HOME ?= $(HOME)/anaconda
@@ -32,9 +31,9 @@ OUTPUT_PORT ?= 8090
 # choose anaconda installer depending on your OS
 ANACONDA_URL = https://repo.continuum.io/miniconda
 ifeq "$(OS_NAME)" "Linux"
-FN := Miniconda2-latest-Linux-x86_64.sh
+FN := Miniconda3-latest-Linux-x86_64.sh
 else ifeq "$(OS_NAME)" "Darwin"
-FN := Miniconda2-latest-MacOSX-x86_64.sh
+FN := Miniconda3-latest-MacOSX-x86_64.sh
 else
 FN := unknown
 endif
@@ -74,7 +73,6 @@ help:
 	@echo "  distclean   to remove *all* files that are not controlled by 'git'. WARNING: use it *only* if you know what you do!"
 	@echo "  passwd      to generate password for 'phoenix-password' in custom.cfg."
 	@echo "  export      to export the conda environment. Caution! You always need to check it the enviroment.yml is working."
-	@echo "  selfupdate  to update this Makefile."
 	@echo "\nSupervisor targets:"
 	@echo "  start       to start supervisor service."
 	@echo "  stop        to stop supervisor service."
@@ -103,17 +101,6 @@ info:
 backup:
 	@echo "Backup custom config ..."
 	@-test -f custom.cfg && cp -v --update --backup=numbered --suffix=.bak custom.cfg custom.cfg.bak
-
-.PHONY: .gitignore
-.gitignore:
-	@echo "Setup default .gitignore ..."
-	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/dot_gitignore" --silent --insecure --output .gitignore
-
-.PHONY: bootstrap.sh
-bootstrap.sh:
-	@echo "Update bootstrap.sh ..."
-	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/bootstrap.sh" --silent --insecure --output bootstrap.sh "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/bootstrap.sh"
-	@chmod 755 bootstrap.sh
 
 custom.cfg:
 	@echo "Using custom.cfg for buildout ..."
@@ -260,10 +247,6 @@ linkcheck:
 doc8:
 	@echo "Running doc8 doc style checks ..."
 	$(CONDA_ENV_PATH)/bin/doc8 docs/
-
-.PHONY: selfupdate
-selfupdate: bootstrap.sh .gitignore
-	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/Makefile" --silent --insecure --output Makefile
 
 ## Supervisor targets
 

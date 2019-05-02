@@ -1,17 +1,13 @@
 name: twitcher
 channels:
-- birdhouse
 - defaults
-- conda-forge
 dependencies:
-- python=2.7
-- six
+- python=3.7
 - curl
 - pyopenssl
 - cryptography
 - mako
 - pyyaml
-- icu=56
 # tests
 - pytest
 - flake8
@@ -22,23 +18,23 @@ dependencies:
 - sphinx
 # twitcher
 - argcomplete
-- lxml=3.7
-- libxslt=1.1.29
+- lxml
+- libxslt
 - paste
 - pastedeploy
 - requests
 - requests-oauthlib
 - webob
 # nginx, supervisor
-- nginx=1.10
-- supervisor=3
+- nginx
+- supervisor=4
 - gunicorn=19
-- gevent=1.2
+- gevent
 # mongodb
 - pymongo=3
 - mongodb=3.4
 - pip:
   - genshi==0.7
+  - pyramid
   - pyramid-rpc
   - sphinx-autoapi
-  - -e git+https://github.com/huard/sphinx-autodoc-pywps.git#egg=sphinx_autodoc_pywps

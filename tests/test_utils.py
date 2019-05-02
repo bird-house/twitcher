@@ -58,25 +58,25 @@ xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/
 def test_replace_caps_url_wps():
     doc = etree.parse(WPS_CAPS_EMU_XML)
     xml = etree.tostring(doc)
-    assert 'http://localhost:8094/wps' in xml
+    assert b'http://localhost:8094/wps' in xml
     xml = utils.replace_caps_url(xml, "https://localhost/ows/proxy/emu")
-    assert 'http://localhost:8094/wps' not in xml
-    assert 'https://localhost/ows/proxy/emu' in xml
+    assert b'http://localhost:8094/wps' not in xml
+    assert b'https://localhost/ows/proxy/emu' in xml
 
 
 def test_replace_caps_url_wms_111():
     doc = etree.parse(WMS_CAPS_NCWMS2_111_XML)
     xml = etree.tostring(doc)
-    assert 'http://localhost:8080/ncWMS2/wms' in xml
+    assert b'http://localhost:8080/ncWMS2/wms' in xml
     xml = utils.replace_caps_url(xml, "https://localhost/ows/proxy/wms")
     # assert 'http://localhost:8080/ncWMS2/wms' not in xml
-    assert 'https://localhost/ows/proxy/wms' in xml
+    assert b'https://localhost/ows/proxy/wms' in xml
 
 
 def test_replace_caps_url_wms_130():
     doc = etree.parse(WMS_CAPS_NCWMS2_130_XML)
     xml = etree.tostring(doc)
-    assert 'http://localhost:8080/ncWMS2/wms' in xml
+    assert b'http://localhost:8080/ncWMS2/wms' in xml
     xml = utils.replace_caps_url(xml, "https://localhost/ows/proxy/wms")
     # assert 'http://localhost:8080/ncWMS2/wms' not in xml
-    assert 'https://localhost/ows/proxy/wms' in xml
+    assert b'https://localhost/ows/proxy/wms' in xml

@@ -1,12 +1,8 @@
 import ssl
 from datetime import datetime
 
-import six
-if six.PY2:
-    import xmlrpclib
-else:
-    import xmlrpc.client as xmlrpclib
-from six.moves.urllib import parse as urlparse
+import xmlrpc.client as xmlrpclib
+from urllib import parse as urlparse
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
