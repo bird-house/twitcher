@@ -1,6 +1,17 @@
 Changes
 *******
 
+0.4.0 (2019-05-02)
+==================
+
+Changes:
+
+* Skipped Python 2.7 support (#61).
+* Added public URL "purl" (#58).
+* Added SSL verify option (#55).
+* Skipped internal WPS (#52).
+* Moved tests to top-level folder (#47).
+
 0.3.8 (2018-09-11)
 ==================
 
