@@ -33,12 +33,10 @@ def xmlrpc_error_handler(wrapped):
         try:
             result = wrapped(*args, **kwargs)
         except xmlrpclib.Fault as e:
-            LOGGER.error("A fault occurred: %s (%d)", e.faultString, e.faultCode)
+            LOGGER.error("A fault occurred. {}".format(e))
             raise
         except xmlrpclib.ProtocolError as e:
-            LOGGER.error(
-                "A protocol error occurred. URL: %s, HTTP/HTTPS headers: %s, Error code: %d, Error message: %s",
-                e.url, e.headers, e.errcode, e.errmsg)
+            LOGGER.error("A protocol error occurred. {}".format(e))
             raise
         except xmlrpclib.ResponseError as e:
             LOGGER.error(

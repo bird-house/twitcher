@@ -65,7 +65,7 @@ class OWSRequestWpsTestCase(unittest.TestCase):
 
     def test_post_getcaps_request(self):
         request = DummyRequest(post={})
-        request.body = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        request.body = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <GetCapabilities service="WPS" acceptVersions="1.0.0" language="en-CA"/>"""
         ows_req = OWSRequest(request)
         assert ows_req.request == 'getcapabilities'
@@ -73,21 +73,21 @@ class OWSRequestWpsTestCase(unittest.TestCase):
 
     def test_post_false_request(self):
         request = DummyRequest(post={})
-        request.body = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        request.body = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <MyCaps service="WPS" acceptVersions="1.0.0" language="en-CA"/>"""
         with pytest.raises(OWSInvalidParameterValue) as e_info:
             ows_req = OWSRequest(request)
 
     def test_post_false_service(self):
         request = DummyRequest(post={})
-        request.body = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        request.body = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <GetCapabilities service="ATM" acceptVersions="1.0.0" language="en-CA"/>"""
         with pytest.raises(OWSInvalidParameterValue) as e_info:
             ows_req = OWSRequest(request)
 
     def test_post_describeprocess_request(self):
         request = DummyRequest(post={})
-        request.body = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        request.body = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <DescribeProcess service="WPS" version="1.0.0" language="en" xmlns:ows="http://www.opengis.net/ows/1.1">
           <ows:Identifier>intersection</ows:Identifier>
           <ows:Identifier>union</ows:Identifier>
@@ -99,7 +99,7 @@ class OWSRequestWpsTestCase(unittest.TestCase):
 
     def test_post_execute_request(self):
         request = DummyRequest(post={})
-        request.body = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        request.body = b"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <wps:Execute service="WPS" version="1.0.0"
             xmlns:wps="http://www.opengis.net/wps/1.0.0"
             xmlns:ows="http://www.opengis.net/ows/1.1"
