@@ -138,7 +138,7 @@ class Post(OWSParser):
         super(Post, self).__init__(request)
 
         try:
-            xml = self.request.body.encode('ascii')
+            xml = self.request.body
             self.document = lxml.etree.fromstring(xml)
             lxml_strip_ns(self.document)
         except Exception as e:
