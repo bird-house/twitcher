@@ -94,7 +94,7 @@ class MemoryServiceStore(ServiceStore):
         Lists all services in memory storage.
         """
         my_services = []
-        for service in self.name_index.values():
+        for service in list(self.name_index.values()):
             my_services.append(Service(service))
         return my_services
 
@@ -108,7 +108,7 @@ class MemoryServiceStore(ServiceStore):
         return Service(service)
 
     def fetch_by_url(self, url):
-        for service in self.name_index.values():
+        for service in list(self.name_index.values()):
             if service.url == url:
                 return Service(service)
         raise ServiceNotFound

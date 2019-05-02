@@ -138,10 +138,11 @@ class Post(OWSParser):
         super(Post, self).__init__(request)
 
         try:
-            self.document = lxml.etree.fromstring(self.request.body)
+            xml = self.request.body.encode('ascii')
+            self.document = lxml.etree.fromstring(xml)
             lxml_strip_ns(self.document)
         except Exception as e:
-            raise OWSNoApplicableCode(e.message)
+            raise OWSNoApplicableCode("{}".format(e))
 
     def _get_service(self):
         """Check mandatory service name parameter in POST request."""

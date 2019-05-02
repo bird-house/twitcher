@@ -4,7 +4,7 @@ The owsproxy is based on `papyrus_ogcproxy <https://github.com/elemoine/papyrus_
 See also: https://github.com/nive/outpost/blob/master/outpost/proxy.py
 """
 
-from six.moves.urllib import parse as urlparse
+from urllib import parse as urlparse
 
 import requests
 
@@ -81,7 +81,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
         # Headers meaningful only for a single transport-level connection
         HopbyHop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
-                        headers={k: v for k, v in resp_iter.headers.items() if k not in HopbyHop})
+                        headers={k: v for k, v in list(resp_iter.headers.items()) if k not in HopbyHop})
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
@@ -141,7 +141,7 @@ def owsproxy(request):
         service = store.fetch_by_name(service_name)
     except Exception as err:
         # TODO: Store impl should raise appropriate exception like not authorized
-        return OWSAccessFailed("Could not find service {0} : {1}.".format(service_name, err.message))
+        return OWSAccessFailed("Could not find service {0} : {1}.".format(service_name, err))
     else:
         return _send_request(request, service, extra_path, request_params=request.query_string)
 
