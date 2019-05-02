@@ -76,7 +76,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
             resp_iter = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
                                          stream=True, verify=service.verify)
         except Exception as e:
-            return OWSAccessFailed("Request failed: {}".format(e.message))
+            return OWSAccessFailed("Request failed: {}".format(e))
 
         # Headers meaningful only for a single transport-level connection
         HopbyHop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
@@ -87,7 +87,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
                                     verify=service.verify)
         except Exception as e:
-            return OWSAccessFailed("Request failed: {}".format(e.message))
+            return OWSAccessFailed("Request failed: {}".format(e))
 
         if resp.ok is False:
             if 'ExceptionReport' in resp.text:

@@ -146,9 +146,9 @@ class TwitcherCtl(object):
                 else:
                     result = service.revoke_token(token=args.token)
         except Exception as e:
-            LOGGER.error("Error: %s", e.message)
+            LOGGER.error("Error: {}".format(e))
         else:
-            LOGGER.info("Result: %s", result)
+            LOGGER.info("Result: {}".format(result))
             return result
 
 
