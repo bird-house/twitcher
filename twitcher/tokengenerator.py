@@ -2,6 +2,7 @@
 Provides various implementations of algorithms to generate an Access Token.
 """
 
+import six
 import uuid
 
 from twitcher.datatype import AccessToken
@@ -45,4 +46,8 @@ class UuidTokenGenerator(TokenGenerator):
         """
         :return: A new token
         """
-        return uuid.uuid4().get_hex()
+        if six.PY2:
+            token = uuid.uuid4().get_hex()
+        else:
+            token = uuid.uuid4().hex
+        return token
