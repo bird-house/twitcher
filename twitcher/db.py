@@ -4,9 +4,6 @@
 
 import pymongo
 
-import logging
-logger = logging.getLogger(__name__)
-
 
 def mongodb(registry):
     settings = registry.settings
@@ -17,12 +14,12 @@ def mongodb(registry):
     return db
 
 
-def includeme(config):
-    config.registry.db = mongodb(config.registry)
-
-    def _add_db(request):
-        db = request.registry.db
-        # if db_url.username and db_url.password:
-        #     db.authenticate(db_url.username, db_url.password)
-        return db
-    config.add_request_method(_add_db, 'db', reify=True)
+# def includeme(config):
+#     config.registry.db = mongodb(config.registry)
+#
+#     def _add_db(request):
+#         db = request.registry.db
+#         # if db_url.username and db_url.password:
+#         #     db.authenticate(db_url.username, db_url.password)
+#         return db
+#     config.add_request_method(_add_db, 'db', reify=True)

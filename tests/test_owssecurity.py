@@ -60,7 +60,7 @@ class OWSSecurityTestCase(unittest.TestCase):
         request = DummyRequest(params=params, path='/ows/proxy/emu')
         request.registry = Registry()
         request.registry.settings = {'twitcher.ows_prox_protected_path': '/ows'}
-        with pytest.raises(OWSAccessForbidden) as e_info:
+        with pytest.raises(OWSAccessForbidden):
             security.check_request(request)
 
     def test_check_request_allowed_caps(self):

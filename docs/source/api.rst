@@ -1,8 +1,6 @@
 .. toctree::
    :hidden:
 
-   autoapi/twitcher
-
 .. _api:
 
 *************************
@@ -19,7 +17,7 @@ To use the XML-RPC interface, connect to twitcher’s HTTPS port with any XML-RP
 .. code-block:: python
 
    import xmlrpclib
-   server = xmlrpclib.Server('https://localhost:8000/RPC2')
+   server = xmlrpclib.Server('http://localhost:8000/RPC2')
 
 .. warning::
 
@@ -30,6 +28,7 @@ To use the XML-RPC interface, connect to twitcher’s HTTPS port with any XML-RP
 
 The `XML-RPC <http://xmlrpc.scripting.com/>`_ interface can also be accessed from Java and other languages.
 
-See the ``twitcher/rpcinterface.py`` module for the available xmlrpc methods.
+See the ``twitcher/rpcinterface.py`` module for the available xmlrpc methods:
 
-:doc:`Internal Documentation Reference. <autoapi/twitcher>`
+.. autoclass:: twitcher.rpcinterface.RPCInterface
+   :members:

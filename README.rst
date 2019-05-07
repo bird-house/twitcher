@@ -35,7 +35,7 @@ Twitcher extensions:
 
 * `Magpie`_ is an AuthN/AuthZ service provided by the `PAVICS`_ project.
 
-Twitcher is a **prototype** implemented in Python with the `Pyramid`_ web framework.
+Twitcher is implemented with the Python `Pyramid`_ web framework.
 
 Twitcher is part of the `Birdhouse`_ project. The documentation is on `ReadTheDocs`_.
 

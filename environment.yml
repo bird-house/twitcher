@@ -2,39 +2,8 @@ name: twitcher
 channels:
 - defaults
 dependencies:
-- python=3.7
-- curl
-- pyopenssl
-- cryptography
-- mako
-- pyyaml
-# tests
-- pytest
-- flake8
-- mock
-- pbr
-- webtest
-# sphinx
-- sphinx
+- python>=3.7
+- pip
 # twitcher
-- argcomplete
 - lxml
-- libxslt
-- paste
-- pastedeploy
 - requests
-- requests-oauthlib
-- webob
-# nginx, supervisor
-- nginx
-- supervisor=4
-- gunicorn=19
-- gevent
-# mongodb
-- pymongo=3
-- mongodb=3.4
-- pip:
-  - genshi==0.7
-  - pyramid
-  - pyramid-rpc
-  - sphinx-autoapi
