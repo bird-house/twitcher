@@ -4,47 +4,59 @@
 Installation
 ************
 
-The installation is using the Python distribution system `Anaconda`_ to maintain software dependencies. `Buildout`_ is used to setup the application with all services and configuration files.
-
-Requirements
-============
-
-The installation works on Linux 64 bit distributions (tested on Ubuntu 14.04) and also on MacOS (tested on Sierra).
-
 From GitHub Sources
 ===================
 
-Install twitcher as normal user from GitHub sources:
+Install twitcher from GitHub sources:
+
+.. code-block:: console
+
+   $ git clone https://github.com/bird-house/twitcher.git
+   $ cd twitcher
+   $ conda env update -f environment.yml
+   $ conda activate twitcher
+   $ python setup.py install
+
+The installation process setups a Conda_ environment named *twitcher*
+with all dependent packages.
+
+... or do it the lazy way
++++++++++++++++++++++++++
+
+We provide also a ``Makefile`` to run this installation:
 
 .. code-block:: sh
 
    $ git clone https://github.com/bird-house/twitcher.git
    $ cd twitcher
-   $ make clean install
-   $ make test
+   $ make clean    # cleans up a previous Conda environment
+   $ make install  # runs the above installation steps
 
-The installation process setups a conda environment named *twitcher* with all dependent conda (and pip) packages. The installation folder (for configuration files, database etc) is by default ``~/birdhouse``. Configuration options can be overriden in the buildout ``custom.cfg`` file.
+Starting Database
+=================
+
+Twitcher is using a MongoDB_ database.
+The default configuration is using the MongoDB standard port 27017 on localhost.
+
+You can install MongoDB with Conda_ for testing:
+
+.. code-block:: console
+
+  $ conda install mongodb=4
+  # start DB for testing
+  $ mongod --config etc/mongod.conf
 
 Starting Twitcher Service
 =========================
 
-Twitcher is run as `Gunicorn <http://gunicorn.org/>`_ WSGI application server behind the `Nginx <http://nginx.org/>`_ HTTP server. Starting/Stopping the services is controlled by `Supervisor <http://supervisord.org/>`_. This is described in the `Birdhouse documenation <http://birdhouse.readthedocs.io/en/latest/installation.html#nginx-gunicorn-and-supervisor>`_.
+For development twitcher is using the the waitress_ WSGI server.
 
-Start the twitcher service (using supervisor):
+Start the twitcher service using the `development.ini` configuration:
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ make start  # or make restart
+   $ pserve development.ini --reload
 
-Check the status of the twitcher service:
-
-.. code-block:: sh
-
-    $ make status
-    Supervisor status ...
-    mongodb                          RUNNING   pid 6863, uptime 0:00:19
-    nginx                            RUNNING   pid 6865, uptime 0:00:19
-    twitcher                         RUNNING   pid 6864, uptime 0:00:19
-
-
-You will find more information about the installation in the `Makefile documentation <http://birdhousebuilderbootstrap.readthedocs.io/en/latest/>`_.
+.. _waitress: https://docs.pylonsproject.org/projects/waitress/en/latest/
+.. _Conda: https://conda.io/en/latest/
+.. _MongoDB: https://www.mongodb.com/

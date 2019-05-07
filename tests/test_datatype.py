@@ -23,7 +23,7 @@ class AccessTokenTestCase(unittest.TestCase):
         assert 'expires_at' in access_token.params
 
     def test_missing_token(self):
-        with pytest.raises(TypeError) as e_info:
+        with pytest.raises(TypeError):
             AccessToken()
 
     def test_invalid_access_token(self):
@@ -45,7 +45,7 @@ class ServiceTestCase(unittest.TestCase):
         assert service.has_purl() is False
 
     def test_missing_url(self):
-        with pytest.raises(TypeError) as e_info:
+        with pytest.raises(TypeError):
             Service()
 
     def test_service_with_name(self):

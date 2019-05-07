@@ -6,8 +6,8 @@
    overview
    installation
    configuration
+   dev_guide
    running
    tutorial
    api
    changes
-   appendix

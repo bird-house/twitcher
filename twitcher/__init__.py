@@ -1,4 +1,4 @@
-__version__ = '0.4.0'
+from .__version__ import __author__, __email__, __version__
 
 
 def main(global_config, **settings):

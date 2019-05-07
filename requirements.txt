@@ -1,5 +1,9 @@
+plaster_pastedeploy
+waitress
 pyramid>=1.10
 pyramid_rpc
+pyramid_debugtoolbar
+pyramid_retry
 webob
 requests
 requests_oauthlib

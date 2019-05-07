@@ -9,35 +9,23 @@ Running Twitcher
     :depth: 2
 
 
-Running twitcher service
-========================
-
-The twitcher service is controlled by `supervisor <http://supervisord.org/>`_. The twitcher installation comes with a Makefile which provides shortcut commands for supervisor:
-
-.. code-block:: sh
-
-    $ cd twitcher   # cd into twitcher installation directory
-    $ make status   # show running supervisor services (incl. twitcher)
-    $ make start    # start all supervisor services (incl. twitcher)
-    $ make stop    # stop ...
-    $ make restart    # restart ...
-
 Running `twitcherctl`
 =====================
 
 
-The ``twitcherctl`` is a command line tool to control the twitcher service. It uses the XML-RPC api of twitcher to generate access tokens and to register OWS services.
+The ``twitcherctl`` is a command line tool to control the twitcher service.
+It uses the XML-RPC api of twitcher to generate access tokens and to register OWS services.
 
-``twitcherctl`` is part of the twitcher installation. When you have installed twitcher from GitHub then start ``twitcherctl`` with:
+``twitcherctl`` is part of the twitcher installation.
+When you have installed twitcher from GitHub then start ``twitcherctl`` with:
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ cd twitcher   # cd into twitcher installation directory
-   $ bin/twitcherctl -h
+   $ twitcherctl -h
 
 
 `twitcherctl` Commands and Options
-------------------------------------------
+----------------------------------
 
 ``twitcherctl`` has the following command line options:
 
@@ -82,15 +70,15 @@ Generate an access token
 
 See the available options:
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ bin/twitcherctl -k gentoken -h
+   $ twitcherctl -k gentoken -h
 
 Generate an access token valid for 24 hours (use ``-k`` to avoid validation of HTTPS server certificate):
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ bin/twitcherctl -k gentoken -H 24
+   $ twitcherctl -k gentoken -H 24
 
 
 Register an OWS Service for the OWS Proxy
@@ -98,18 +86,19 @@ Register an OWS Service for the OWS Proxy
 
 See the available options:
 
-.. code-block:: sh
+.. code-block:: console
 
-   bin/twitcherctl -k register -h
+   twitcherctl -k register -h
 
 Register a local WPS service:
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ bin/twitcherctl -k register http://localhost:5000/wps
+   $ twitcherctl -k register http://localhost:5000/wps
    tiny_buzzard
 
-You can use the ``--name`` option to provide a name (used by the OWS proxy). Otherwise a nice name will be generated.
+You can use the ``--name`` option to provide a name (used by the OWS proxy).
+Otherwise a nice name will be generated.
 
 
 Show Status of Twitcher
@@ -117,26 +106,17 @@ Show Status of Twitcher
 
 Currently the ``status`` command shows only the registered OWS services:
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ bin/twitcherctl -k list
+   $ twitcherctl -k list
    [{'url': 'http://localhost:5000/wps', 'proxy_url': 'https://localhost:38083/ows/proxy/tiny_buzzard', 'type': 'wps', 'name': 'tiny_buzzard'}]
 
-Using OWSProxy
-==============
-
-See the :ref:`tutorial`.
-
-
-Using WPS Application
-=====================
-
-See the :ref:`tutorial`.
 
 Use Twitcher components in your Pyramid Application
 ===================================================
 
-Instead of running twitcher as a service you can also include twitcher components (OWS Security Middleware, OWS Proxy) in a Pyramid application.
+Instead of running twitcher as a service you can also include twitcher components
+(OWS Security Middleware, OWS Proxy) in a Pyramid application.
 
 Include OWS Security Middleware
 -------------------------------

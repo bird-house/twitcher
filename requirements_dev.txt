@@ -1,5 +1,10 @@
-# test
+-r requirements.txt
+# tests
 pytest
-mock
 WebTest
+mock
 flake8
+# docs
+sphinx>=1.7
+# release
+bumpversion

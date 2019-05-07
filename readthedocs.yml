@@ -1,0 +1,12 @@
+version: 2
+build:
+    image: latest
+
+python:
+    version: 3
+    install:
+      - method: setuptools
+        path: .
+
+conda:
+    environment: environment.yml

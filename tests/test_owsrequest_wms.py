@@ -47,5 +47,3 @@ class OWSRequestWmsTestCase(unittest.TestCase):
         assert ows_req.request == 'getmetadata'
         assert ows_req.service == 'wms'
         assert ows_req.version == '1.3.0'
-
-
