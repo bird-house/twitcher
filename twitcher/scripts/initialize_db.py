@@ -12,15 +12,16 @@ def setup_models(dbsession):
     Add or update models / fixtures in the database.
 
     """
-    dbsession.add(models.token.AccessToken(token='123', expires_at='60'))
-    dbsession.add(models.service.Service(
-        name='wps',
-        url='http://localhost:5000/wps',
-        # public=True,
-        # verify=False,
-        purl=None,
-        type='WPS',
-        auth=None))
+    # dbsession.add(models.token.AccessToken(token='123', expires_at='60'))
+    # dbsession.add(models.service.Service(
+    #     name='wps',
+    #     url='http://localhost:5000/wps',
+    #     public=True,
+    #     verify=True,
+    #     purl=None,
+    #     type='WPS',
+    #     auth='token'))
+    pass
 
 
 def parse_args(argv):

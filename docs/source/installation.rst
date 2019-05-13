@@ -56,6 +56,11 @@ Load default data into the database using a script.
 
   $ initialize_twitcher_db development.ini
 
+
+.. note::
+
+  You can use `make db` as a shortcut to upgrade or init the twitcher database (last two steps).
+
 Starting Twitcher Service
 =========================
 
