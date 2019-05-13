@@ -20,7 +20,7 @@ __pycache__
 .tox
 nosetests.xml
 unit_tests/testdata.json
-build
+coverage/
 
 # R
 *.Rhistory
@@ -63,3 +63,7 @@ testdata.json
 *.a
 *.mod
 *.out
+
+# Environments
+env/
+venv/

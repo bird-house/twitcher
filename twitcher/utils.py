@@ -1,15 +1,44 @@
-import time
+from pyramid.config import Configurator
+from pyramid.request import Request
+from pyramid.registry import Registry
 from datetime import datetime
+from urllib import parse as urlparse
+from lxml import etree
+from typing import TYPE_CHECKING
+import time
 import pytz
 import re
-from lxml import etree
 
 from twitcher.exceptions import ServiceNotFound
 
-from urllib import parse as urlparse
-
 import logging
 LOGGER = logging.getLogger("TWITCHER")
+
+if TYPE_CHECKING:
+    from twitcher.typedefs import AnySettingsContainer, SettingsType
+    from typing import AnyStr, Optional
+
+
+def get_settings(container):
+    # type: (AnySettingsContainer) -> Optional[SettingsType]
+    """
+    Retrieves the application ``settings`` from various containers referencing to it.
+
+    :raises TypeError: if the container type cannot be identified to retrieve settings.
+    """
+    if isinstance(container, (Configurator, Request)):
+        container = container.registry
+    if isinstance(container, Registry):
+        container = container.settings
+    if isinstance(container, dict):
+        return container
+    raise TypeError("Could not retrieve settings from container object of type [{}]".format(type(container)))
+
+
+def get_twitcher_url(container):
+    # type: (AnySettingsContainer) -> AnyStr
+    settings = get_settings(container)
+    return settings.get('twitcher.url').rstrip('/').strip()
 
 
 def sanitize(name, minlen=2, maxlen=25):
@@ -57,7 +86,7 @@ def expires_at(hours=1):
 
 
 def localize_datetime(dt, tz_name='UTC'):
-    """Provide a timzeone-aware object for a given datetime and timezone name
+    """Provide a timezone-aware object for a given datetime and timezone name
     """
     tz_aware_dt = dt
     if dt.tzinfo is None:

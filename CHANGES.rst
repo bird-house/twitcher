@@ -1,6 +1,12 @@
 Changes
 *******
 
+Unreleased
+==========
+
+* Provide a `Dockerfile` for building `Twitcher`.
+* Add coverage analysis targets in `Makefile`.
+
 0.4.0 (2019-05-02)
 ==================
 
