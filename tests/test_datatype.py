@@ -4,10 +4,9 @@ Based on unitests in https://github.com/wndhydrnt/python-oauth2/tree/master/oaut
 
 import pytest
 import unittest
-import mock
 
-from twitcher.datatype import AccessToken
-from twitcher.datatype import Service
+from twitcher.datatype import AccessToken, Service
+from twitcher import models
 from twitcher.utils import expires_at
 
 
@@ -31,22 +30,25 @@ class AccessTokenTestCase(unittest.TestCase):
         assert access_token.expires_in == 0
         assert access_token.is_expired() is True
 
-    def test_access_token_with_data(self):
-        access_token = AccessToken(token='12345', expires_at=expires_at(hours=1),
-                                   data={'esgf_token': 'bfghk'})
-        assert access_token.data == {'esgf_token': 'bfghk'}
+    def test_access_token_from_model(self):
+        access_token = AccessToken.from_model(
+            models.AccessToken(token='abc', expires_at=expires_at(hours=2)))
+        assert access_token.token == 'abc'
+        assert access_token.expires_at > 0
 
 
 class ServiceTestCase(unittest.TestCase):
     def test_service_with_url_only(self):
-        service = Service(url='http://nowhere/wps')
+        service = Service(name="test_wps", url='http://nowhere/wps')
         assert service.url == 'http://nowhere/wps'
-        assert service.name == 'unknown'
+        assert service.name == 'test_wps'
         assert service.has_purl() is False
 
-    def test_missing_url(self):
+    def test_missing_url_or_name(self):
         with pytest.raises(TypeError):
-            Service()
+            Service(name="test")
+        with pytest.raises(TypeError):
+            Service(url='http://nowhere/wps')
 
     def test_service_with_name(self):
         service = Service(url='http://nowhere/wps', name="test_wps")
@@ -64,3 +66,14 @@ class ServiceTestCase(unittest.TestCase):
                                   'verify': True,
                                   'purl': 'http://myservice/wps'}
         assert service.has_purl() is True
+
+    def test_service_from_model(self):
+        service = Service.from_model(
+            models.Service(name='test_wps', url='http://nowhere/wps'))
+        assert service.name == 'test_wps'
+        assert service.url == 'http://nowhere/wps'
+        assert service.type == 'WPS'
+        assert service.auth == 'token'
+        assert service.public is False
+        assert service.verify is True
+        assert service.purl == ''

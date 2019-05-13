@@ -13,9 +13,6 @@ from twitcher.owsexceptions import (OWSNoApplicableCode,
                                     OWSMissingParameterValue)
 from twitcher.utils import lxml_strip_ns
 
-import logging
-logger = logging.getLogger(__name__)
-
 allowed_service_types = ('wps', 'wms')
 allowed_request_types = {'wps': ('getcapabilities', 'describeprocess', 'execute'),
                          'wms': ('getcapabilities',

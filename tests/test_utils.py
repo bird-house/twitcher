@@ -5,6 +5,17 @@ from twitcher.exceptions import ServiceNotFound
 from .common import WPS_CAPS_EMU_XML, WMS_CAPS_NCWMS2_111_XML, WMS_CAPS_NCWMS2_130_XML
 
 
+def test_sanitize():
+    assert utils.sanitize("Hummingbird") == "hummingbird"
+    assert utils.sanitize("MapMint Demo Instance") == "mapmint_demo_instance"
+    with pytest.raises(ValueError):
+        assert utils.sanitize(None)
+    with pytest.raises(ValueError):
+        assert utils.sanitize("1", minlen=2)
+    assert utils.sanitize(" ab c ") == "ab_c"
+    assert utils.sanitize("a_much_to_long_name_for_this_test", maxlen=25) == "a_much_to_long_name_for_t"
+
+
 def test_is_url_valid():
     assert utils.is_valid_url("http://somewhere.org") is True
     assert utils.is_valid_url("https://somewhere.org/my/path") is True

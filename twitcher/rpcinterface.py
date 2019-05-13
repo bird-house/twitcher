@@ -5,8 +5,7 @@ from pyramid.settings import asbool
 from twitcher.api import ITokenManager, TokenManager
 from twitcher.api import IRegistry, Registry
 from twitcher.tokengenerator import tokengenerator_factory
-from twitcher.store import tokenstore_factory
-from twitcher.store import servicestore_factory
+from .store import AccessTokenStore, ServiceStore
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
@@ -17,15 +16,15 @@ class RPCInterface(ITokenManager, IRegistry):
     def __init__(self, request):
         self.request = request
         self.tokenmgr = TokenManager(
-            tokengenerator_factory(request.registry),
-            tokenstore_factory(request.registry))
-        self.srvreg = Registry(servicestore_factory(request.registry))
+            tokengenerator_factory(request),
+            AccessTokenStore(request))
+        self.srvreg = Registry(ServiceStore(request))
 
-    def generate_token(self, valid_in_hours=1, environ=None):
+    def generate_token(self, valid_in_hours=1):
         """
         Implementation of :meth:`twitcher.api.ITokenManager.generate_token`.
         """
-        return self.tokenmgr.generate_token(valid_in_hours, environ)
+        return self.tokenmgr.generate_token(valid_in_hours)
 
     def revoke_token(self, token):
         """
@@ -39,11 +38,11 @@ class RPCInterface(ITokenManager, IRegistry):
         """
         return self.tokenmgr.revoke_all_tokens()
 
-    def register_service(self, url, data=None, overwrite=True):
+    def register_service(self, name, url, data=None):
         """
         Implementation of :meth:`twitcher.api.IRegistry.register_service`.
         """
-        return self.srvreg.register_service(url, data, overwrite)
+        return self.srvreg.register_service(name, url, data)
 
     def unregister_service(self, name):
         """
@@ -101,7 +100,6 @@ def includeme(config):
         # pyramid xml-rpc
         # http://docs.pylonsproject.org/projects/pyramid-rpc/en/latest/xmlrpc.html
         config.include('pyramid_rpc.xmlrpc')
-        # config.include('twitcher.db')
         config.add_xmlrpc_endpoint('api', '/RPC2')
 
         # register xmlrpc methods

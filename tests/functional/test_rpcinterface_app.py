@@ -1,34 +1,25 @@
 """
-Testing the Twithcer XML-RPC interface.
+Testing the Twitcher XML-RPC interface.
 """
 import pytest
-import unittest
-import webtest
-import pyramid.testing
 
-from .common import call_FUT
-from .common import setup_with_mongodb
-from .common import setup_mongodb_tokenstore
-from .common import setup_mongodb_servicestore
-from .common import WPS_TEST_SERVICE
+from .. common import WPS_TEST_SERVICE
+from .base import FunctionalTest, call_FUT
 
 
-class XMLRPCInterfaceAppTest(unittest.TestCase):
+class XMLRPCInterfaceAppTest(FunctionalTest):
 
     def setUp(self):
-        config = setup_with_mongodb()
-        self.token = setup_mongodb_tokenstore(config)
-        setup_mongodb_servicestore(config)
-        config.include('twitcher.rpcinterface')
-        self.app = webtest.TestApp(config.make_wsgi_app())
+        super(XMLRPCInterfaceAppTest, self).setUp()
+        self.init_database()
+        self.init_store()
 
-    def tearDown(self):
-        pyramid.testing.tearDown()
+        self.config.include('twitcher.rpcinterface')
+        self.app = self.test_app()
 
-    @pytest.mark.online
     def test_generate_token_and_revoke_it(self):
         # gentoken
-        resp = call_FUT(self.app, 'generate_token', (1, {}))
+        resp = call_FUT(self.app, 'generate_token', (1, ))
         assert 'access_token' in resp
         assert 'expires_at' in resp
         # revoke
@@ -38,16 +29,20 @@ class XMLRPCInterfaceAppTest(unittest.TestCase):
         resp = call_FUT(self.app, 'revoke_all_tokens', ())
         assert resp is True
 
-    @pytest.mark.online
     def test_register_service_and_unregister_it(self):
-        service = {'url': WPS_TEST_SERVICE, 'name': 'test_emu',
+        service = {'url': WPS_TEST_SERVICE, 'name': 'test_wps',
                    'type': 'wps', 'public': False, 'auth': 'token',
                    'verify': True, 'purl': 'http://purl/wps'}
+
+        # clear
+        resp = call_FUT(self.app, 'clear_services', ())
+        assert resp is True
+
         # register
         resp = call_FUT(self.app, 'register_service', (
+            service['name'],
             service['url'],
-            service,
-            False))
+            service))
         assert resp == service
 
         # get by name
@@ -64,8 +59,4 @@ class XMLRPCInterfaceAppTest(unittest.TestCase):
 
         # unregister
         resp = call_FUT(self.app, 'unregister_service', (service['name'],))
-        assert resp is True
-
-        # clear
-        resp = call_FUT(self.app, 'clear_services', ())
         assert resp is True

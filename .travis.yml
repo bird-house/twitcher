@@ -5,8 +5,6 @@ os:
 python:
   - "3.7"
 sudo: false
-services:
-  - mongodb
 install:
   # Python 3.x is default
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -26,10 +24,10 @@ install:
   - pip install -r requirements_dev.txt
   # Install twitcher
   - python setup.py install
-before_script:
+#before_script:
   # Start WPS service on port 6000
-  - pserve development.ini &
-  - sleep 2
+  #- pserve development.ini &
+  #- sleep 2
 script:
   - pytest -v -m 'not online' tests/
   - flake8

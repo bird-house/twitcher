@@ -25,26 +25,36 @@ with all dependent packages.
 
 We provide also a ``Makefile`` to run this installation:
 
-.. code-block:: sh
+.. code-block:: console
 
    $ git clone https://github.com/bird-house/twitcher.git
    $ cd twitcher
    $ make clean    # cleans up a previous Conda environment
    $ make install  # runs the above installation steps
 
-Starting Database
-=================
+Initialize Database
+===================
 
-Twitcher is using a MongoDB_ database.
-The default configuration is using the MongoDB standard port 27017 on localhost.
+Initialize and upgrade the database using Alembic_.
 
-You can install MongoDB with Conda_ for testing:
+Generate your first revision:
 
 .. code-block:: console
 
-  $ conda install mongodb=4
-  # start DB for testing
-  $ mongod --config etc/mongod.conf
+  $ conda activate twitcher
+  $ alembic -c development.ini revision --autogenerate -m "init"
+
+Upgrade to that revision:
+
+.. code-block:: console
+
+  $ alembic -c development.ini upgrade head
+
+Load default data into the database using a script.
+
+.. code-block:: console
+
+  $ initialize_twitcher_db development.ini
 
 Starting Twitcher Service
 =========================
@@ -59,4 +69,4 @@ Start the twitcher service using the `development.ini` configuration:
 
 .. _waitress: https://docs.pylonsproject.org/projects/waitress/en/latest/
 .. _Conda: https://conda.io/en/latest/
-.. _MongoDB: https://www.mongodb.com/
+.. _Alembic: https://alembic.sqlalchemy.org/en/latest/

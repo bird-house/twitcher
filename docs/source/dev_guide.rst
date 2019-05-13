@@ -7,16 +7,6 @@ Developer Guide
     :local:
     :depth: 1
 
-Building the docs
------------------
-
-First install dependencies for the documentation:
-
-.. code-block:: console
-
-  $ make bootstrap_dev
-  $ make docs
-
 .. _testing:
 
 Running tests
@@ -59,6 +49,15 @@ Do the same as above using the ``Makefile``.
     $ make test
     $ make testall
     $ make pep8
+
+Building the docs
+-----------------
+
+First install dependencies for the documentation:
+
+.. code-block:: console
+
+  $ make docs
 
 Prepare a release
 -----------------

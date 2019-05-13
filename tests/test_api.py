@@ -2,22 +2,25 @@
 Testing the Twitcher API.
 """
 import pytest
-import unittest
 
-from twitcher.api import TokenManager
+from .common import BaseTest, dummy_request
+
+from twitcher.store import AccessTokenStore, ServiceStore
+from twitcher.api import TokenManager, Registry
 from twitcher.tokengenerator import UuidTokenGenerator
-from twitcher.store.memory import MemoryTokenStore
-
-from twitcher.api import Registry
-from twitcher.store.memory import MemoryServiceStore
 
 
-class TokenManagerTest(unittest.TestCase):
+class TokenManagerTest(BaseTest):
 
     def setUp(self):
+        super(TokenManagerTest, self).setUp()
+        self.init_database()
+
+        token_store = AccessTokenStore(
+            dummy_request(dbsession=self.session))
         self.tokenmgr = TokenManager(
             tokengenerator=UuidTokenGenerator(),
-            tokenstore=MemoryTokenStore()
+            tokenstore=token_store
         )
 
     def test_generate_token_and_revoke_it(self):
@@ -32,20 +35,17 @@ class TokenManagerTest(unittest.TestCase):
         resp = self.tokenmgr.revoke_all_tokens()
         assert resp is True
 
-    def test_generate_token_with_data(self):
-        # gentoken
-        resp = self.tokenmgr.generate_token(valid_in_hours=1, data={'esgf_token': 'abcdef'})
-        assert 'access_token' in resp
-        assert 'expires_at' in resp
-        # check data
-        access_token = self.tokenmgr.store.fetch_by_token(resp['access_token'])
-        assert access_token.data == {'esgf_token': 'abcdef'}
 
-
-class RegistryTest(unittest.TestCase):
+class RegistryTest(BaseTest):
 
     def setUp(self):
-        self.reg = Registry(servicestore=MemoryServiceStore())
+        super(RegistryTest, self).setUp()
+        self.init_database()
+
+        service_store = ServiceStore(
+            dummy_request(dbsession=self.session))
+
+        self.reg = Registry(servicestore=service_store)
 
     def test_register_service_and_unregister_it(self):
         service = {'url': 'http://localhost/wps', 'name': 'test_emu',
@@ -53,9 +53,9 @@ class RegistryTest(unittest.TestCase):
                    'purl': 'http://myservice/wps'}
         # register
         resp = self.reg.register_service(
+            service['name'],
             service['url'],
-            service,
-            False)
+            service)
         assert resp == service
 
         # get by name

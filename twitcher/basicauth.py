@@ -9,14 +9,14 @@ from pyramid.security import (
     ALL_PERMISSIONS)
 
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger("TWITCHER")
 
 
 Admin = 'group:admin'
 
 
 def groupfinder(username, password, request):
-    logger.error("u=%s, p=%s", request.username, request.password)
+    LOGGER.error("u=%s, p=%s", request.username, request.password)
     if request.username and request.password:
         if username == request.username and password == request.password:
             return [Admin]
@@ -81,7 +81,7 @@ def auth_activated(registry):
 
 def includeme(config):
     if auth_activated(config.registry):
-        logger.debug("basic authentication is activated.")
+        LOGGER.debug("basic authentication is activated.")
         # Security policies for basic auth
         authn_policy = BasicAuthAuthenticationPolicy(check=groupfinder, realm="Birdhouse")
         authz_policy = ACLAuthorizationPolicy()

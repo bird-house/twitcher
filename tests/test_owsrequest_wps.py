@@ -1,6 +1,5 @@
 import pytest
 import unittest
-import mock
 
 from pyramid import testing
 from pyramid.testing import DummyRequest

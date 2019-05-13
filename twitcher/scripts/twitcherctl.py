@@ -4,10 +4,11 @@ import argcomplete
 import argparse
 
 from twitcher.client import TwitcherService
+from twitcher.namesgenerator import get_random_name
 
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("TWITCHER")
 
 
 class TwitcherCtl(object):
@@ -42,21 +43,13 @@ class TwitcherCtl(object):
             description='List of available commands',
         )
 
-        # token managment
-        # ---------------
+        # token management
+        # ----------------
 
         # gentoken
         subparser = subparsers.add_parser('gentoken', help="Generates an access token.")
         subparser.add_argument('-H', '--valid-in-hours', type=int, default=1,
                                help="Set how long the token is valid in hours (default: 1 hour).")
-        subparser.add_argument('-S', '--esgf-slcs-service-url', default="https://172.28.128.3",
-                               help="URL of ESGF SLCS service (default: https://172.28.128.3).")
-        subparser.add_argument('-T', '--esgf-access-token',
-                               help="ESGF access token to retrieve a certificate from ESGF SLCS service.")
-        subparser.add_argument('-C', '--esgf-credentials',
-                               help="URL pointing to ESGF credentials.")
-        subparser.add_argument('-e', '--env', nargs='*', default=[],
-                               help="Set environment variable (key=value).")
 
         # revoke
         subparser = subparsers.add_parser('revoke', help="Remove given access token.")
@@ -118,13 +111,13 @@ class TwitcherCtl(object):
             if args.cmd == 'list':
                 result = service.list_services()
             elif args.cmd == 'register':
-                data = {'name': args.name,
-                        'type': args.type,
+                data = {'type': args.type,
                         'purl': args.purl,
                         'public': args.public,
                         'auth': args.auth,
                         'verify': args.verify}
                 result = service.register_service(
+                    name=args.name or get_random_name(),
                     url=args.url,
                     data=data,
                 )
@@ -133,13 +126,7 @@ class TwitcherCtl(object):
             elif args.cmd == 'clear':
                 result = service.clear_services()
             elif args.cmd == 'gentoken':
-                data = {k: v for k, v in (x.split('=') for x in args.env)}
-                if args.esgf_access_token:
-                    data['esgf_access_token'] = args.esgf_access_token
-                    data['esgf_slcs_service_url'] = args.esgf_slcs_service_url
-                if args.esgf_credentials:
-                    data['esgf_credentials'] = args.esgf_credentials
-                result = service.generate_token(valid_in_hours=args.valid_in_hours, data=data)
+                result = service.generate_token(valid_in_hours=args.valid_in_hours)
             elif args.cmd == 'revoke':
                 if args.all is True:
                     result = service.revoke_all_tokens()

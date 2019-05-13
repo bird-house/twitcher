@@ -1,5 +1,5 @@
 """
-Definitions of types used by tokens.
+Definition of service and token types.
 """
 
 import time
@@ -10,10 +10,15 @@ from twitcher.exceptions import AccessTokenNotFound
 
 class Service(dict):
     """
-    Dictionary that contains OWS services. It always has the ``'url'`` key.
+    Dictionary that contains OWS services.
+    It always has the ``'url'`` and ``'name'`` key.
+
+    TODO: Should this be part of the model?
     """
     def __init__(self, *args, **kwargs):
         super(Service, self).__init__(*args, **kwargs)
+        if 'name' not in self:
+            raise TypeError("'name' is required")
         if 'url' not in self:
             raise TypeError("'url' is required")
 
@@ -25,17 +30,17 @@ class Service(dict):
     @property
     def name(self):
         """Service name."""
-        return self.get('name', 'unknown')
+        return self['name']
 
     @property
     def type(self):
         """Service type."""
-        return self.get('type', 'WPS')
+        return self.get('type') or 'WPS'
 
     @property
     def purl(self):
         """Service optional public URL (purl)."""
-        return self.get('purl', '')
+        return self.get('purl') or ''
 
     def has_purl(self):
         """Return true if we have a valid public URL (purl)."""
@@ -45,26 +50,17 @@ class Service(dict):
     def public(self):
         """Flag if service has public access."""
         # TODO: public access can be set via auth parameter.
-        return self.get('public', False)
+        return self.get('public') or False
 
     @property
     def auth(self):
         """Authentication method: public, token, cert."""
-        return self.get('auth', 'token')
+        return self.get('auth') or 'token'
 
     @property
     def verify(self):
         """Verify ssl service certificate."""
-        value = self.get('verify', 'true')
-        if isinstance(value, bool):
-            verify = value
-        elif value.lower() == 'true':
-            verify = True
-        elif value.lower() == 'false':
-            verify = False
-        else:
-            verify = value
-        return verify
+        return self.get('verify') or True
 
     @property
     def params(self):
@@ -76,6 +72,18 @@ class Service(dict):
             'public': self.public,
             'auth': self.auth,
             'verify': self.verify}
+
+    @classmethod
+    def from_model(cls, model):
+        instance = cls(
+            url=model.url,
+            name=model.name,
+            type=model.type,
+            purl=model.purl,
+            public=model.public,
+            auth=model.auth,
+            verify=model.verify)
+        return instance
 
     def __str__(self):
         return self.name
@@ -89,6 +97,8 @@ class Service(dict):
 class AccessToken(dict):
     """
     Dictionary that contains access token. It always has ``'token'`` key.
+
+    TODO: Should this be part of the model?
     """
 
     def __init__(self, *args, **kwargs):
@@ -103,7 +113,7 @@ class AccessToken(dict):
 
     @property
     def expires_at(self):
-        return int(self.get("expires_at", 0))
+        return int(self.get("expires_at") or 0)
 
     @property
     def expires_in(self):
@@ -138,6 +148,13 @@ class AccessToken(dict):
     @property
     def params(self):
         return {'access_token': self.token, 'expires_at': self.expires_at}
+
+    @classmethod
+    def from_model(cls, model):
+        instance = cls(
+            token=model.token,
+            expires_at=model.expires_at)
+        return instance
 
     def __str__(self):
         return self.token

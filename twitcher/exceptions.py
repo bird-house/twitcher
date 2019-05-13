@@ -25,3 +25,10 @@ class ServiceRegistrationError(Exception):
     storage backend by an instance of :class:`twitcher.store.ServiceStore`.
     """
     pass
+
+
+class DatabaseError(Exception):
+    """
+    Error indicating that database could not be accesses.
+    """
+    pass
