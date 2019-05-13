@@ -1,0 +1,6 @@
+# conda env update -f environment.yml
+name: twitcher
+channels:
+  - defaults
+dependencies:
+  - jupyterlab

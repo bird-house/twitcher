@@ -4,7 +4,6 @@ Based on unitests in https://github.com/wndhydrnt/python-oauth2/tree/master/oaut
 
 import pytest
 import unittest
-import mock
 
 from twitcher.tokengenerator import UuidTokenGenerator
 

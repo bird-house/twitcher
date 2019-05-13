@@ -1,22 +1,19 @@
 import tempfile
 
-from twitcher.exceptions import AccessTokenNotFound
-from twitcher.exceptions import ServiceNotFound
+from twitcher.exceptions import AccessTokenNotFound, ServiceNotFound
 from twitcher.owsexceptions import OWSAccessForbidden, OWSInvalidParameterValue
-from twitcher.utils import path_elements
-from twitcher.store import tokenstore_factory
-from twitcher.store import servicestore_factory
-from twitcher.utils import parse_service_name
+from twitcher.store import AccessTokenStore, ServiceStore
+from twitcher import datatype
+from twitcher.utils import path_elements, parse_service_name
 from twitcher.owsrequest import OWSRequest
 from twitcher.esgf import fetch_certificate, ESGF_CREDENTIALS
-from twitcher.datatype import Service
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
 
 
-def owssecurity_factory(registry):
-    return OWSSecurity(tokenstore_factory(registry), servicestore_factory(registry))
+def owssecurity_factory(request):
+    return OWSSecurity(AccessTokenStore(request), ServiceStore(request))
 
 
 def verify_cert(request):
@@ -44,15 +41,6 @@ class OWSSecurity(object):
                 token = elements[-1]   # last path element
         return token
 
-    def prepare_headers(self, request, access_token):
-        if "esgf_access_token" in access_token.data or "esgf_credentials" in access_token.data:
-            workdir = tempfile.mkdtemp(prefix=request.prefix, dir=request.workdir)
-            if fetch_certificate(workdir=workdir, data=access_token.data):
-                request.headers['X-Requested-Workdir'] = workdir
-                request.headers['X-X509-User-Proxy'] = workdir + '/' + ESGF_CREDENTIALS
-                LOGGER.debug("Prepared request headers.")
-        return request
-
     def verify_access(self, request, service):
         # TODO: public service access handling is confusing.
         try:
@@ -71,10 +59,6 @@ class OWSSecurity(object):
             access_token = self.tokenstore.fetch_by_token(token)
             if access_token.is_expired():
                 raise OWSAccessForbidden("Access token is expired.")
-            # update request with data from access token
-            # request.environ.update(access_token.data)
-            # TODO: is this realy the way we want to do this?
-            request = self.prepare_headers(request, access_token)
         except AccessTokenNotFound:
             raise OWSAccessForbidden("Access token is required to access this service.")
 
@@ -86,14 +70,13 @@ class OWSSecurity(object):
                 service_name = parse_service_name(request.path, protected_path)
                 service = self.servicestore.fetch_by_name(service_name)
                 if service.public is True:
-                    LOGGER.warn('public access for service %s', service_name)
+                    LOGGER.warning('public access for service %s', service_name)
             except ServiceNotFound:
-                # TODO: why not raising an exception?
-                service = Service(url='unregistered', public=False, auth='token')
-                LOGGER.warn("Service not registered.")
+                raise OWSInvalidParameterValue(
+                    "Service {} not found".format(service_name), value="service")
             ows_request = OWSRequest(request)
             if not ows_request.service_allowed():
                 raise OWSInvalidParameterValue(
-                    "service %s not supported" % ows_request.service, value="service")
+                    "Service {} not supported".format(ows_request.service), value="service")
             if not ows_request.public_access():
                 self.verify_access(request, service)

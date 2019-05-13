@@ -27,7 +27,7 @@ setup(name='pyramid_twitcher',
       author_email=about['__email__'],
       url='https://github.com/bird-house/twitcher.git',
       license='Apache License 2.0',
-      keywords='pyramid twitcher birdhouse wps security proxy ows ogc',
+      keywords='web pyramid twitcher birdhouse wps security proxy ows ogc',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
@@ -38,6 +38,7 @@ setup(name='pyramid_twitcher',
       [paste.app_factory]
       main = twitcher:main
       [console_scripts]
-      twitcherctl=twitcher.twitcherctl:main
+      twitcherctl=twitcher.scripts.twitcherctl:main
+      initialize_twitcher_db=twitcher.scripts.initialize_db:main
       """,
       )

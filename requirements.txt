@@ -1,12 +1,20 @@
-plaster_pastedeploy
-waitress
 pyramid>=1.10
 pyramid_rpc
-pyramid_debugtoolbar
-pyramid_retry
 webob
 requests
 requests_oauthlib
-pymongo
 argcomplete
 pytz
+# debug
+pyramid_debugtoolbar
+# deploy
+plaster_pastedeploy
+# wsgi
+waitress
+# database
+pyramid_retry
+pyramid_tm
+alembic
+SQLAlchemy
+transaction
+zope.sqlalchemy

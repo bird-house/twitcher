@@ -118,7 +118,7 @@ Use x509 certificates to control client access
 
 .. warning::
 
-  You need the Nginx web-service in front of the Twitcher WSGI service to use x509 certificates.
+  You need an Nginx web-server in front of the Twitcher WSGI service to use x509 certificates.
 
 Since version 0.3.6 Twitcher is prepared to use x509 certificates to control client access.
 By default it is configured to accept x509 proxy certificates from ESGF_.

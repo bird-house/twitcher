@@ -21,7 +21,7 @@ from requests_oauthlib import OAuth2Session
 from twitcher.utils import is_valid_url
 
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger("TWITCHER")
 
 
 ESGF_CERTS_DIR = 'certificates'
@@ -49,9 +49,9 @@ def fetch_certificate(workdir='.', data={}):
         test_credentials = data.get('esgf_credentials')
         mgr = ESGFAccessManager(url, base_dir=workdir)
         mgr.logon(access_token, test_credentials)
-        logger.debug('Prepared twitcher workdir %s', workdir)
+        LOGGER.debug('Prepared twitcher workdir %s', workdir)
     except Exception:
-        logger.exception("Could not fetch certificate.")
+        LOGGER.exception("Could not fetch certificate.")
         return False
     return True
 
@@ -79,12 +79,12 @@ class ESGFAccessManager(object):
         try:
             os.chmod(self.esgf_credentials, 0o400)
         except Exception:
-            logger.warn("Could not update permission of credentials.")
+            LOGGER.warning("Could not update permission of credentials.")
         return True
 
     def _download_certificate(self, url):
         if is_valid_url(url):
-            logger.debug('Download cert from %s', url)
+            LOGGER.debug('Download cert from %s', url)
             response = requests.get(url, stream=True)
             with open(self.esgf_credentials, 'wb') as fd:
                 for chunk in response.iter_content(chunk_size=128):
@@ -98,7 +98,7 @@ class ESGFAccessManager(object):
         Generates a new private key and certificate request, submits the request to be
         signed by the SLCS CA and returns the certificate.
         """
-        logger.debug("Retrieve certificate with token.")
+        LOGGER.debug("Retrieve certificate with token.")
 
         # Generate a new key pair
         key_pair = crypto.PKey()
@@ -132,7 +132,7 @@ class ESGFAccessManager(object):
             content = "{} {}".format(response.text, private_key)
             with open(self.esgf_credentials, 'w') as fh:
                 fh.write(content)
-            logger.debug('Fetched certificate successfully.')
+            LOGGER.debug('Fetched certificate successfully.')
         else:
             msg = "Could not get certificate: {} {}".format(response.status_code, response.reason)
             raise Exception(msg)
