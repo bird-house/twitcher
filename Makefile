@@ -22,6 +22,7 @@ help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  help        to print this help message. (Default)"
 	@echo "  install     to install $(APP_NAME) by running 'python setup.py develop'."
+	@echo "  db          to upgrade or initialize database."
 	@echo "  start       to start $(APP_NAME) service as daemon (background process)."
 	@echo "  clean       to delete all files that are created by running buildout."
 	@echo "\nTesting targets:"
@@ -72,6 +73,12 @@ install: bootstrap
 	@echo "Installing application ..."
 	@-bash -c "source $(ANACONDA_HOME)/bin/activate $(CONDA_ENV) && python setup.py develop"
 	@echo "\nStart service with \`make start'"
+
+.PHONY: db
+db:
+	@echo "Upgrade or initialize database ..."
+	@-bash -c "source $(ANACONDA_HOME)/bin/activate $(CONDA_ENV) && alembic -c development.ini upgrade head"
+	@-bash -c "source $(ANACONDA_HOME)/bin/activate $(CONDA_ENV) && initialize_twitcher_db development.ini"
 
 .PHONY: start
 start: check_conda
