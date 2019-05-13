@@ -28,12 +28,12 @@ def test_adapter_factory_none_specified():
 class TestAdapter(AdapterInterface):
     def servicestore_factory(self, request):
         class DummyServiceStore(ServiceStoreInterface):
-            def save_service(self, service): return True
-            def delete_service(self, service): pass
-            def list_services(self): return ["test"]
-            def fetch_by_name(self, name): return name
-            def fetch_by_url(self, url): return url
-            def clear_services(self): pass
+            def save_service(self, service): return True    # noqa: E704
+            def delete_service(self, service): pass         # noqa: E704
+            def list_services(self): return ["test"]        # noqa: E704
+            def fetch_by_name(self, name): return name      # noqa: E704
+            def fetch_by_url(self, url): return url         # noqa: E704
+            def clear_services(self): pass                  # noqa: E704
         return DummyServiceStore(request)
 
 
