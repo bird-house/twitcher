@@ -21,6 +21,8 @@ else
 	CONDA_CMD := echo "Activating conda env $(CONDA_ENV) ..."; source "$(CONDA_HOME)/bin/activate" "$(CONDA_ENV)";
 endif
 
+DOCKER_TAG := birdhouse/twitcher:0.4.0
+
 # Temp files
 TEMP_FILES := *.egg-info *.log *.sqlite
 
@@ -57,6 +59,9 @@ help:
 	@echo "  conda-update      to update the conda environment with 'environment.yml' file."
 	@echo "  conda-clean       to remove the conda environment."
 	@echo "  conda-spec        to generate Conda specifications file."
+	@echo "\nDocker targets:"
+	@echo "  docker-build      to build the docker image with current code base and version."
+	@echo "  docker-push       to push the built docker image to the tagged repository."
 	@echo "\nTesting targets:"
 	@echo "  test              to run tests (but skip long running tests)."
 	@echo "  test-all          to run all tests (including long running tests)."
@@ -89,6 +94,7 @@ debug:
 	@-echo "  CONDA_ACTUAL_PREFIX [called]:  $(shell $(CONDA_TARGET_PREFIX))"
 	@-echo "  CONDA_TARGET_PREFIX [literal]: $(CONDA_ACTUAL_PREFIX)"
 	@-echo "  CONDA_ACTUAL_PREFIX [called]:  $(shell $(CONDA_ACTUAL_PREFIX))"
+	@-echo "  DOCKER_TAG:                    $(DOCKER_TAG)"
 
 ## Conda targets
 
@@ -174,6 +180,18 @@ distclean: clean
 	@echo "Cleaning ..."
 	@git diff --quiet HEAD || echo "There are uncommited changes! Not doing 'git clean' ..."
 	@-git clean -dfx
+
+## Docker targets
+
+.PHONY: docker-build
+docker-build:
+	@echo "Building docker image: $(DOCKER_TAG)"
+	@-docker build "$(APP_ROOT)" -t "$(DOCKER_TAG)"
+
+.PHONY: docker-push
+docker-push:
+	@echo "Pushing docker image: $(DOCKER_TAG)"
+	@-docker push "$(DOCKER_TAG)"
 
 ## Test targets
 

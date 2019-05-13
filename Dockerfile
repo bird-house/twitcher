@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM birdhouse/bird-base:latest
+FROM python:3.7-alpine
 LABEL Description="Twitcher" Vendor="Birdhouse" Maintainer="https://github.com/bird-house/twitcher"
 
 # Configure hostname and ports for services
@@ -7,33 +7,41 @@ ENV HTTP_PORT 8080
 ENV HTTPS_PORT 8443
 ENV OUTPUT_PORT 8000
 ENV HOSTNAME localhost
-
-# Ports used in birdhouse
 EXPOSE 9001 $HTTP_PORT $HTTPS_PORT $OUTPUT_PORT
 
-# for https://github.com/bird-house/twitcher/issues/51
-#ENV POSTGRES_USER user
-#ENV POSTGRES_PASSWORD password
-#ENV POSTGRES_HOST postgres
-#ENV POSTGRES_DB default
-#ENV POSTGRES_PORT 5432
-ENV TWITCHER_URL twitcher
-ENV TWITCHER_PROTECTED_PATH /ows/proxy
-
 ENV HOME /root
-WORKDIR /opt/birdhouse/src/twitcher
+ENV TWITCHER_DIR /opt/birdhouse/src/twitcher
+WORKDIR $TWITCHER_DIR
 
-##### deprecated ?
-# Volume for data, cache, logfiles, configs
-#VOLUME /opt/birdhouse/var/lib
-#VOLUME /opt/birdhouse/var/log
-#VOLUME /opt/birdhouse/etc
-# Create folders required for installation
-#RUN mkdir -p /opt/birdhouse/etc && chmod 755 /opt/birdhouse/etc && \
-#    mkdir -p /opt/birdhouse/var/run && chmod 755 /opt/birdhouse/var/run
-#RUN mkdir -p /opt/birdhouse/var/tmp/nginx/client
+# copy basic requirements/references and build dependencies
+# will be skipped if only source code has been updated
+COPY \
+    requirements* \
+    setup.py \
+    README.rst \
+    CHANGES.rst \
+    $TWITCHER_DIR/
+COPY \
+    twitcher/__init__.py \
+    twitcher/__version__.py \
+    $TWITCHER_DIR/twitcher/
+RUN apk update \
+    && apk add \
+        bash \
+        libxslt-dev \
+        libxml2 \
+        libffi-dev \
+        openssl-dev \
+    && apk add --virtual .build-deps \
+        python-dev \
+        gcc \
+        musl-dev \
+    && pip install --no-cache-dir --upgrade pip setuptools \
+    && pip install --no-cache-dir -e $TWITCHER_DIR \
+    && apk --purge del .build-deps
 
-COPY requirements.txt setup.py twitcher/ ./
-RUN python setup.py install
+# copy source code and install it
+COPY ./ $TWITCHER_DIR
+RUN pip install --no-dependencies -e $TWITCHER_DIR
 
 CMD ["pserve", "development.ini"]

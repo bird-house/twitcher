@@ -5,6 +5,8 @@ requests
 requests_oauthlib
 argcomplete
 pytz
+lxml
+pyopenssl
 # debug
 pyramid_debugtoolbar
 # deploy

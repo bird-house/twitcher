@@ -4,8 +4,14 @@ Changes
 Unreleased
 ==========
 
+New Features:
+
 * Provide a `Dockerfile` for building `Twitcher`.
-* Add coverage analysis targets in `Makefile`.
+* Improve `Makefile` conda environment setup/activation/update to speedup target operations when possible.
+* Add `Makefile` targets for `docker`, `conda`, `bumpversion` and `coverage` analysis related tasks.
+* Provide ``AdapterInterface`` to allow overriding store implementations with configuration setting ``twitcher.adapter``.
+* Add version auto-update (number and date) of these 'changes' with ``bump2version``.
+* Update requirements with missing dependencies when building docker image.
 
 0.4.0 (2019-05-02)
 ==================
