@@ -1,5 +1,11 @@
 """
 Read or write data from database.
+
+Stores should not be accessed directly, but instead should use the adapter interface.
+
+See also:
+    - :class:`twitcher.adapter.base.AdapterInterface`
+    - :func:`twitcher.adapter.get_adapter_factory`
 """
 
 from twitcher.exceptions import (

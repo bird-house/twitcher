@@ -12,9 +12,9 @@ from pyramid.response import Response
 from pyramid.settings import asbool
 from typing import TYPE_CHECKING
 
+from twitcher.adapter import get_adapter_factory
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
 from twitcher.utils import replace_caps_url, get_settings, get_twitcher_url
-from twitcher.store import ServiceStore
 
 import logging
 LOGGER = logging.getLogger('TWITCHER')
@@ -156,7 +156,8 @@ def owsproxy_view(request):
     try:
         service_name = request.matchdict.get('service_name')
         extra_path = request.matchdict.get('extra_path')
-        store = ServiceStore(request)
+        adapter = get_adapter_factory(request)
+        store = adapter.servicestore_factory(request)
         service = store.fetch_by_name(service_name)
     except Exception as err:
         # TODO: Store impl should raise appropriate exception like not authorized
