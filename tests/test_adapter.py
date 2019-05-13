@@ -1,13 +1,16 @@
 from twitcher.adapter import import_adapter, get_adapter_factory, TWITCHER_ADAPTER_DEFAULT
 from twitcher.adapter.base import AdapterInterface
 from twitcher.adapter.default import DefaultAdapter
+from twitcher.store import ServiceStoreInterface
+from pyramid.testing import DummyRequest
 import pytest
 
 
 def test_import_adapter():
     adapter = import_adapter('twitcher.adapter.default.DefaultAdapter')
     assert adapter is DefaultAdapter, "Expect {!s}, but got {!s}".format(DefaultAdapter, adapter)
-    assert isinstance(adapter(), AdapterInterface), "Expect {!s}, but got {!s}".format(AdapterInterface, type(adapter))
+    assert isinstance(adapter({}), AdapterInterface), \
+        "Expect {!s}, but got {!s}".format(AdapterInterface, type(adapter))
 
 
 def test_adapter_factory_default_explicit():
@@ -23,7 +26,15 @@ def test_adapter_factory_none_specified():
 
 # noinspection PyAbstractClass
 class TestAdapter(AdapterInterface):
-    pass
+    def servicestore_factory(self, request):
+        class DummyServiceStore(ServiceStoreInterface):
+            def save_service(self, service): return True
+            def delete_service(self, service): pass
+            def list_services(self): return ["test"]
+            def fetch_by_name(self, name): return name
+            def fetch_by_url(self, url): return url
+            def clear_services(self): pass
+        return DummyServiceStore(request)
 
 
 # noinspection PyPep8Naming
@@ -46,3 +57,12 @@ def test_adapter_factory_TestAdapter_invalid_raised():
         pytest.fail(msg="Invalid adapter not inheriting from 'AdapterInterface' should raise on import.")
     adapter_str = '{}.{}'.format(AdapterInterface.__module__, AdapterInterface.__name__)
     assert adapter_str in str(err), "Expected to have full adapter import string in error message."
+
+
+# noinspection PyTypeChecker
+def test_adapter_factory_call_servicestore_factory():
+    settings = {'twitcher.adapter': '{}.{}'.format(TestAdapter.__module__, TestAdapter.__name__)}
+    adapter = get_adapter_factory(settings)
+    store = adapter.servicestore_factory(DummyRequest())
+    assert isinstance(store, ServiceStoreInterface)
+    assert store.fetch_by_name("test") == "test", "Requested adapter with corresponding store should have been called."

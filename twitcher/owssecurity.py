@@ -1,15 +1,10 @@
 from twitcher.exceptions import AccessTokenNotFound, ServiceNotFound
 from twitcher.owsexceptions import OWSAccessForbidden, OWSInvalidParameterValue
-from twitcher.store import AccessTokenStore, ServiceStore
 from twitcher.utils import path_elements, parse_service_name
 from twitcher.owsrequest import OWSRequest
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
-
-
-def owssecurity_factory(request):
-    return OWSSecurity(AccessTokenStore(request), ServiceStore(request))
 
 
 def verify_cert(request):

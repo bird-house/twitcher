@@ -1,8 +1,8 @@
 from pyramid.settings import asbool
 from pyramid.tweens import EXCVIEW
 
+from twitcher.adapter import get_adapter_factory
 from twitcher.owsexceptions import OWSException, OWSNoApplicableCode
-from twitcher.owssecurity import owssecurity_factory
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
@@ -22,7 +22,8 @@ def ows_security_tween_factory(handler, registry):
 
     def ows_security_tween(request):
         try:
-            security = owssecurity_factory(request)
+            adapter = get_adapter_factory(request)
+            security = adapter.owssecurity_factory(request)
             security.check_request(request)
             return handler(request)
         except OWSException as err:

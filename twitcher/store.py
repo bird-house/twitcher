@@ -22,20 +22,15 @@ if TYPE_CHECKING:
 
 
 class AccessTokenStoreInterface(object):
-    def __init__(self, request):
-        # type: (Request) -> None
+    def __init__(self, request):            # type: (Request) -> None
         self.request = request
-    def save_token(self, access_token):
-        # type: (AccessToken) -> None
+    def save_token(self, access_token):     # type: (AccessToken) -> None
         raise NotImplementedError
-    def delete_token(self, token):
-        # type: (AccessToken) -> None
+    def delete_token(self, token):          # type: (AccessToken) -> None
         raise NotImplementedError
-    def fetch_by_token(self, token):
-        # type: (AnyStr) -> None
+    def fetch_by_token(self, token):        # type: (AnyStr) -> None
         raise NotImplementedError
-    def clear_tokens(self):
-        # type: () -> None
+    def clear_tokens(self):                 # type: () -> None
         raise NotImplementedError
 
 
@@ -102,26 +97,19 @@ class AccessTokenStore(AccessTokenStoreInterface):
 
 
 class ServiceStoreInterface(object):
-    def __init__(self, request):
-        # type: (Request) -> None
+    def __init__(self, request):        # type: (Request) -> None
         self.request = request
-    def save_service(self, service):
-        # type: (Service) -> None
+    def save_service(self, service):    # type: (Service) -> None
         raise NotImplementedError
-    def delete_service(self, service):
-        # type: (Service) -> None
+    def delete_service(self, service):  # type: (Service) -> None
         raise NotImplementedError
-    def list_services(self):
-        # type: () -> List[Service]
+    def list_services(self):            # type: () -> List[Service]
         raise NotImplementedError
-    def fetch_by_name(self, name):
-        # type: (AnyStr) -> Service
+    def fetch_by_name(self, name):      # type: (AnyStr) -> Service
         raise NotImplementedError
-    def fetch_by_url(self, url):
-        # type: (AnyStr) -> Service
+    def fetch_by_url(self, url):        # type: (AnyStr) -> Service
         raise NotImplementedError
-    def clear_services(self):
-        # type: () -> None
+    def clear_services(self):           # type: () -> None
         raise NotImplementedError
 
 

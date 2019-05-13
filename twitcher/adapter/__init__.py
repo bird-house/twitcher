@@ -1,16 +1,19 @@
 from twitcher.adapter.default import DefaultAdapter, AdapterInterface
-from twitcher.warning import UnsupportedOperationWarning
 from twitcher.utils import get_settings
+
 from inspect import isclass
 from typing import TYPE_CHECKING
-import warnings
+
 import logging
+LOGGER = logging.getLogger("TWITCHER")
+
 if TYPE_CHECKING:
-    from twitcher.store.base import AccessTokenStore, ServiceStore
+    from twitcher.store import AccessTokenStoreInterface, ServiceStoreInterface
     from twitcher.owssecurity import OWSSecurityInterface
     from twitcher.typedefs import AnySettingsContainer
+    from pyramid.request import Request
     from typing import AnyStr, Type, Union
-LOGGER = logging.getLogger("TWITCHER")
+
 
 TWITCHER_ADAPTER_DEFAULT = 'default'
 
@@ -55,18 +58,18 @@ def get_adapter_factory(container):
             raise
         try:
             LOGGER.info("Using adapter: '{!r}'".format(adapter_class))
-            return adapter_class()
+            return adapter_class(container)
         except Exception as e:
             LOGGER.error("Adapter '{!s}' raised an exception during instantiation : '{!r}'".format(adapter_type, e))
             raise
-    return DefaultAdapter()
+    return DefaultAdapter(container)
 
 
 def get_adapter_store_factory(
         adapter,        # type: AdapterInterface
         store_name,     # type: AnyStr
-        container,      # type: AnySettingsContainer
-):                      # type: (...) -> Union[AccessTokenStore, ServiceStore, OWSSecurityInterface]
+        request,        # type: Request
+):                      # type: (...) -> Union[AccessTokenStoreInterface, ServiceStoreInterface, OWSSecurityInterface]
     """
     Retrieves the adapter store by name if it is defined.
 
@@ -79,37 +82,16 @@ def get_adapter_store_factory(
     """
     try:
         store = getattr(adapter, store_name)
-        return store(container)
+        return store(request)
     except NotImplementedError:
         if isinstance(adapter, DefaultAdapter):
             LOGGER.exception("Adapter 'DefaultAdapter' doesn't implement '{1!r}', no way to recover."
                              .format(adapter, store_name))
             raise
-        warnings.warn("Adapter '{0!r}' doesn't implement '{1!r}', falling back to 'DefaultAdapter' implementation."
-                      .format(adapter, store_name), UnsupportedOperationWarning)
-        return get_adapter_store_factory(DefaultAdapter(), store_name, container)
+        LOGGER.warning("Adapter '{0!r}' doesn't implement '{1!r}', falling back to 'DefaultAdapter' implementation."
+                       .format(adapter, store_name))
+        return get_adapter_store_factory(DefaultAdapter(request), store_name, request)
     except Exception as e:
         LOGGER.error("Adapter '{0!r}' raised an exception while instantiating '{1!r}' : '{2!r}'"
                      .format(adapter, store_name, e))
         raise
-
-
-def tokenstore_factory(container):
-    # type: (AnySettingsContainer) -> AccessTokenStore
-    """Shortcut method to retrieve the AccessTokenStore from the selected AdapterInterface from settings."""
-    adapter = get_adapter_factory(container)
-    return get_adapter_store_factory(adapter, 'tokenstore_factory', container)
-
-
-def servicestore_factory(container):
-    # type: (AnySettingsContainer) -> ServiceStore
-    """Shortcut method to retrieve the ServiceStore from the selected AdapterInterface from settings."""
-    adapter = get_adapter_factory(container)
-    return get_adapter_store_factory(adapter, 'servicestore_factory', container)
-
-
-def owssecurity_factory(container):
-    # type: (AnySettingsContainer) -> OWSSecurityInterface
-    """Shortcut method to retrieve the OWSSecurityInterface from the selected AdapterInterface from settings."""
-    adapter = get_adapter_factory(container)
-    return get_adapter_store_factory(adapter, 'owssecurity_factory', container)

@@ -13,7 +13,7 @@ from pyramid.settings import asbool
 from typing import TYPE_CHECKING
 
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
-from twitcher.utils import replace_caps_url
+from twitcher.utils import replace_caps_url, get_settings, get_twitcher_url
 from twitcher.store import ServiceStore
 
 import logging
@@ -52,8 +52,8 @@ allowed_hosts = (
 )
 
 
-# requests.models.Reponse defaults its chunk size to 128 bytes, which is very slow
-class BufferedResponse():
+# requests.models.Response defaults its chunk size to 128 bytes, which is very slow
+class BufferedResponse(object):
     def __init__(self, resp):
         self.resp = resp
 
@@ -85,9 +85,9 @@ def _send_request(request, service, extra_path=None, request_params=None):
             return OWSAccessFailed("Request failed: {}".format(e))
 
         # Headers meaningful only for a single transport-level connection
-        HopbyHop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
+        hop_by_hop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
-                        headers={k: v for k, v in list(resp_iter.headers.items()) if k not in HopbyHop})
+                        headers={k: v for k, v in list(resp_iter.headers.items()) if k not in hop_by_hop})
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
