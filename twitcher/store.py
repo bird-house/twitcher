@@ -113,7 +113,7 @@ class ServiceStoreInterface(object):
     def save_service(self, service):    # type: (Service) -> None
         raise NotImplementedError
 
-    def delete_service(self, service):  # type: (Service) -> None
+    def delete_service(self, name):     # type: (AnyStr) -> None
         raise NotImplementedError
 
     def list_services(self):            # type: () -> List[Service]

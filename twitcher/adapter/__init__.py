@@ -85,13 +85,13 @@ def get_adapter_store_factory(
         return store(request)
     except NotImplementedError:
         if isinstance(adapter, DefaultAdapter):
-            LOGGER.exception("Adapter 'DefaultAdapter' doesn't implement '{1!r}', no way to recover."
+            LOGGER.exception("Adapter 'DefaultAdapter' doesn't implement '{!r}', no way to recover."
                              .format(adapter, store_name))
             raise
-        LOGGER.warning("Adapter '{0!r}' doesn't implement '{1!r}', falling back to 'DefaultAdapter' implementation."
+        LOGGER.warning("Adapter '{!r}' doesn't implement '{!r}', falling back to 'DefaultAdapter' implementation."
                        .format(adapter, store_name))
         return get_adapter_store_factory(DefaultAdapter(request), store_name, request)
     except Exception as e:
-        LOGGER.error("Adapter '{0!r}' raised an exception while instantiating '{1!r}' : '{2!r}'"
+        LOGGER.error("Adapter '{!r}' raised an exception while instantiating '{!r}' : '{!r}'"
                      .format(adapter, store_name, e))
         raise
