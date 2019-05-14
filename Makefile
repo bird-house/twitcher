@@ -3,6 +3,7 @@
 # Application
 APP_ROOT := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 APP_NAME := twitcher
+INI_FILE ?= $(APP_ROOT)/development.ini
 
 # Conda
 CHECK      ?= shell command -v
@@ -134,34 +135,34 @@ bump: bump_dep
 ## Build targets
 
 .PHONY: bootstrap
-bootstrap: conda-check conda-update install
+bootstrap: conda-check conda-update
 	@echo "Bootstrap ..."
 
 .PHONY: bootstrap-dev
-bootstrap-dev: conda-check conda-update install-dev
+bootstrap-dev: conda-check conda-update
 	@echo "Bootstrap for development ..."
 
 .PHONY: install
-install:
+install: bootstrap
 	@echo "Installing application ..."
-	@-bash -c '$(CONDA_CMD) python "$(APP_ROOT)/setup.py" develop'
+	@-bash -c '$(CONDA_CMD) pip install -e "$(APP_ROOT)"'
 	@echo "\nStart service with \`make start'"
 
 .PHONY: install-dev
-install-dev:
+install-dev: #bootstrap-dev
 	@echo "Installing development requirements for tests and docs ..."
-	@-bash -c '$(CONDA_CMD) pip install -r "$(APP_ROOT)/requirements_dev.txt"'
+	@-bash -c '$(CONDA_CMD) pip install -e "$(APP_ROOT)[dev]"'
 
 .PHONY: db
 db:
 	@echo "Upgrade or initialize database ..."
-	@-bash -c '$(CONDA_CMD) alembic -c "$(APP_ROOT)/development.ini" upgrade head'
-	@-bash -c '$(CONDA_CMD) initialize_twitcher_db "$(APP_ROOT)/development.ini"'
+	@-bash -c '$(CONDA_CMD) alembic -c "$(INI_FILE)" upgrade head'
+	@-bash -c '$(CONDA_CMD) initialize_twitcher_db "$(INI_FILE)"'
 
 .PHONY: start
 start: conda-check
 	@echo "Starting application ..."
-	@-bash -c '$(CONDA_CMD) pserve "$(APP_ROOT)/development.ini" &'
+	@-bash -c '$(CONDA_CMD) pserve "$(INI_FILE)" &'
 
 .PHONY: clean
 clean: srcclean conda-clean
