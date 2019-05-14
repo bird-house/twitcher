@@ -122,12 +122,12 @@ spec: conda-check
 
 ## Version targets
 
-.PHONY: bump_dep
-bump_dep:
+.PHONY: bump-dep
+bump-dep: conda-check
 	@-bash -c '$(CONDA_CMD) pip install bump2version'
 
 .PHONY: bump
-bump: bump_dep
+bump: conda-check bump-dep
 	@-echo "Updating package version ..."
 	@[ "${VERSION}" ] || ( echo ">> 'VERSION' is not set"; exit 1 )
 	@-bash -c '$(CONDA_CMD) bump2version $(BUMP_XARGS) --new-version "${VERSION}" patch;'
@@ -143,18 +143,18 @@ bootstrap-dev: conda-check conda-update
 	@echo "Bootstrap for development ..."
 
 .PHONY: install
-install: bootstrap
+install: conda-check bootstrap
 	@echo "Installing application ..."
 	@-bash -c '$(CONDA_CMD) pip install -e "$(APP_ROOT)"'
 	@echo "\nStart service with \`make start'"
 
 .PHONY: install-dev
-install-dev: #bootstrap-dev
+install-dev: conda-check bootstrap-dev
 	@echo "Installing development requirements for tests and docs ..."
 	@-bash -c '$(CONDA_CMD) pip install -e "$(APP_ROOT)[dev]"'
 
 .PHONY: db
-db:
+db: conda-check
 	@echo "Upgrade or initialize database ..."
 	@-bash -c '$(CONDA_CMD) alembic -c "$(INI_FILE)" upgrade head'
 	@-bash -c '$(CONDA_CMD) initialize_twitcher_db "$(INI_FILE)"'
