@@ -85,8 +85,7 @@ def get_adapter_store_factory(
         return store(request)
     except NotImplementedError:
         if isinstance(adapter, DefaultAdapter):
-            LOGGER.exception("Adapter 'DefaultAdapter' doesn't implement '{!r}', no way to recover."
-                             .format(adapter, store_name))
+            LOGGER.exception("Adapter 'DefaultAdapter' doesn't implement '{!r}', no way to recover.".format(store_name))
             raise
         LOGGER.warning("Adapter '{!r}' doesn't implement '{!r}', falling back to 'DefaultAdapter' implementation."
                        .format(adapter, store_name))
