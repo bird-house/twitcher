@@ -6,8 +6,7 @@ APP_NAME := twitcher
 INI_FILE ?= $(APP_ROOT)/development.ini
 
 # Conda
-CHECK      ?= shell command -v
-CONDA_HOME ?= $($(CHECK) conda info --base 2> /dev/null)
+CONDA_HOME ?= $(shell conda info --base 2> /dev/null)
 CONDA_ENV  ?= $(APP_NAME)
 CONDA_BIN  := $(CONDA_HOME)/bin/conda
 CONDA_TARGET_PREFIX := readlink -e "$(CONDA_HOME)/envs/$(CONDA_ENV)" 2> /dev/null
@@ -19,7 +18,7 @@ ifeq ($(shell $(CONDA_TARGET_PREFIX)),$(shell $(CONDA_ACTUAL_PREFIX)))
 	CONDA_CMD := echo "$(CONDA_MSG)";
 else
 	CONDA_MSG := Will activate conda environment with 'CONDA_CMD'
-	CONDA_CMD := echo "Activating conda env $(CONDA_ENV) ..."; source "$(CONDA_HOME)/bin/activate" "$(CONDA_ENV)";
+	CONDA_CMD := echo "Activating conda env \'$(CONDA_ENV)\' ..."; source "$(CONDA_HOME)/bin/activate" "$(CONDA_ENV)";
 endif
 
 DOCKER_TAG := birdhouse/twitcher:0.4.0
@@ -82,7 +81,6 @@ help:
 debug:
 	@-echo "Following variables are used:"
 	@-echo "  SHELL:                         $(SHELL)"
-	@-echo "  CHECK:                         $(CHECK)"
 	@-echo "  APP_ROOT:                      $(APP_ROOT)"
 	@-echo "  APP_NAME:                      $(APP_NAME)"
 	@-echo "  BUMP_XARGS:                    $(BUMP_XARGS)"
@@ -92,9 +90,9 @@ debug:
 	@-echo "  CONDA_MSG:                     $(CONDA_MSG)"
 	@-echo "  CONDA_CMD:                     $(CONDA_CMD)"
 	@-echo "  CONDA_TARGET_PREFIX [literal]: $(CONDA_TARGET_PREFIX)"
-	@-echo "  CONDA_ACTUAL_PREFIX [called]:  $(shell $(CONDA_TARGET_PREFIX))"
+	@-echo "  CONDA_ACTUAL_PREFIX [called]:  `$(CONDA_TARGET_PREFIX)`"
 	@-echo "  CONDA_TARGET_PREFIX [literal]: $(CONDA_ACTUAL_PREFIX)"
-	@-echo "  CONDA_ACTUAL_PREFIX [called]:  $(shell $(CONDA_ACTUAL_PREFIX))"
+	@-echo "  CONDA_ACTUAL_PREFIX [called]:  `$(CONDA_ACTUAL_PREFIX)`"
 	@-echo "  DOCKER_TAG:                    $(DOCKER_TAG)"
 
 ## Conda targets
