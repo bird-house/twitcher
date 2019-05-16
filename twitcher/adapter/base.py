@@ -24,8 +24,8 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def configurator_factory(self, request):
-        # type: (Request) -> Configurator
+    def configurator_factory(self, container):
+        # type: (AnySettingsContainer) -> Configurator
         """
         Returns the 'configurator' implementation of the adapter.
         """
@@ -52,8 +52,8 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def owsproxy_config(self, request):
-        # type: (Request) -> None
+    def owsproxy_config(self, config):
+        # type: (AnySettingsContainer) -> None
         """
         Returns the 'owsproxy' implementation of the adapter.
         """

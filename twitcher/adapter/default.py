@@ -15,8 +15,8 @@ class DefaultAdapter(AdapterInterface):
         from twitcher.__version__ import __version__
         return {"name": "default", "version": str(__version__)}
 
-    def configurator_factory(self, request):
-        settings = get_settings(request)
+    def configurator_factory(self, container):
+        settings = get_settings(container)
         return Configurator(settings=settings)
 
     def tokenstore_factory(self, request):
@@ -30,7 +30,9 @@ class DefaultAdapter(AdapterInterface):
         service_store = self.servicestore_factory(request)
         return OWSSecurity(token_store, service_store)
 
-    def owsproxy_config(self, request):
+    def owsproxy_config(self, container):
         from twitcher.owsproxy import owsproxy_defaultconfig
-        config = self.configurator_factory(request)
-        owsproxy_defaultconfig(config)
+        # update provided config or generate it otherwise
+        if not isinstance(container, Configurator):
+            container = self.configurator_factory(container)
+        owsproxy_defaultconfig(container)
