@@ -54,3 +54,29 @@ class ServiceStoreTestCase(BaseTest):
         assert len(services) == 1
         self.service_store.delete_service(name='flamingo')
         self.service_store.clear_services()
+
+    def test_service_store_insert_or_update(self):
+        self.service_store.save_service(
+            Service(
+                name="albatross",
+                url="http://somewhere.over.the/ocean",
+                type="wps",
+                public=False,
+                auth='token',
+                verify=True,
+                purl="http://purl/wps")
+        )
+        # update
+        self.service_store.save_service(
+            Service(
+                name="albatross",
+                url="http://somewhere.over.the/ocean",
+                type="wps",
+                public=True,
+                auth='token',
+                verify=True,
+                purl="http://purl/wps")
+        )
+        services = self.service_store.list_services()
+        assert len(services) == 1
+        self.service_store.clear_services()
