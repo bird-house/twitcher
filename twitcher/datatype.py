@@ -50,7 +50,10 @@ class Service(dict):
     def public(self):
         """Flag if service has public access."""
         # TODO: public access can be set via auth parameter.
-        return self.get('public') or False
+        value = self.get('public', False)
+        if value is True or value == 1 or value == 'true':
+            return True
+        return False
 
     @property
     def auth(self):
@@ -60,7 +63,10 @@ class Service(dict):
     @property
     def verify(self):
         """Verify ssl service certificate."""
-        return self.get('verify') or True
+        value = self.get('verify', True)
+        if value is False or value == 0 or value == 'false':
+            return False
+        return True
 
     @property
     def params(self):

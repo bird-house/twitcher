@@ -148,8 +148,8 @@ class ServiceStore(ServiceStoreInterface):
                 url=baseurl(service.url),
                 type=service.type,
                 purl=service.purl,
-                public=service.public,
-                verify=service.verify,
+                public=int(service.public),
+                verify=int(service.verify),
                 auth=service.auth))
         except DBAPIError:
             raise DatabaseError
