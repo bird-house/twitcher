@@ -71,7 +71,7 @@ class OWSSecurity(OWSSecurityInterface):
                     LOGGER.warning('public access for service %s', service_name)
             except ServiceNotFound:
                 raise OWSInvalidParameterValue(
-                    "Service {} not found".format(service_name), value="service")
+                    "Service not found", value="service")
             ows_request = OWSRequest(request)
             if not ows_request.service_allowed():
                 raise OWSInvalidParameterValue(
