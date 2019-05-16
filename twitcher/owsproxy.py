@@ -204,9 +204,6 @@ def owsproxy_defaultconfig(config):
             config.add_view(owsproxy_delegate_view, route_name='owsproxy')
             config.add_view(owsproxy_delegate_view, route_name='owsproxy_secured')
         else:
-            config.include('twitcher.config')
-            # include mongodb
-            # config.include('twitcher.db')
             config.add_view(owsproxy_view, route_name='owsproxy')
             config.add_view(owsproxy_view, route_name='owsproxy_secured')
             config.add_view(owsproxy_view, route_name='owsproxy_extra')

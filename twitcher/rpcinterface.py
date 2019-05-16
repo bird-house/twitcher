@@ -92,9 +92,6 @@ def includeme(config):
     if asbool(settings.get('twitcher.rpcinterface', True)):
         LOGGER.debug('Twitcher XML-RPC Interface enabled.')
 
-        # include twitcher config
-        config.include('twitcher.config')
-
         # using basic auth
         config.include('twitcher.basicauth')
 

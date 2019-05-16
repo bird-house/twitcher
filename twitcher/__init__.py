@@ -9,7 +9,6 @@ def main(global_config, **settings):
     with Configurator(settings=settings) as config:
         # include twitcher components
         config.include('.models')
-        config.include('.config')
         config.include('.frontpage')
         config.include('.rpcinterface')
         config.include('.owsproxy')
