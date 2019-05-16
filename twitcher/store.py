@@ -138,19 +138,32 @@ class ServiceStore(ServiceStoreInterface):
 
     def save_service(self, service):
         """
-        Stores an OWS service in database.
+        Stores an OWS service in database (insert or update).
 
         :param service: An instance of :class:`twitcher.datatype.Service`.
         """
         try:
-            self.request.dbsession.merge(models.Service(
-                name=service.name,
-                url=baseurl(service.url),
-                type=service.type,
-                purl=service.purl,
-                public=int(service.public),
-                verify=int(service.verify),
-                auth=service.auth))
+            query = self.request.dbsession.query(models.Service)
+            one = query.filter(models.Service.name == service.name).first()
+            if one:
+                # update
+                one.url = baseurl(service.url)
+                one.type = service.type
+                one.purl = service.purl
+                one.public = int(service.public)
+                one.verify = int(service.verify)
+                one.auth = service.auth
+                self.request.dbsession.merge(one)
+            else:
+                # insert
+                self.request.dbsession.add(models.Service(
+                    name=service.name,
+                    url=baseurl(service.url),
+                    type=service.type,
+                    purl=service.purl,
+                    public=int(service.public),
+                    verify=int(service.verify),
+                    auth=service.auth))
         except DBAPIError:
             raise DatabaseError
 
