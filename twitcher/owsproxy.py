@@ -10,13 +10,19 @@ import requests
 
 from pyramid.response import Response
 from pyramid.settings import asbool
+from typing import TYPE_CHECKING
 
+from twitcher.adapter import get_adapter_factory
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
-from twitcher.utils import replace_caps_url
-from twitcher.store import ServiceStore
+from twitcher.utils import replace_caps_url, get_settings, get_twitcher_url
 
 import logging
 LOGGER = logging.getLogger('TWITCHER')
+
+if TYPE_CHECKING:
+    from twitcher.typedefs import AnySettingsContainer  # noqa: F401
+    from pyramid.config import Configurator             # noqa: F401
+    from typing import AnyStr                           # noqa: F401
 
 
 allowed_content_types = (
@@ -46,8 +52,8 @@ allowed_hosts = (
 )
 
 
-# requests.models.Reponse defaults its chunk size to 128 bytes, which is very slow
-class BufferedResponse():
+# requests.models.Response defaults its chunk size to 128 bytes, which is very slow
+class BufferedResponse(object):
     def __init__(self, resp):
         self.resp = resp
 
@@ -79,9 +85,9 @@ def _send_request(request, service, extra_path=None, request_params=None):
             return OWSAccessFailed("Request failed: {}".format(e))
 
         # Headers meaningful only for a single transport-level connection
-        HopbyHop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
+        hop_by_hop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
-                        headers={k: v for k, v in list(resp_iter.headers.items()) if k not in HopbyHop})
+                        headers={k: v for k, v in list(resp_iter.headers.items()) if k not in hop_by_hop})
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
@@ -130,14 +136,28 @@ def _send_request(request, service, extra_path=None, request_params=None):
         return Response(content, status=resp.status_code, headers=headers)
 
 
-def owsproxy(request):
+def owsproxy_base_path(container):
+    # type: (AnySettingsContainer) -> AnyStr
+    settings = get_settings(container)
+    return settings.get('twitcher.ows_proxy_protected_path', '/ows').rstrip('/').strip()
+
+
+def owsproxy_base_url(container):
+    # type: (AnySettingsContainer) -> AnyStr
+    twitcher_url = get_twitcher_url(container)
+    owsproxy_path = owsproxy_base_path(container)
+    return twitcher_url + owsproxy_path
+
+
+def owsproxy_view(request):
     """
     TODO: use ows exceptions
     """
     try:
         service_name = request.matchdict.get('service_name')
         extra_path = request.matchdict.get('extra_path')
-        store = ServiceStore(request)
+        adapter = get_adapter_factory(request)
+        store = adapter.servicestore_factory(request)
         service = store.fetch_by_name(service_name)
     except Exception as err:
         # TODO: Store impl should raise appropriate exception like not authorized
@@ -146,7 +166,7 @@ def owsproxy(request):
         return _send_request(request, service, extra_path, request_params=request.query_string)
 
 
-def owsproxy_delegate(request):
+def owsproxy_delegate_view(request):
     """
     Delegates owsproxy request to external twitcher service.
     """
@@ -167,25 +187,31 @@ def owsproxy_delegate(request):
     return Response(resp.content, status=resp.status_code, headers=resp.headers)
 
 
-def includeme(config):
-    settings = config.registry.settings
-    protected_path = settings.get('twitcher.ows_proxy_protected_path', '/ows')
+def owsproxy_defaultconfig(config):
+    # type: (Configurator) -> None
+    settings = get_settings(config)
     if asbool(settings.get('twitcher.ows_proxy', True)):
+        protected_path = owsproxy_base_path(settings)
         LOGGER.debug('Twitcher {}/proxy enabled.'.format(protected_path))
 
         config.add_route('owsproxy', protected_path + '/proxy/{service_name}')
-        # TODO: maybe configure extra path
         config.add_route('owsproxy_extra', protected_path + '/proxy/{service_name}/{extra_path:.*}')
         config.add_route('owsproxy_secured', protected_path + '/proxy/{service_name}/{access_token}')
 
         # use delegation mode?
         if asbool(settings.get('twitcher.ows_proxy_delegate', False)):
             LOGGER.debug('Twitcher {}/proxy delegation mode enabled.'.format(protected_path))
-            config.add_view(owsproxy_delegate, route_name='owsproxy')
-            config.add_view(owsproxy_delegate, route_name='owsproxy_secured')
+            config.add_view(owsproxy_delegate_view, route_name='owsproxy')
+            config.add_view(owsproxy_delegate_view, route_name='owsproxy_secured')
         else:
-            # include twitcher config
             config.include('twitcher.config')
-            config.add_view(owsproxy, route_name='owsproxy')
-            config.add_view(owsproxy, route_name='owsproxy_secured')
-            config.add_view(owsproxy, route_name='owsproxy_extra')
+            # include mongodb
+            # config.include('twitcher.db')
+            config.add_view(owsproxy_view, route_name='owsproxy')
+            config.add_view(owsproxy_view, route_name='owsproxy_secured')
+            config.add_view(owsproxy_view, route_name='owsproxy_extra')
+
+
+def includeme(config):
+    from twitcher.adapter import get_adapter_factory
+    get_adapter_factory(config).owsproxy_config(config)

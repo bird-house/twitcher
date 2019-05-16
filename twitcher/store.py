@@ -1,5 +1,11 @@
 """
 Read or write data from database.
+
+Stores should not be accessed directly, but instead should use the adapter interface.
+
+See also:
+    - :class:`twitcher.adapter.base.AdapterInterface`
+    - :func:`twitcher.adapter.get_adapter_factory`
 """
 
 from twitcher.exceptions import (
@@ -7,22 +13,45 @@ from twitcher.exceptions import (
     ServiceNotFound,
     DatabaseError
 )
-from twitcher import namesgenerator
 from twitcher.utils import baseurl
 from twitcher import datatype
 from twitcher import models
 
+from typing import TYPE_CHECKING
 from sqlalchemy.exc import DBAPIError
 
+if TYPE_CHECKING:
+    from twitcher.models.token import AccessToken
+    from twitcher.models.service import Service
+    from pyramid.request import Request
+    from typing import AnyStr, List
 
-class AccessTokenStore(object):
+
+class AccessTokenStoreInterface(object):
+    def __init__(self, request):            # type: (Request) -> None
+        self.request = request
+
+    def save_token(self, access_token):     # type: (AccessToken) -> None
+        raise NotImplementedError
+
+    def delete_token(self, token):          # type: (AccessToken) -> None
+        raise NotImplementedError
+
+    def fetch_by_token(self, token):        # type: (AnyStr) -> None
+        raise NotImplementedError
+
+    def clear_tokens(self):                 # type: () -> None
+        raise NotImplementedError
+
+
+class AccessTokenStore(AccessTokenStoreInterface):
     """
     Stores tokens in sql database.
 
     TODO: handle exceptions.
     """
     def __init__(self, request):
-        self.request = request
+        super(AccessTokenStore, self).__init__(request)
 
     def save_token(self, access_token):
         """
@@ -77,12 +106,35 @@ class AccessTokenStore(object):
             raise DatabaseError
 
 
-class ServiceStore(object):
+class ServiceStoreInterface(object):
+    def __init__(self, request):        # type: (Request) -> None
+        self.request = request
+
+    def save_service(self, service):    # type: (Service) -> None
+        raise NotImplementedError
+
+    def delete_service(self, name):     # type: (AnyStr) -> None
+        raise NotImplementedError
+
+    def list_services(self):            # type: () -> List[Service]
+        raise NotImplementedError
+
+    def fetch_by_name(self, name):      # type: (AnyStr) -> Service
+        raise NotImplementedError
+
+    def fetch_by_url(self, url):        # type: (AnyStr) -> Service
+        raise NotImplementedError
+
+    def clear_services(self):           # type: () -> None
+        raise NotImplementedError
+
+
+class ServiceStore(ServiceStoreInterface):
     """
     Stores a services. It inserts or updates the service with a given name.
     """
     def __init__(self, request):
-        self.request = request
+        super(ServiceStore, self).__init__(request)
 
     def save_service(self, service):
         """

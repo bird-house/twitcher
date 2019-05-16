@@ -6,4 +6,4 @@ flake8
 # docs
 sphinx>=1.7
 # release
-bumpversion
+bump2version

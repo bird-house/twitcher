@@ -1,11 +1,10 @@
 from pyramid.view import view_defaults
-from pyramid_rpc.xmlrpc import xmlrpc_method
 from pyramid.settings import asbool
 
 from twitcher.api import ITokenManager, TokenManager
 from twitcher.api import IRegistry, Registry
+from twitcher.adapter import get_adapter_factory
 from twitcher.tokengenerator import tokengenerator_factory
-from .store import AccessTokenStore, ServiceStore
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
@@ -15,10 +14,12 @@ LOGGER = logging.getLogger("TWITCHER")
 class RPCInterface(ITokenManager, IRegistry):
     def __init__(self, request):
         self.request = request
+        self.adapter = get_adapter_factory(request)
         self.tokenmgr = TokenManager(
             tokengenerator_factory(request),
-            AccessTokenStore(request))
-        self.srvreg = Registry(ServiceStore(request))
+            self.adapter.tokenstore_factory(request))
+        self.srvreg = Registry(
+            self.adapter.servicestore_factory(request))
 
     def generate_token(self, valid_in_hours=1):
         """

@@ -10,7 +10,7 @@ with open(os.path.join(here, 'twitcher', '__version__.py'), 'r') as f:
     exec(f.read(), about)
 
 reqs = [line.strip() for line in open('requirements.txt')]
-extra_reqs = [line.strip() for line in open('requirements_dev.txt')]
+dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
 
 setup(name='pyramid_twitcher',
       version=about['__version__'],
@@ -33,7 +33,7 @@ setup(name='pyramid_twitcher',
       zip_safe=False,
       test_suite='twitcher',
       install_requires=reqs,
-      extra_requires=extra_reqs,
+      extra_requires={"dev": dev_reqs},  # pip install ".[dev]"
       entry_points="""\
       [paste.app_factory]
       main = twitcher:main

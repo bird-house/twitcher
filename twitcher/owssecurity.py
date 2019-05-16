@@ -1,19 +1,10 @@
-import tempfile
-
 from twitcher.exceptions import AccessTokenNotFound, ServiceNotFound
 from twitcher.owsexceptions import OWSAccessForbidden, OWSInvalidParameterValue
-from twitcher.store import AccessTokenStore, ServiceStore
-from twitcher import datatype
 from twitcher.utils import path_elements, parse_service_name
 from twitcher.owsrequest import OWSRequest
-from twitcher.esgf import fetch_certificate, ESGF_CREDENTIALS
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
-
-
-def owssecurity_factory(request):
-    return OWSSecurity(AccessTokenStore(request), ServiceStore(request))
 
 
 def verify_cert(request):
@@ -21,13 +12,20 @@ def verify_cert(request):
         raise OWSAccessForbidden("A valid X.509 client certificate is needed.")
 
 
-class OWSSecurity(object):
+class OWSSecurityInterface(object):
+
+    def check_request(self, request):
+        raise NotImplementedError
+
+
+class OWSSecurity(OWSSecurityInterface):
 
     def __init__(self, tokenstore, servicestore):
         self.tokenstore = tokenstore
         self.servicestore = servicestore
 
-    def get_token_param(self, request):
+    @staticmethod
+    def get_token_param(request):
         token = None
         if 'token' in request.params:
             token = request.params['token']   # in params
