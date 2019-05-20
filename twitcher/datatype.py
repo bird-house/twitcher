@@ -4,6 +4,8 @@ Definition of service and token types.
 
 import time
 
+from pyramid.settings import asbool
+
 from twitcher.utils import now_secs, is_valid_url
 from twitcher.exceptions import AccessTokenNotFound
 
@@ -14,6 +16,8 @@ class Service(dict):
     It always has the ``'url'`` and ``'name'`` key.
 
     TODO: Should this be part of the model?
+    TODO: If the field is accessed with service['public'] instead of service.public,
+    we get different values. We could override `__getattr__`.
     """
     def __init__(self, *args, **kwargs):
         super(Service, self).__init__(*args, **kwargs)
@@ -21,6 +25,10 @@ class Service(dict):
             raise TypeError("'name' is required")
         if 'url' not in self:
             raise TypeError("'url' is required")
+        if self.get('public') is None:
+            self['public'] = False
+        if self.get('verify') is None:
+            self['verify'] = True
 
     @property
     def url(self):
@@ -50,10 +58,7 @@ class Service(dict):
     def public(self):
         """Flag if service has public access."""
         # TODO: public access can be set via auth parameter.
-        value = self.get('public', False)
-        if value is True or value == 1 or value == 'true':
-            return True
-        return False
+        return asbool(self.get('public', False))
 
     @property
     def auth(self):
@@ -63,10 +68,7 @@ class Service(dict):
     @property
     def verify(self):
         """Verify ssl service certificate."""
-        value = self.get('verify', True)
-        if value is False or value == 0 or value == 'false':
-            return False
-        return True
+        return asbool(self.get('verify', True))
 
     @property
     def params(self):
