@@ -67,7 +67,7 @@ install:
 .PHONY: develop
 develop:
 	@echo "Installing development requirements for tests and docs ..."
-	@-bash -c 'pip install -e .[dev]'
+	@-bash -c 'pip install -e ".[dev]"'
 
 .PHONY: migrate
 migrate:
@@ -78,7 +78,7 @@ migrate:
 .PHONY: start
 start:
 	@echo "Starting application ..."
-	@-bash -c 'pserve "$(INI_FILE)"'
+	@-bash -c 'pserve "$(INI_FILE)" --reload'
 
 .PHONY: clean
 clean: clean-build clean-pyc clean-test
@@ -109,8 +109,8 @@ clean-test:
 	@-rm -fr ./coverage/
 	@-rm -fr .pytest_cache
 
-.PHONY: distclean
-distclean: clean
+.PHONY: clean-dist
+clean-dist: clean
 	@echo "Run 'git clean' ..."
 	@git diff --quiet HEAD || echo "There are uncommited changes! Not doing 'git clean' ..."
 	@-git clean -dfx
@@ -120,7 +120,7 @@ distclean: clean
 .PHONY: docker-build
 docker-build:
 	@echo "Building docker image: $(DOCKER_TAG)"
-	@-docker build . -t "$(DOCKER_TAG)"
+	@-docker build "$(APP_ROOT)" -t "$(DOCKER_TAG)"
 
 .PHONY: docker-push
 docker-push:

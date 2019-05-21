@@ -17,7 +17,7 @@ Quick steps to install and start Twitcher:
   $ conda activate twitcher
   $ make install
   $ make migrate
-  $ pserve development.ini --reload
+  $ make start
 
 From GitHub Sources
 ===================

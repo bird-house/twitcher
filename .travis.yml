@@ -21,7 +21,7 @@ install:
   - conda env update -f environment.yml
   - source activate twitcher
   # Install twitcher
-  - pip install .[dev]
+  - pip install ".[dev]"
 script:
   - pytest -v -m 'not online' tests/
   - flake8
