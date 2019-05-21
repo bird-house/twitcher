@@ -20,6 +20,8 @@ First activate the ``twitcher`` Conda environment and install ``pytest``.
 
    $ source activate twitcher
    $ pip install -r requirements_dev.txt  # if not already installed
+   OR
+   $ make develop
 
 Run quick tests (skip slow and online):
 
@@ -47,8 +49,9 @@ Do the same as above using the ``Makefile``.
 .. code-block:: console
 
     $ make test
-    $ make testall
-    $ make pep8
+    $ make test-all
+    $ make lint
+    $ make coverage
 
 Building the docs
 -----------------
@@ -62,18 +65,7 @@ First install dependencies for the documentation:
 Prepare a release
 -----------------
 
-Update the Conda specification file to build identical environments_ on a specific OS.
-
-.. note:: You should run this on your target OS, in our case Linux.
-
-.. code-block:: console
-
-  $ make clean
-  $ make install
-  $ make spec
-
-.. _`environments`: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments
-
+Update `CHANGES.rst`.
 
 Bump a new version
 ------------------
