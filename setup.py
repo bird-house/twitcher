@@ -33,7 +33,7 @@ setup(name='pyramid_twitcher',
       zip_safe=False,
       test_suite='twitcher',
       install_requires=reqs,
-      extra_requires={"dev": dev_reqs},  # pip install ".[dev]"
+      extras_require={"dev": dev_reqs},  # pip install ".[dev]"
       entry_points="""\
       [paste.app_factory]
       main = twitcher:main

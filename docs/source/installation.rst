@@ -4,33 +4,53 @@
 Installation
 ************
 
+Quick Installation
+==================
+
+Quick steps to install and start Twitcher:
+
+.. code-block:: console
+
+  $ git clone https://github.com/bird-house/twitcher.git
+  $ cd twitcher
+  $ conda env create
+  $ conda activate twitcher
+  $ make install
+  $ make migrate
+  $ make start
+
 From GitHub Sources
 ===================
 
-Install twitcher from GitHub sources:
+Get Twitcher source from GitHub:
 
 .. code-block:: console
 
    $ git clone https://github.com/bird-house/twitcher.git
    $ cd twitcher
+
+Create Conda_ environment named *twitcher*:
+
+.. code-block:: console
+
    $ conda env update -f environment.yml
    $ conda activate twitcher
-   $ python setup.py install
 
-The installation process setups a Conda_ environment named *twitcher*
-with all dependent packages.
-
-... or do it the lazy way
-+++++++++++++++++++++++++
-
-We provide also a ``Makefile`` to run this installation:
+Install the Twitcher app:
 
 .. code-block:: console
 
-   $ git clone https://github.com/bird-house/twitcher.git
-   $ cd twitcher
-   $ make clean    # cleans up a previous Conda environment
-   $ make install  # runs the above installation steps
+   $ pip install -e .
+   OR
+   make install
+
+For development you can use this command:
+
+.. code-block:: console
+
+  $ pip install -e .[dev]
+  OR
+  $ make develop
 
 Initialize Database
 ===================
@@ -44,6 +64,10 @@ Generate your first revision:
   $ conda activate twitcher
   $ alembic -c development.ini revision --autogenerate -m "init"
 
+.. warning::
+
+    This first step is only needed in development to generate a new database schema version.
+
 Upgrade to that revision:
 
 .. code-block:: console
@@ -56,10 +80,9 @@ Load default data into the database using a script.
 
   $ initialize_twitcher_db development.ini
 
-
 .. note::
 
-  You can use `make db` as a shortcut to upgrade or init the twitcher database (last two steps).
+  You can use `make migrate` as a shortcut to upgrade or init the twitcher database (last two steps).
 
 Starting Twitcher Service
 =========================

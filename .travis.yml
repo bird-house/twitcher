@@ -20,14 +20,8 @@ install:
   # Update now the env with our environment
   - conda env update -f environment.yml
   - source activate twitcher
-  # Packages for testing
-  - pip install -r requirements_dev.txt
   # Install twitcher
-  - python setup.py install
-#before_script:
-  # Start WPS service on port 6000
-  #- pserve development.ini &
-  #- sleep 2
+  - pip install ".[dev]"
 script:
   - pytest -v -m 'not online' tests/
   - flake8

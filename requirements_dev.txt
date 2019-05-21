@@ -1,9 +1,6 @@
--r requirements.txt
-# tests
 pytest
+pytest-cov
 WebTest
 flake8
-# docs
-sphinx>=1.7
-# release
+sphinx
 bump2version
