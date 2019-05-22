@@ -63,7 +63,7 @@ class AdapterInterface(six.with_metaclass(AdapterBase)):
         """
         raise NotImplementedError
 
-    def owsproxy_config(self, config):
+    def owsproxy_config(self, container):
         # type: (AnySettingsContainer) -> None
         """
         Returns the 'owsproxy' implementation of the adapter.
