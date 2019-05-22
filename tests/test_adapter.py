@@ -42,17 +42,17 @@ class DummyAdapter(AdapterInterface):
 
 
 # noinspection PyPep8Naming
-def test_adapter_factory_DummyAdapter_valid_import_with_inits():
+def test_adapter_factory_DummyAdapter_valid_import_with_init():
     settings = {'twitcher.adapter': DummyAdapter.name}
     adapter = get_adapter_factory(settings)
-    assert isinstance(adapter, DummyAdapter), "Expect {!s}, but got {!s}".format(TestAdapter, type(adapter))
+    assert isinstance(adapter, DummyAdapter), "Expect {!s}, but got {!s}".format(DummyAdapter, type(adapter))
 
 
 def make_path(base, other='__init__.py'):
     return str(Path(base) / Path(other))
 
 
-def test_adapter_factory_TmpAdapter_valid_import_installed_without_inits():
+def test_adapter_factory_TmpAdapter_valid_import_installed_without_init():
     """
     Test a valid installed adapter import by setting although not located under same directory,
     with much deeper structure, and without any '__init__.py' defining a python 'package'.
