@@ -1,17 +1,27 @@
 Changes
 *******
 
-Unreleased
-==========
+0.5.0 (2019-05-22)
+==================
+
+Changes:
+
+* Skipped Buildout (#49).
+* Replaced mongodb by sqlalchemy (#51).
+* Simplified `Makefile` and skipped conda targets (#75).
+* Add `Makefile` targets for `docker`, `bumpversion` and `coverage` analysis related tasks (#67).
+* Removed unused `config` module (#70).
 
 New Features:
 
-* Provide a `Dockerfile` for building `Twitcher`.
-* Improve `Makefile` conda environment setup/activation/update to speedup target operations when possible.
-* Add `Makefile` targets for `docker`, `conda`, `bumpversion` and `coverage` analysis related tasks.
-* Provide ``AdapterInterface`` to allow overriding store implementations with configuration setting ``twitcher.adapter``.
-* Add version auto-update (number and date) of these 'changes' with ``bump2version``.
+* Provided a `Dockerfile` for building `Twitcher` (#67).
+* Provide ``AdapterInterface`` to allow overriding store implementations with configuration setting ``twitcher.adapter`` (#67).
+* Add version auto-update (number and date) of these 'changes' with ``bump2version`` (#67).
+
+Fixes:
+
 * Update requirements with missing dependencies when building docker image.
+* Various fixes (#74, #73, #72, #71)
 
 0.4.0 (2019-05-02)
 ==================
