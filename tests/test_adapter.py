@@ -3,7 +3,11 @@ from twitcher.adapter.base import AdapterInterface
 from twitcher.adapter.default import DefaultAdapter
 from twitcher.store import ServiceStoreInterface
 from pyramid.testing import DummyRequest
+from pathlib import Path
 import pytest
+import shutil
+import site
+import os
 
 
 def test_import_adapter():
@@ -25,7 +29,7 @@ def test_adapter_factory_none_specified():
 
 
 # noinspection PyAbstractClass
-class TestAdapter(AdapterInterface):
+class DummyAdapter(AdapterInterface):
     def servicestore_factory(self, request):
         class DummyServiceStore(ServiceStoreInterface):
             def save_service(self, service): return True    # noqa: E704
@@ -38,20 +42,59 @@ class TestAdapter(AdapterInterface):
 
 
 # noinspection PyPep8Naming
-def test_adapter_factory_TestAdapter_valid_import():
-    settings = {'twitcher.adapter': '{}.{}'.format(TestAdapter.__module__, TestAdapter.__name__)}
+def test_adapter_factory_DummyAdapter_valid_import_with_inits():
+    settings = {'twitcher.adapter': DummyAdapter.name}
     adapter = get_adapter_factory(settings)
-    assert isinstance(adapter, TestAdapter), "Expect {!s}, but got {!s}".format(TestAdapter, type(adapter))
+    assert isinstance(adapter, DummyAdapter), "Expect {!s}, but got {!s}".format(TestAdapter, type(adapter))
+
+
+def make_path(base, other='__init__.py'):
+    return str(Path(base) / Path(other))
+
+
+def test_adapter_factory_TmpAdapter_valid_import_installed_without_inits():
+    """
+    Test a valid installed adapter import by setting although not located under same directory,
+    with much deeper structure, and without any '__init__.py' defining a python 'package'.
+    """
+
+    mod_pkg = 'test_package'
+    mod_base = site.getsitepackages()[0]
+    try:
+        mod_name = '{}.module.submodule.section'.format(mod_pkg)
+        mod_path = make_path(mod_base, mod_name.replace('.', '/'))
+        mod_file_name = 'file'
+        mod_file = make_path(mod_path, '{}.py'.format(mod_file_name))
+        mod_class = 'TmpAdapter'
+        os.makedirs(mod_path, exist_ok=True)
+        with open(mod_file, 'w') as f:
+            f.writelines([
+                "from twitcher.adapter.base import AdapterInterface\n\n",
+                "class {}(AdapterInterface):\n".format(mod_class),
+                "    pass\n"
+            ])
+        mod_import = '.'.join([mod_name, mod_file_name, mod_class])
+
+        settings = {'twitcher.adapter': mod_import}
+        adapter = get_adapter_factory(settings)
+        adapter_mod_name = '.'.join([adapter.__module__, type(adapter).__name__])
+        assert not isinstance(adapter, DefaultAdapter)
+        assert isinstance(adapter, AdapterInterface)
+        assert adapter_mod_name == mod_import
+    finally:
+        shutil.rmtree(make_path(mod_base, mod_pkg), ignore_errors=True)
 
 
 # noinspection PyAbstractClass
-class TestAdapterFake(object):
+class DummyAdapterFake(object):
     pass
 
 
 # noinspection PyPep8Naming
 def test_adapter_factory_TestAdapter_invalid_raised():
-    settings = {'twitcher.adapter': '{}.{}'.format(TestAdapterFake.__module__, TestAdapterFake.__name__)}
+    # fake adapter doesn't have 'name' property, provide at least same functionality
+    dummy_name = '{}.{}'.format(DummyAdapterFake.__module__, DummyAdapterFake.__name__)
+    settings = {'twitcher.adapter': dummy_name}
     with pytest.raises(TypeError) as err:
         get_adapter_factory(settings)
         pytest.fail(msg="Invalid adapter not inheriting from 'AdapterInterface' should raise on import.")
@@ -61,7 +104,7 @@ def test_adapter_factory_TestAdapter_invalid_raised():
 
 # noinspection PyTypeChecker
 def test_adapter_factory_call_servicestore_factory():
-    settings = {'twitcher.adapter': '{}.{}'.format(TestAdapter.__module__, TestAdapter.__name__)}
+    settings = {'twitcher.adapter': DummyAdapter.name}
     adapter = get_adapter_factory(settings)
     store = adapter.servicestore_factory(DummyRequest())
     assert isinstance(store, ServiceStoreInterface)
