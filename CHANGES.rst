@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.5.0 (2019-05-22)
+==================
+
 Changes:
 
 * Skipped Buildout (#49).

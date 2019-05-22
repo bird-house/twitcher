@@ -1,5 +1,5 @@
 # Configuration
-VERSION := 0.4.0
+VERSION := VERSION := birdhouse/twitcher:0.5.0
 APP_ROOT := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 INI_FILE ?= development.ini
 
