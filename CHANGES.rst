@@ -4,6 +4,13 @@ Changes
 Unreleased
 ==========
 
+New Features:
+
+Changes:
+* Updated `README.rst` to match recent development, reference and docker image link.
+
+Fixes:
+
 0.5.1 (2019-05-24)
 ==================
 

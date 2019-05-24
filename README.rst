@@ -41,6 +41,8 @@ Twitcher is implemented with the Python `Pyramid`_ web framework.
 
 Twitcher is part of the `Birdhouse`_ project. The documentation is on `ReadTheDocs`_.
 
+Twitcher `Docker`_ images are also available for most recent tagged versions.
+
 .. _Birdhouse: http://birdhouse.readthedocs.io/en/latest/
 .. _Pyramid: http://www.pylonsproject.org
 .. _ReadTheDocs: http://twitcher.readthedocs.io/en/latest/
@@ -49,3 +51,4 @@ Twitcher is part of the `Birdhouse`_ project. The documentation is on `ReadTheDo
 .. _Weaver: https://github.com/crim-ca/weaver
 .. _CRIM: https://www.crim.ca/en
 .. _Swagger: https://swagger.io/
+.. _Docker: https://cloud.docker.com/u/birdhouse/repository/docker/birdhouse/twitcher/general
