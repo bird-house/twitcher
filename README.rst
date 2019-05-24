@@ -34,13 +34,14 @@ and might also be used for Thredds catalog services.
 Twitcher extensions:
 
 * `Magpie`_ is an AuthN/AuthZ service provided by the `PAVICS`_ project.
-
-There is also the Weaver_ middleware by CRIM_.
-A fork of Twitcher for workflow execution and a Swagger_ RESTful interface for Web Processing Services.
+* `Weaver`_  middleware by CRIM_. A reimplementation of an old `Twitcher fork <https://github.com/ouranosinc/twitcher/>`_
+  for workflow execution and a Swagger RESTful interface for Web Processing Services.
 
 Twitcher is implemented with the Python `Pyramid`_ web framework.
 
 Twitcher is part of the `Birdhouse`_ project. The documentation is on `ReadTheDocs`_.
+
+Twitcher `Docker`_ images are also available for most recent tagged versions.
 
 .. _Birdhouse: http://birdhouse.readthedocs.io/en/latest/
 .. _Pyramid: http://www.pylonsproject.org
@@ -50,3 +51,4 @@ Twitcher is part of the `Birdhouse`_ project. The documentation is on `ReadTheDo
 .. _Weaver: https://github.com/crim-ca/weaver
 .. _CRIM: https://www.crim.ca/en
 .. _Swagger: https://swagger.io/
+.. _Docker: https://cloud.docker.com/u/birdhouse/repository/docker/birdhouse/twitcher/general
