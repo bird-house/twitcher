@@ -4,6 +4,20 @@ Changes
 Unreleased
 ==========
 
+New Features:
+
+* Add `postgres` extra requirements for when it is used as database driver with `sqlalchemy`.
+
+Changes:
+
+* Use ``container`` instead of ``config`` for ``AdapterInterface.owsproxy_config`` to match real use cases.
+
+Fixes:
+
+* Improve the adapter import methodology to work with more use cases (https://github.com/Ouranosinc/Magpie/issues/182).
+* Fix incorrect setup for bump version within `Makefile`.
+* Fix Twitcher `main` including ``twitcher.<module>`` instead of ``.<module>``.
+
 0.5.0 (2019-05-22)
 ==================
 

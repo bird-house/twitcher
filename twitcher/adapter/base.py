@@ -1,6 +1,7 @@
 from twitcher.utils import get_settings
 
 from typing import TYPE_CHECKING
+import six
 if TYPE_CHECKING:
     from twitcher.typedefs import AnySettingsContainer, JSON
     from twitcher.store import AccessTokenStoreInterface, ServiceStoreInterface
@@ -9,13 +10,23 @@ if TYPE_CHECKING:
     from pyramid.request import Request
 
 
-class AdapterInterface(object):
+class AdapterBase(type):
+    @property
+    def name(cls):
+        return '{}.{}'.format(cls.__module__, cls.__name__)
+
+
+class AdapterInterface(six.with_metaclass(AdapterBase)):
     """
     Common interface allowing functionality overriding using an adapter implementation.
     """
     def __init__(self, container):
         # type: (AnySettingsContainer) -> None
         self.settings = get_settings(container)
+
+    @classmethod
+    def name(cls):
+        return '{}.{}'.format(cls.__module__, cls.__name__)
 
     def describe_adapter(self):
         # type: () -> JSON
@@ -52,7 +63,7 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def owsproxy_config(self, config):
+    def owsproxy_config(self, container):
         # type: (AnySettingsContainer) -> None
         """
         Returns the 'owsproxy' implementation of the adapter.

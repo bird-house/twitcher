@@ -33,7 +33,10 @@ setup(name='pyramid_twitcher',
       zip_safe=False,
       test_suite='twitcher',
       install_requires=reqs,
-      extras_require={"dev": dev_reqs},  # pip install ".[dev]"
+      extras_require={
+          "dev": dev_reqs,              # pip install ".[dev]"
+          "postgres": ["psycopg2"],     # when using postgres database driver with sqlalchemy
+      },
       entry_points="""\
       [paste.app_factory]
       main = twitcher:main

@@ -1,6 +1,7 @@
-from twitcher.adapter.default import DefaultAdapter, AdapterInterface
+from twitcher.adapter.default import DefaultAdapter, TWITCHER_ADAPTER_DEFAULT
+from twitcher.adapter.base import AdapterInterface
 from twitcher.utils import get_settings
-
+from importlib import import_module
 from inspect import isclass
 from typing import TYPE_CHECKING
 
@@ -15,21 +16,20 @@ if TYPE_CHECKING:
     from typing import AnyStr, Type, Union
 
 
-TWITCHER_ADAPTER_DEFAULT = 'default'
-
-
 def import_adapter(name):
     # type: (AnyStr) -> Type[AdapterInterface]
     """Attempts import of the class specified by python string ``package.module.class``."""
     components = name.split('.')
     mod_name = components[0]
-    mod = __import__(mod_name)
+    mod = import_module(mod_name)
     for comp in components[1:]:
         if not hasattr(mod, comp):
+            mod_from = mod_name
             mod_name = '{mod}.{sub}'.format(mod=mod_name, sub=comp)
-            mod = __import__(mod_name, fromlist=[mod_name])
+            mod = import_module(mod_name, package=mod_from)
             continue
         mod = getattr(mod, comp)
+        mod_name = mod.__name__
     if not isclass(mod) or not issubclass(mod, AdapterInterface):
         raise TypeError("Invalid reference is not of type '{}.{}'."
                         .format(AdapterInterface.__module__, AdapterInterface.__name__))

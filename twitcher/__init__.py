@@ -8,10 +8,10 @@ def main(global_config, **settings):
     """
     with Configurator(settings=settings) as config:
         # include twitcher components
-        config.include('.models')
-        config.include('.frontpage')
-        config.include('.rpcinterface')
-        config.include('.owsproxy')
+        config.include('twitcher.models')
+        config.include('twitcher.frontpage')
+        config.include('twitcher.rpcinterface')
+        config.include('twitcher.owsproxy')
         # tweens/middleware
         # TODO: maybe add tween for exception handling or use unknown_failure view
         config.include('twitcher.tweens')
