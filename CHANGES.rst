@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.5.1 (2019-05-24)
+==================
+
 New Features:
 
 * Add `postgres` extra requirements for when it is used as database driver with `sqlalchemy`.
