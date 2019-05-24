@@ -34,9 +34,8 @@ and might also be used for Thredds catalog services.
 Twitcher extensions:
 
 * `Magpie`_ is an AuthN/AuthZ service provided by the `PAVICS`_ project.
-
-There is also the Weaver_ middleware by CRIM_.
-A fork of Twitcher for workflow execution and a Swagger_ RESTful interface for Web Processing Services.
+* `Weaver`_  middleware by CRIM_. A reimplementation of an old `Twitcher fork <https://github.com/ouranosinc/twitcher/>`_
+  for workflow execution and a Swagger RESTful interface for Web Processing Services.
 
 Twitcher is implemented with the Python `Pyramid`_ web framework.
 
