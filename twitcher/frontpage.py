@@ -19,10 +19,11 @@ def frontpage(request):
 @view_config(route_name='information', renderer='json')
 def information(request):
     """List API information."""
-    return dict((i.replace('__', ''), getattr(__version__, i))
-                for i in dir(__version__)
-                if i not in ['__file__', '__name__', '__cached__']
-                and is_json_serializable(getattr(__version__, i)))
+    return dict(
+        (i.replace('__', ''), getattr(__version__, i))
+        for i in dir(__version__)
+        if i not in ['__file__', '__name__', '__cached__'] and is_json_serializable(getattr(__version__, i))
+    )
 
 
 @view_config(route_name='versions', renderer='json')
