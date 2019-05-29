@@ -5,6 +5,7 @@ from datetime import datetime
 from urllib import parse as urlparse
 from lxml import etree
 from typing import TYPE_CHECKING
+import json
 import time
 import pytz
 import re
@@ -56,6 +57,14 @@ def is_valid_url(url):
         return False
 
 
+def is_json_serializable(item):
+    try:
+        json.dumps(item)
+        return True
+    except (TypeError, OverflowError):
+        return False
+
+
 def parse_service_name(url, protected_path):
     parsed_url = urlparse.urlparse(url)
     service_name = None
@@ -95,7 +104,7 @@ def localize_datetime(dt, tz_name='UTC'):
         timezone = pytz.timezone(tz_name)
         tz_aware_dt = aware.astimezone(timezone)
     else:
-        LOGGER.warn('tzinfo already set')
+        LOGGER.warning('tzinfo already set')
     return tz_aware_dt
 
 

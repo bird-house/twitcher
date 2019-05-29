@@ -14,7 +14,7 @@ dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
 
 setup(name='pyramid_twitcher',
       version=about['__version__'],
-      description='Security Proxy for OGC Services like WPS.',
+      description=about['__doc__'],
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
           "Programming Language :: Python",
