@@ -2,24 +2,20 @@
 Factories to create storage backends.
 """
 
-from twitcher.adapter.base import AdapterInterface, AdapterBase
+from twitcher.adapter.base import AdapterInterface
 from twitcher.store import AccessTokenStore, ServiceStore
 from twitcher.owssecurity import OWSSecurity
 from twitcher.utils import get_settings
-
 from pyramid.config import Configurator
-import six
 
 TWITCHER_ADAPTER_DEFAULT = 'default'
 
 
-class DefaultBase(AdapterBase):
+class DefaultAdapter(AdapterInterface):
     @property
-    def name(cls):
+    def name(self):
         return TWITCHER_ADAPTER_DEFAULT
 
-
-class DefaultAdapter(six.with_metaclass(DefaultBase, AdapterInterface)):
     def describe_adapter(self):
         from twitcher.__version__ import __version__
         return {"name": self.name, "version": str(__version__)}

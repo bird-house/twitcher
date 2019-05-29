@@ -29,7 +29,12 @@ def information(request):
 def versions(request):
     """List version details of components used by the API."""
     adapter_version = get_adapter_factory(request).describe_adapter()
-    twitcher_version = {'name': 'Twitcher', 'version': __version__.__version__}
+    adapter_version['type'] = 'adapter'
+    twitcher_version = {
+        'name': 'Twitcher',
+        'version': __version__.__version__,
+        'type': 'application',
+    }
     return [twitcher_version, adapter_version]
 
 

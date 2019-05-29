@@ -28,7 +28,7 @@ def test_adapter_factory_none_specified():
     assert isinstance(adapter, DefaultAdapter), "Expect {!s}, but got {!s}".format(DefaultAdapter, type(adapter))
 
 
-# noinspection PyAbstractClass
+# noinspection PyAbstractClass,PyMethodMayBeStatic
 class DummyAdapter(AdapterInterface):
     def servicestore_factory(self, request):
         class DummyServiceStore(ServiceStoreInterface):
@@ -43,7 +43,7 @@ class DummyAdapter(AdapterInterface):
 
 # noinspection PyPep8Naming
 def test_adapter_factory_DummyAdapter_valid_import_with_init():
-    settings = {'twitcher.adapter': DummyAdapter.name}
+    settings = {'twitcher.adapter': DummyAdapter({}).name}
     adapter = get_adapter_factory(settings)
     assert isinstance(adapter, DummyAdapter), "Expect {!s}, but got {!s}".format(DummyAdapter, type(adapter))
 
@@ -104,7 +104,7 @@ def test_adapter_factory_TestAdapter_invalid_raised():
 
 # noinspection PyTypeChecker
 def test_adapter_factory_call_servicestore_factory():
-    settings = {'twitcher.adapter': DummyAdapter.name}
+    settings = {'twitcher.adapter': DummyAdapter({}).name}
     adapter = get_adapter_factory(settings)
     store = adapter.servicestore_factory(DummyRequest())
     assert isinstance(store, ServiceStoreInterface)
