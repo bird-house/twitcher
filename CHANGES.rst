@@ -5,9 +5,12 @@ Unreleased
 ==========
 
 New Features:
+* Adds route `/info` which returns contents of `twitcher.__version__`.
+* Adds route `/versions` which returns version details such as `Twitcher` app version and employed adapter version.
 
 Changes:
 * Updated `README.rst` to match recent development, reference and docker image link.
+* Adds URI of `/info` and `/versions` routes in the frontpage response.
 
 Fixes:
 
