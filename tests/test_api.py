@@ -1,7 +1,6 @@
 """
 Testing the Twitcher API.
 """
-import pytest
 
 from .common import BaseTest, dummy_request
 

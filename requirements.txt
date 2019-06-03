@@ -7,7 +7,6 @@ argcomplete
 pytz
 lxml
 pyopenssl
-six
 # debug
 pyramid_debugtoolbar
 # deploy

@@ -1,7 +1,5 @@
 from pyramid.config import Configurator
 
-from .__version__ import __author__, __email__, __version__
-
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.

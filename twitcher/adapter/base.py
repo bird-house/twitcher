@@ -1,7 +1,6 @@
 from twitcher.utils import get_settings
 
 from typing import TYPE_CHECKING
-import six
 if TYPE_CHECKING:
     from twitcher.typedefs import AnySettingsContainer, JSON
     from twitcher.store import AccessTokenStoreInterface, ServiceStoreInterface
@@ -10,13 +9,7 @@ if TYPE_CHECKING:
     from pyramid.request import Request
 
 
-class AdapterBase(type):
-    @property
-    def name(cls):
-        return '{}.{}'.format(cls.__module__, cls.__name__)
-
-
-class AdapterInterface(six.with_metaclass(AdapterBase)):
+class AdapterInterface(object):
     """
     Common interface allowing functionality overriding using an adapter implementation.
     """
@@ -24,9 +17,9 @@ class AdapterInterface(six.with_metaclass(AdapterBase)):
         # type: (AnySettingsContainer) -> None
         self.settings = get_settings(container)
 
-    @classmethod
-    def name(cls):
-        return '{}.{}'.format(cls.__module__, cls.__name__)
+    @property
+    def name(self):
+        return '{}.{}'.format(self.__module__, type(self).__name__)
 
     def describe_adapter(self):
         # type: () -> JSON
