@@ -99,7 +99,7 @@ def test_adapter_factory_TestAdapter_invalid_raised():
         get_adapter_factory(settings)
         pytest.fail(msg="Invalid adapter not inheriting from 'AdapterInterface' should raise on import.")
     adapter_str = '{}.{}'.format(AdapterInterface.__module__, AdapterInterface.__name__)
-    assert adapter_str in str(err), "Expected to have full adapter import string in error message."
+    assert adapter_str in str(err.value), "Expected to have full adapter import string in error message."
 
 
 # noinspection PyTypeChecker
