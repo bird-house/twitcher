@@ -27,10 +27,10 @@ class OWSProxyTests(unittest.TestCase):
     def test_badrequest_url(self):
         request = DummyRequest(scheme='http')
         response = owsproxy_view(request)
-        assert isinstance(response, OWSAccessFailed) is True
+        assert isinstance(response, OWSAccessFailed)
 
     def test_badrequest_netloc(self):
         request = DummyRequest(scheme='http',
                                params={'url': 'http://'})
         response = owsproxy_view(request)
-        assert isinstance(response, OWSAccessFailed) is True
+        assert isinstance(response, OWSAccessFailed)

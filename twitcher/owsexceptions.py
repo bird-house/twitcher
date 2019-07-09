@@ -13,11 +13,21 @@ from webob import html_escape as _html_escape
 
 from pyramid.interfaces import IExceptionResponse
 from pyramid.response import Response
+from pyramid.httpexceptions import (
+    HTTPException,
+    HTTPUnauthorized,
+    HTTPBadRequest,
+    HTTPInternalServerError,
+    HTTPNotImplemented,
+    status_map,
+)
+
+import inspect
 
 
 @implementer(IExceptionResponse)
 class OWSException(Response, Exception):
-
+    status_base = HTTPNotImplemented
     code = 'NoApplicableCode'
     value = None
     locator = 'NoApplicableCode'
@@ -34,15 +44,28 @@ class OWSException(Response, Exception):
     </Exception>
 </ExceptionReport>''')
 
-    def __init__(self, detail=None, value=None, **kw):
-        Response.__init__(self, status='200 OK', **kw)
+    def __init__(self, detail=None, value=None, status_base=None, **kw):
+        if status_base is not None:
+            self.status_base = status_base
+        Response.__init__(self, status=self._get_status_string(), **kw)
         Exception.__init__(self, detail)
         self.message = detail or self.explanation
         if value:
             self.locator = value
 
-    def __str__(self):
+    def __str__(self, skip_body=False):
         return self.message
+
+    def _get_status_string(self):
+        if inspect.isclass(self.status_base) and issubclass(self.status_base, HTTPException):
+            status = self.status_base().status
+        elif isinstance(self.status_base, HTTPException):
+            status = self.status_base.status
+        elif isinstance(self.status_base, int):
+            status = status_map[self.status_base]().status
+        else:
+            raise ValueError("Invalid status base configuration.")
+        return status
 
     def prepare(self, environ):
         if not self.body:
@@ -77,21 +100,24 @@ class OWSException(Response, Exception):
 
 
 class OWSAccessForbidden(OWSException):
+    status_base = HTTPUnauthorized
     locator = "AccessForbidden"
     explanation = "Access to this service is forbidden"
 
 
 class OWSAccessFailed(OWSException):
+    status_base = HTTPBadRequest
     locator = "NotAcceptable"
     explanation = "Access to this service failed"
 
 
 class OWSNoApplicableCode(OWSException):
-    pass
+    status_base = HTTPInternalServerError
 
 
 class OWSMissingParameterValue(OWSException):
     """MissingParameterValue WPS Exception"""
+    status_base = HTTPBadRequest
     code = "MissingParameterValue"
     locator = ""
     explanation = "Parameter value is missing"
@@ -99,6 +125,7 @@ class OWSMissingParameterValue(OWSException):
 
 class OWSInvalidParameterValue(OWSException):
     """InvalidParameterValue WPS Exception"""
+    status_base = HTTPBadRequest
     code = "InvalidParameterValue"
     locator = ""
     explanation = "Parameter value is invalid"
