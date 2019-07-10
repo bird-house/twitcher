@@ -2,6 +2,7 @@ from twitcher.exceptions import AccessTokenNotFound, ServiceNotFound
 from twitcher.owsexceptions import OWSAccessForbidden, OWSInvalidParameterValue
 from twitcher.utils import path_elements, parse_service_name
 from twitcher.owsrequest import OWSRequest
+from pyramid.httpexceptions import HTTPNotFound
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
@@ -71,7 +72,7 @@ class OWSSecurity(OWSSecurityInterface):
                     LOGGER.warning('public access for service %s', service_name)
             except ServiceNotFound:
                 raise OWSInvalidParameterValue(
-                    "Service not found", value="service")
+                    "Service not found", value="service", status_base=HTTPNotFound)
             ows_request = OWSRequest(request)
             if not ows_request.service_allowed():
                 raise OWSInvalidParameterValue(
