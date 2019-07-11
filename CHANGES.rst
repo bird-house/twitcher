@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.5.2 (2019-07-11)
+==================
+
 New Features:
 
 * Adds route `/info` which returns contents of `twitcher.__version__`.
