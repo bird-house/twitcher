@@ -4,3 +4,4 @@ WebTest
 flake8
 sphinx
 bump2version
+twine

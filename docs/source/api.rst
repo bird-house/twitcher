@@ -1,36 +1,51 @@
-.. toctree::
-   :hidden:
+#############
+API Reference
+#############
 
-.. _api:
+.. automodule:: twitcher
 
-*************************
-XML-RPC API Documentation
-*************************
+Twitcher Client
+===============
 
-.. contents::
-    :local:
-    :depth: 2
+.. autoclass:: twitcher.client.TwitcherService
+  :members:
+  :undoc-members:
 
+Twitcher CLI
+============
 
-To use the XML-RPC interface, connect to twitcher’s HTTP port with any XML-RPC client library and run commands against it.
-An example of doing this using Python’s ``xmlrpclib`` client library is as follows.
+.. automodule:: twitcher.scripts.twitcherctl
+  :members:
 
-.. code-block:: python
+Twitcher OpenAPI
+----------------
 
-   import xmlrpc.client as xmlrpclib
-   server = xmlrpclib.Server('http://localhost:8000/RPC2')
+.. autoclass:: twitcher.api.TwitcherAPI
+  :members:
 
-.. warning::
+OWS Security
+============
 
-   When accessing the default HTTPS service you need to deactivate SSL verfication.
-   See ``twitcher/client.py`` how this can be done. You may also use the following code::
+.. automodule:: twitcher.oauth2
+  :members:
 
-   >> from twitcher import client
-   >> server = client._create_server('https://localhost:8000/RPC2', verify_ssl=False)
+.. autoclass:: twitcher.oauth2.RandomTokenValidator
+  :members:
 
-The `XML-RPC <http://xmlrpc.scripting.com/>`_ interface can also be accessed from Java and other languages.
+.. autoclass:: twitcher.oauth2.SignedTokenValidator
+  :members:
 
-See the ``twitcher/rpcinterface.py`` module for the available xmlrpc methods:
+.. autoclass:: twitcher.oauth2.CustomTokenValidator
+  :members:
 
-.. autoclass:: twitcher.rpcinterface.RPCInterface
-   :members:
+OWS Registry
+============
+
+.. autoclass:: twitcher.owsregistry.OWSRegistry
+  :members:
+
+OWS Proxy
+=========
+
+.. automodule:: twitcher.owsproxy
+  :members:

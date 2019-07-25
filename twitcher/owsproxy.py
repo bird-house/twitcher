@@ -12,9 +12,13 @@ from pyramid.response import Response
 from pyramid.settings import asbool
 from typing import TYPE_CHECKING
 
-from twitcher.adapter import get_adapter_factory
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
-from twitcher.utils import replace_caps_url, get_settings, get_twitcher_url
+from twitcher.utils import (
+    replace_caps_url,
+    get_settings,
+    get_twitcher_url,
+    is_valid_url)
+from twitcher.owsrequest import OWSRequest
 
 import logging
 LOGGER = logging.getLogger('TWITCHER')
@@ -69,18 +73,19 @@ def _send_request(request, service, extra_path=None, request_params=None):
         url += '/' + extra_path
     if request_params:
         url += '?' + request_params
-    LOGGER.debug('url = %s', url)
+    LOGGER.debug('url = {}'.format(url))
 
     # forward request to target (without Host Header)
     h = dict(request.headers)
     h.pop("Host", h)
     h['Accept-Encoding'] = None
     #
-    service_type = service['type']
+    service_type = service.get('type', 'wps')
+    service_verify = service.get('verify', True)
     if service_type and (service_type.lower() != 'wps'):
         try:
             resp_iter = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
-                                         stream=True, verify=service.verify)
+                                         stream=True, verify=service_verify)
         except Exception as e:
             return OWSAccessFailed("Request failed: {}".format(e))
 
@@ -91,7 +96,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
-                                    verify=service.verify)
+                                    verify=service_verify)
         except Exception as e:
             return OWSAccessFailed("Request failed: {}".format(e))
 
@@ -118,12 +123,12 @@ def _send_request(request, service, extra_path=None, request_params=None):
             if ct in ['text/xml', 'application/xml', 'text/xml;charset=ISO-8859-1']:
                 # replace urls in xml content
                 # ... if public URL is not configured use proxy url.
-                if service.has_purl():
-                    public_url = service.get('purl')
+                if is_valid_url(service.get('purl')):
+                    public_url = service['purl']
                 else:
                     public_url = request.route_url('owsproxy', service_name=service['name'])
                 # TODO: where do i need to replace urls?
-                content = replace_caps_url(resp.content, public_url, service.get('url'))
+                content = replace_caps_url(resp.content, public_url, service['url'])
             else:
                 # raw content
                 content = resp.content
@@ -150,41 +155,29 @@ def owsproxy_base_url(container):
 
 
 def owsproxy_view(request):
-    """
-    TODO: use ows exceptions
-    """
     try:
         service_name = request.matchdict.get('service_name')
         extra_path = request.matchdict.get('extra_path')
-        adapter = get_adapter_factory(request)
-        store = adapter.servicestore_factory(request)
-        service = store.fetch_by_name(service_name)
-    except Exception as err:
-        # TODO: Store impl should raise appropriate exception like not authorized
-        return OWSAccessFailed("Could not find service {0} : {1}.".format(service_name, err))
+        service = request.owsregistry.get_service_by_name(service_name)
+    except Exception:
+        return OWSAccessFailed("Could not find service")
+    if verify_request(request, service) is False:
+        raise OWSAccessForbidden("Access to service is forbidden.")
+    return _send_request(request, service, extra_path, request_params=request.query_string)
+
+
+def verify_request(request, service):
+    ows_request = OWSRequest(request)
+    if ows_request.service_allowed() is False:
+        return False
+    if service.get('public', False) is True:
+        return True
+    if ows_request.public_access() is True:
+        return True
+    if service.get('auth', '') == 'cert':
+        return request.headers.get('X-Ssl-Client-Verify', '') == 'SUCCESS'
     else:
-        return _send_request(request, service, extra_path, request_params=request.query_string)
-
-
-def owsproxy_delegate_view(request):
-    """
-    Delegates owsproxy request to external twitcher service.
-    """
-    twitcher_url = request.registry.settings.get('twitcher.url')
-    protected_path = request.registry.settings.get('twitcher.ows_proxy_protected_path', '/ows')
-    url = twitcher_url + protected_path + '/proxy'
-    if request.matchdict.get('service_name'):
-        url += '/' + request.matchdict.get('service_name')
-        if request.matchdict.get('access_token'):
-            url += '/' + request.matchdict.get('service_name')
-    url += '?' + urlparse.urlencode(request.params)
-    LOGGER.debug("delegate to owsproxy: %s", url)
-    # forward request to target (without Host Header)
-    # h = dict(request.headers)
-    # h.pop("Host", h)
-    resp = requests.request(method=request.method.upper(), url=url, data=request.body,
-                            headers=request.headers, verify=False)
-    return Response(resp.content, status=resp.status_code, headers=resp.headers)
+        return request.verify_request(scopes=["compute"])
 
 
 def owsproxy_defaultconfig(config):
@@ -192,21 +185,13 @@ def owsproxy_defaultconfig(config):
     settings = get_settings(config)
     if asbool(settings.get('twitcher.ows_proxy', True)):
         protected_path = owsproxy_base_path(settings)
-        LOGGER.debug('Twitcher {}/proxy enabled.'.format(protected_path))
 
+        config.include('twitcher.oauth2')
+        config.include('twitcher.owsregistry')
         config.add_route('owsproxy', protected_path + '/proxy/{service_name}')
         config.add_route('owsproxy_extra', protected_path + '/proxy/{service_name}/{extra_path:.*}')
-        config.add_route('owsproxy_secured', protected_path + '/proxy/{service_name}/{access_token}')
-
-        # use delegation mode?
-        if asbool(settings.get('twitcher.ows_proxy_delegate', False)):
-            LOGGER.debug('Twitcher {}/proxy delegation mode enabled.'.format(protected_path))
-            config.add_view(owsproxy_delegate_view, route_name='owsproxy')
-            config.add_view(owsproxy_delegate_view, route_name='owsproxy_secured')
-        else:
-            config.add_view(owsproxy_view, route_name='owsproxy')
-            config.add_view(owsproxy_view, route_name='owsproxy_secured')
-            config.add_view(owsproxy_view, route_name='owsproxy_extra')
+        config.add_view(owsproxy_view, route_name='owsproxy')
+        config.add_view(owsproxy_view, route_name='owsproxy_extra')
 
 
 def includeme(config):

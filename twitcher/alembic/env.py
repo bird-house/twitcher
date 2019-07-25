@@ -42,7 +42,8 @@ def run_migrations_online():
     connection = engine.connect()
     context.configure(
         connection=connection,
-        target_metadata=target_metadata
+        target_metadata=target_metadata,
+        render_as_batch=True,  # to prevent sqlite errors
     )
 
     try:

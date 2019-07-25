@@ -1,12 +1,14 @@
 pyramid>=1.10
-pyramid_rpc
 webob
 requests
-requests_oauthlib
 argcomplete
 pytz
 lxml
 pyopenssl
+# rest api
+cornice
+cornice_swagger
+colander
 # debug
 pyramid_debugtoolbar
 # deploy
@@ -20,3 +22,8 @@ alembic
 SQLAlchemy
 transaction
 zope.sqlalchemy
+# oauth2
+pyramid_oauthlib>=0.4.1
+oauthlib<3
+requests_oauthlib<1.2.0
+PyJWT

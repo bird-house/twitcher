@@ -9,8 +9,7 @@ import logging
 LOGGER = logging.getLogger("TWITCHER")
 
 if TYPE_CHECKING:
-    from twitcher.store import AccessTokenStoreInterface, ServiceStoreInterface
-    from twitcher.owssecurity import OWSSecurityInterface
+    from twitcher.store import ServiceStoreInterface
     from twitcher.typedefs import AnySettingsContainer
     from pyramid.request import Request
     from typing import AnyStr, Type, Union
@@ -69,7 +68,7 @@ def get_adapter_store_factory(
         adapter,        # type: AdapterInterface
         store_name,     # type: AnyStr
         request,        # type: Request
-):                      # type: (...) -> Union[AccessTokenStoreInterface, ServiceStoreInterface, OWSSecurityInterface]
+):                      # type: (...) -> Union[ServiceStoreInterface]
     """
     Retrieves the adapter store by name if it is defined.
 

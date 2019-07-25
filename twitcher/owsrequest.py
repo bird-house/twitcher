@@ -8,22 +8,23 @@ The OWSRequest is based on pywps code:
 import lxml.etree
 
 from pyramid.httpexceptions import HTTPBadRequest
-from twitcher.owsexceptions import (OWSNoApplicableCode,
-                                    OWSInvalidParameterValue,
-                                    OWSMissingParameterValue)
+from twitcher.owsexceptions import (
+    OWSNoApplicableCode,
+    OWSInvalidParameterValue,
+    OWSMissingParameterValue)
 from twitcher.utils import lxml_strip_ns
 
 allowed_service_types = ('wps', 'wms')
-allowed_request_types = {'wps': ('getcapabilities', 'describeprocess', 'execute'),
+allowed_request_types = {'wps': ('getcapabilities', 'describeprocess', 'execute', 'getstatus', 'getresult'),
                          'wms': ('getcapabilities',
                                  'getmap',
                                  'getfeatureinfo',
                                  'getlegendgraphic',
                                  # ncwms extras,
                                  'getmetadata')}
-public_request_types = {'wps': ('getcapabilities', 'describeprocess'),
+public_request_types = {'wps': ('getcapabilities', 'describeprocess', 'getstatus', 'getresult'),
                         'wms': ('getcapabilities', )}
-allowed_versions = {'wps': ('1.0.0',), 'wms': ('1.1.1', '1.3.0',)}
+allowed_versions = {'wps': ('1.0.0', '2.0.0'), 'wms': ('1.1.1', '1.3.0',)}
 
 
 class OWSRequest(object):

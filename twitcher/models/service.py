@@ -1,8 +1,7 @@
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
-    Text,
+    String,
 )
 
 from .meta import Base
@@ -11,13 +10,30 @@ from .meta import Base
 class Service(Base):
     __tablename__ = 'services'
     id = Column(Integer, primary_key=True)
-    url = Column(Text)
-    name = Column(Text)
-    type = Column(Text)
-    purl = Column(Text)
-    public = Column(Integer)  # sqlite does not support Boolean
-    verify = Column(Integer)  # sqlite does not support Boolean
-    auth = Column(Text)
+    url = Column(String(255), nullable=False)
+    name = Column(String(40), unique=True, index=True, nullable=False)
+    type = Column(String(40))
+    purl = Column(String(255))
+    _verify = Column(Integer)  # sqlite does not support Boolean
+    auth = Column(String(40))
 
+    @property
+    def verify(self):
+        if self._verify == 1:
+            return True
+        return False
 
-Index('name_index', Service.name, unique=True, mysql_length=255)
+    @property
+    def public(self):
+        """Return true if public access."""
+        return self.auth not in ['token', 'cert']
+
+    def to_json(self):
+        return {
+            'url': self.url,
+            'name': self.name,
+            'type': self.type,
+            'purl': self.purl,
+            'auth': self.auth,
+            'public': self.public,
+            'verify': self.verify}

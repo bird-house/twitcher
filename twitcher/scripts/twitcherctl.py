@@ -1,3 +1,105 @@
+"""
+The ``twitcherctl`` is a command line tool to control the twitcher service.
+It is used to generate access tokens and to register OWS services.
+
+``twitcherctl`` is part of the twitcher installation:
+
+.. code-block:: console
+
+   $ twitcherctl -h
+
+`twitcherctl` Commands and Options
+----------------------------------
+
+``twitcherctl`` has the following command line options:
+
+-h, --help
+
+   Print usage message and exit
+
+-s, --serverurl
+
+   URL on which twitcher server is listening (default "http://localhost:8000/").
+
+-t, --token
+
+   OAuth access token for twitcher service.
+
+-k, --insecure
+
+   Don't validate the server's certificate.
+
+List of available commands:
+
+add
+    Add OAuth2 client application.
+gentoken
+    Generates an access token.
+list
+    Lists all registered OWS services used by OWS proxy.
+clear
+    Removes all OWS services from the registry.
+register
+   Adds OWS service to the registry to be used by the OWS proxy.
+unregister
+   Removes OWS service from the registry.
+
+Add an OAuth2 client application
+--------------------------------
+
+Register an application using basic authentication with username and password
+(name and redirect-uri are optional):
+
+.. code-block:: console
+
+    $ twitcherctl -k add --username demo --password demo --name demo_app --redirect-uri http://localhost/demo_app
+    {'client_id': 'id', 'client_secret': 'secret'}
+
+The result is an OAuth *client_id* and *client_secret*.
+
+Generate an access token
+------------------------
+
+Get an OAuth access token using *client_id* and *client_secret* for given *scope*:
+
+.. code-block:: console
+
+   $ twitcherctl -k gentoken -i client_id -s client_secret --scope compute
+   {'access_token': 'TOKEN', 'expires_in': 3600, 'scope': ['compute'], 'token_type': 'Bearer'}
+
+Possible scopes are: compute, register
+
+Register an OWS Service for the OWS Proxy
+-----------------------------------------
+
+See the available options:
+
+.. code-block:: console
+
+   twitcherctl -k register -h
+
+Register a local WPS service using an OAuth access token:
+
+.. code-block:: console
+
+   $ twitcherctl -k -t TOKEN register http://localhost:5000/wps
+   tiny_buzzard
+
+You can use the ``--name`` option to provide a name (used by the OWS proxy).
+Otherwise a nice name will be generated.
+
+List registered services
+------------------------
+
+The ``list`` command shows the registered OWS services:
+
+.. code-block:: console
+
+   $ twitcherctl -k list
+   [{'url': 'http://localhost:5000/wps', 'type': 'wps', 'name': 'tiny_buzzard', 'auth': 'token'}]
+
+"""
+
 import sys
 import getpass
 import argcomplete
@@ -13,7 +115,7 @@ LOGGER = logging.getLogger("TWITCHER")
 
 class TwitcherCtl(object):
     """
-    Command line to interact with the xmlrpc interface of the ``twitcher`` service.
+    Command line to interact with the OAuth and OpenAPI interface of the ``twitcher`` service.
     """
 
     def create_parser(self):
@@ -28,10 +130,8 @@ class TwitcherCtl(object):
                             metavar='URL',
                             default='http://localhost:8000',
                             help='URL on which twitcher server is listening (default "http://localhost:8000").')
-        parser.add_argument("-u", "--username",
-                            help="Username to use for authentication with server.")
-        parser.add_argument("-p", "--password",
-                            help="Password to use for authentication with server")
+        parser.add_argument("-t", "--token",
+                            help="Access token for service.")
         parser.add_argument("-k", "--insecure",  # like curl
                             help="Don't validate the server's certificate.",
                             action="store_true")
@@ -43,19 +143,28 @@ class TwitcherCtl(object):
             description='List of available commands',
         )
 
+        # add client app
+        # --------------
+
+        # add
+        subparser = subparsers.add_parser('add', help="Add OAuth2 client application")
+        subparser.add_argument("-u", "--username",
+                               help="Username to use for authentication with server.")
+        subparser.add_argument("-p", "--password",
+                               help="Password to use for authentication with server")
+        subparser.add_argument("-n", "--name",
+                               help="Client application name")
+        subparser.add_argument("-r", "--redirect-uri",
+                               help="Client application redirect URI")
+
         # token management
         # ----------------
 
         # gentoken
-        subparser = subparsers.add_parser('gentoken', help="Generates an access token.")
-        subparser.add_argument('-H', '--valid-in-hours', type=int, default=1,
-                               help="Set how long the token is valid in hours (default: 1 hour).")
-
-        # revoke
-        subparser = subparsers.add_parser('revoke', help="Remove given access token.")
-        subparser.add_argument('token', nargs="?", help="access token")
-        subparser.add_argument('-A', '--all', action="store_true",
-                               help="Remove all access tokens.")
+        subparser = subparsers.add_parser('gentoken', help="Generates an OAuth2 access token.")
+        subparser.add_argument("-i", "--client-id", help="OAuth client-id")
+        subparser.add_argument("-s", "--client-secret", help="OAuth client-secret")
+        subparser.add_argument("-S", "--scope", nargs='+', default='compute', help="OAuth scope: compute or register")
 
         # service registry
         # ----------------
@@ -75,12 +184,10 @@ class TwitcherCtl(object):
                                help="Service type (wps, wms). Default: wps.")
         subparser.add_argument('--purl', default='',
                                help="Service optional public URL.")
-        subparser.add_argument('--public', action='store_true',
-                               help="If set then service has no access restrictions.")
         subparser.add_argument('--auth', default='token',
-                               help="Authentication method (token, cert). Default: token.")
+                               help="Authentication method (token, cert, public). Default: token.")
         subparser.add_argument('--verify', default='true',
-                               help="Verify SSL service certificate (true, false, /path/to/cert). Default: true.")
+                               help="Verify SSL service certificate (true, false). Default: true.")
 
         # unregister
         subparser = subparsers.add_parser('unregister', help="Removes OWS service from the registry.")
@@ -93,50 +200,58 @@ class TwitcherCtl(object):
             LOGGER.setLevel(logging.DEBUG)
 
         if args.insecure:
-            LOGGER.warn('disabled certificate verification!')
-
-        password = args.password
-        if args.username:
-            # username = raw_input('Username:')
-            if not password:
-                password = getpass.getpass(prompt='Password:')
+            # See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+            import urllib3
+            urllib3.disable_warnings()
+            LOGGER.warning('disabled certificate verification!')
 
         verify_ssl = args.insecure is False
-        service = TwitcherService(url=args.serverurl,
-                                  username=args.username,
-                                  password=password,
-                                  verify=verify_ssl)
-        result = None
+        service = TwitcherService(url=args.serverurl, verify=verify_ssl)
+
         try:
             if args.cmd == 'list':
-                result = service.list_services()
+                return service.list_services()
             elif args.cmd == 'register':
                 data = {'type': args.type,
                         'purl': args.purl,
-                        'public': args.public,
                         'auth': args.auth,
                         'verify': args.verify}
-                result = service.register_service(
+                return service.register_service(
+                    access_token=args.token,
                     name=args.name or get_random_name(),
                     url=args.url,
                     data=data,
                 )
             elif args.cmd == 'unregister':
-                result = service.unregister_service(name=args.name)
+                return service.unregister_service(access_token=args.token, name=args.name)
             elif args.cmd == 'clear':
-                result = service.clear_services()
+                return service.clear_services(access_token=args.token)
+            elif args.cmd == 'add':
+                username = args.username
+                if not username:
+                    username = input('Username: ')
+                password = args.password
+                if not password:
+                    password = getpass.getpass(prompt='Password: ')
+                return service.add_client_app(
+                    username,
+                    password,
+                    name=args.name,
+                    redirect_uri=args.redirect_uri)
             elif args.cmd == 'gentoken':
-                result = service.generate_token(valid_in_hours=args.valid_in_hours)
-            elif args.cmd == 'revoke':
-                if args.all is True:
-                    result = service.revoke_all_tokens()
-                else:
-                    result = service.revoke_token(token=args.token)
+                client_id = args.client_id
+                if not client_id:
+                    client_id = input('Client ID: ')
+                client_secret = args.client_secret
+                if not client_secret:
+                    client_secret = getpass.getpass(prompt='Client Secret: ')
+                return service.fetch_token(
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    scope=args.scope)
         except Exception as e:
             LOGGER.error("Error: {}".format(e))
-        else:
-            LOGGER.info("Result: {}".format(result))
-            return result
+        return None
 
 
 def main():

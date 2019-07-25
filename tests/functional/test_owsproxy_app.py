@@ -8,7 +8,7 @@ http://localhost:5000/wps
 
 import pytest
 
-from .base import FunctionalTest, TEST_TOKEN
+from .base import FunctionalTest
 
 
 class OWSProxyAppTest(FunctionalTest):
@@ -19,7 +19,6 @@ class OWSProxyAppTest(FunctionalTest):
         self.init_store()
 
         self.config.include('twitcher.owsproxy')
-        self.config.include('twitcher.tweens')
         self.app = self.test_app()
 
     @pytest.mark.online
@@ -39,18 +38,11 @@ class OWSProxyAppTest(FunctionalTest):
 
     @pytest.mark.online
     def test_execute_allowed(self):
-        url = "/ows/proxy/wps_secured?service=wps&request=execute&version=1.0.0&identifier=hello&datainputs=name=tux&access_token={}".format(TEST_TOKEN)  # noqa
+        access_token = self.create_token()
+        url = "/ows/proxy/wps_secured?service=wps&request=execute&version=1.0.0&identifier=hello&DataInputs=name=tux&access_token={}".format(access_token)  # noqa
         resp = self.app.get(url)
         assert resp.status_code == 200
         assert resp.content_type == 'text/xml'
         print(resp.body)
         resp.mustcontain(
             '<wps:ProcessSucceeded>PyWPS Process Say Hello finished</wps:ProcessSucceeded>')
-
-    @pytest.mark.online
-    def test_execute_not_allowed(self):
-        resp = self.app.get('/ows/proxy/wps_secured?service=wps&request=execute&version=1.0.0&identifier=dummyprocess')
-        assert resp.status_code == 200
-        assert resp.content_type == 'text/xml'
-        print(resp.body)
-        resp.mustcontain('<Exception exceptionCode="NoApplicableCode" locator="AccessForbidden">')

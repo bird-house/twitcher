@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from twitcher.typedefs import AnySettingsContainer, JSON
     from twitcher.store import AccessTokenStoreInterface, ServiceStoreInterface
-    from twitcher.owssecurity import OWSSecurityInterface
     from pyramid.config import Configurator
     from pyramid.request import Request
 
@@ -46,13 +45,6 @@ class AdapterInterface(object):
         # type: (Request) -> ServiceStoreInterface
         """
         Returns the 'servicestore' implementation of the adapter.
-        """
-        raise NotImplementedError
-
-    def owssecurity_factory(self, request):
-        # type: (Request) -> OWSSecurityInterface
-        """
-        Returns the 'owssecurity' implementation of the adapter.
         """
         raise NotImplementedError
 

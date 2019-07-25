@@ -1,92 +1,52 @@
-from pyramid.httpexceptions import HTTPUnauthorized
-from pyramid.security import forget
-from pyramid.view import forbidden_view_config
+"""
+Basic Authentication.
+
+Taken from:
+https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/auth/basic.html
+"""
 from pyramid.authentication import BasicAuthAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.httpexceptions import HTTPForbidden
+from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid.security import (
+    ALL_PERMISSIONS,
     Allow,
-    Everyone,
-    ALL_PERMISSIONS)
-
-import logging
-LOGGER = logging.getLogger("TWITCHER")
-
-
-Admin = 'group:admin'
-
-
-def groupfinder(username, password, request):
-    LOGGER.error("u=%s, p=%s", request.username, request.password)
-    if request.username and request.password:
-        if username == request.username and password == request.password:
-            return [Admin]
-        else:
-            return []
-    else:
-        # Warning: no access restrictions!
-        return [Admin]
-
-
-class RootFactory(object):
-    __acl__ = [
-        (Allow, Everyone, 'view'),
-        (Allow, Admin, ALL_PERMISSIONS)
-    ]
-
-    def __init__(self, request):
-        pass
-
-
-def root_factory(request):
-    return RootFactory(request)
+    Authenticated,
+    forget)
+from pyramid.view import forbidden_view_config
 
 
 @forbidden_view_config()
-def basic_challenge(request):
-    response = HTTPUnauthorized()
-    response.headers.update(forget(request))
+def forbidden_view(request):
+    if request.authenticated_userid is None:
+        response = HTTPUnauthorized()
+        response.headers.update(forget(request))
+
+    # user is logged in but doesn't have permissions, reject wholesale
+    else:
+        response = HTTPForbidden()
     return response
 
 
-def _get_username(request):
+def check_credentials(username, password, request):
     settings = request.registry.settings
-    if 'twitcher.username' in settings:
-        username = settings['twitcher.username']
-        if username:
-            username = username.strip()
-            if len(username) > 2:
-                return username
-    return None
+    _username = settings['twitcher.username']
+    _password = settings['twitcher.password']
+    if username == _username and password == _password:
+        # an empty list is enough to indicate logged-in
+        return []
 
 
-def _get_password(request):
-    settings = request.registry.settings
-    if 'twitcher.password' in settings:
-        password = settings['twitcher.password']
-        if password:
-            password = password.strip()
-            if len(password) > 2:
-                return password
-    return None
-
-
-def auth_activated(registry):
-    settings = registry.settings
-    username = settings.get('twitcher.username')
-    if username:
-        if len(username.strip()) > 2:
-            return True
-    return False
+class Root:
+    # dead simple, give everyone who is logged in any permission
+    __acl__ = (
+        (Allow, Authenticated, ALL_PERMISSIONS),
+    )
 
 
 def includeme(config):
-    if auth_activated(config.registry):
-        LOGGER.debug("basic authentication is activated.")
-        # Security policies for basic auth
-        authn_policy = BasicAuthAuthenticationPolicy(check=groupfinder, realm="Birdhouse")
-        authz_policy = ACLAuthorizationPolicy()
-        config.set_authentication_policy(authn_policy)
-        config.set_authorization_policy(authz_policy)
-        config.set_root_factory(root_factory)
-        config.add_request_method(_get_username, 'username', reify=True)
-        config.add_request_method(_get_password, 'password', reify=True)
+    authn_policy = BasicAuthAuthenticationPolicy(check=check_credentials, debug=True)
+    authz_policy = ACLAuthorizationPolicy()
+    config.set_authorization_policy(authz_policy)
+    config.set_authentication_policy(authn_policy)
+    config.set_root_factory(lambda request: Root())
