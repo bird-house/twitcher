@@ -40,7 +40,6 @@ Resources:
 import datetime
 import uuid
 
-from pyramid.view import view_config
 from oauthlib.oauth2 import RequestValidator
 from oauthlib.oauth2.rfc6749 import tokens
 import jwt
