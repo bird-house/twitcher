@@ -38,7 +38,7 @@ Make sure Twitcher is installed and running:
 Prepare your Client Application
 -------------------------------
 
-Register your your client application at twitcher to get
+Register your client application at twitcher to get
 a *client_id* and *client_secret*:
 
 .. code-block:: console
