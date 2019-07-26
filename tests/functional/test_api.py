@@ -3,7 +3,6 @@ Testing the Twitcher Rest interface.
 """
 import pytest
 
-from .. common import WPS_TEST_SERVICE
 from .base import FunctionalTest
 
 

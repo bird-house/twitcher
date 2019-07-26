@@ -2,11 +2,9 @@
 Based on unitests in https://github.com/wndhydrnt/python-oauth2/tree/master/oauth2/test
 """
 
-import pytest
 from .common import BaseTest, dummy_request
 
 from twitcher.store import ServiceStore
-from twitcher.models import Service
 
 
 class ServiceStoreTestCase(BaseTest):

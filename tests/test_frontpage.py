@@ -1,5 +1,3 @@
-from .common import BaseTest
-
 from twitcher import main, __version__
 from twitcher.adapter.default import TWITCHER_ADAPTER_DEFAULT
 from twitcher.frontpage import INFORMATION_PATH, VERSIONS_PATH

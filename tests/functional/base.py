@@ -2,7 +2,6 @@ import webtest
 
 from .. common import BaseTest, WPS_TEST_SERVICE, dummy_request
 
-from twitcher.models import Service
 from twitcher.store import ServiceStore
 
 

@@ -3,9 +3,6 @@ The owsproxy is based on `papyrus_ogcproxy <https://github.com/elemoine/papyrus_
 
 See also: https://github.com/nive/outpost/blob/master/outpost/proxy.py
 """
-
-from urllib import parse as urlparse
-
 import requests
 
 from pyramid.response import Response

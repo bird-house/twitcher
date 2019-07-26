@@ -1,7 +1,5 @@
 from .base import FunctionalTest
 
-from twitcher import models
-
 
 def compute_view(request):
     if request.verify_request(scopes=["compute"]) is True:
