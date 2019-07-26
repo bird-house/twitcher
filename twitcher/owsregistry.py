@@ -23,7 +23,7 @@ class OWSRegistry(object):
         except Exception:
             LOGGER.exception('register service failed')
             return {}
-        return service.to_json()
+        return service.json()
 
     def unregister_service(self, name):
         """
@@ -47,7 +47,7 @@ class OWSRegistry(object):
             LOGGER.error('Could not get service with name {}'.format(name))
             return {}
         else:
-            return service.to_json()
+            return service.json()
 
     def get_service_by_url(self, url):
         """
@@ -59,14 +59,14 @@ class OWSRegistry(object):
             LOGGER.error('Could not get service with url {}'.format(url))
             return {}
         else:
-            return service.to_json()
+            return service.json()
 
     def list_services(self):
         """
         Lists all registered OWS services.
         """
         try:
-            services = [service.to_json() for service in self.store.list_services()]
+            services = [service.json() for service in self.store.list_services()]
         except Exception:
             LOGGER.error('List services failed.')
             return []

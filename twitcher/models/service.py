@@ -28,7 +28,7 @@ class Service(Base):
         """Return true if public access."""
         return self.auth not in ['token', 'cert']
 
-    def to_json(self):
+    def json(self):
         return {
             'url': self.url,
             'name': self.name,
