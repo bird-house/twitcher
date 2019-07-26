@@ -222,7 +222,7 @@ def includeme(config):
     # you can access your request properties, database sessions, etc.
     # The request object is populated with accessors for the properties
     # referred to in the OAuthLib docs and used by its built in types.
-    token_type = settings.get('twitcher.token.type', 'default')
+    token_type = settings.get('twitcher.token.type', 'random_token')
     if token_type == 'random_token':
         validator = RandomTokenValidator()
     elif token_type == 'signed_token':

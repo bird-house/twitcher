@@ -45,7 +45,7 @@ Edit the configuration file:
 
 .. code-block:: ini
 
-  twitcher.token.type = random_token # default
+  twitcher.token.type = random_token
 
 
 Signed Token
