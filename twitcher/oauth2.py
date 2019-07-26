@@ -3,38 +3,47 @@
 twitcher.oauth2
 ---------------
 
-Using OAuth2 client_credentials grant type:
-https://docs.apigee.com/api-platform/security/oauth/oauth-20-client-credentials-grant-type
+This module implements the `OAuth2 <https://oauthlib.readthedocs.io/en/latest/oauth2/oauth2.html>`_
+model to generate access tokens.
+These tokens are used to access the compute services (*scope=compute*)
+and the OWS registration service (*scope=register*).
+The compute services are accessed via the OWS proxy.
+The OWS registration service is used to register OWS services behind the proxy.
 
-Code examples taken from:
+The implementation is using the OAuth2
+`client credentials <https://oauthlib.readthedocs.io/en/latest/oauth2/grants/credentials.html>`_
+grant type
+
+Currently three types of access tokens can be used:
+
+*random_token*
+    The access token is a UUID string.
+    The tokens are stored in a local database and can be used for local validation only.
+
+*signed_token*
+    A JWT token signed with a X.509 certificate.
+    The token can be validated without contacting a validation service.
+
+*custom_token*
+    A JWT token with a secret (UUID string) which can be shared for validation.
+    The token can be validated without contacting a validation service.
+
+See also the OAuth2
+`token documenation <https://oauthlib.readthedocs.io/en/latest/oauth2/tokens/tokens.html>`_
+
+The implementation is using the `pyramid-oauthlib <https://github.com/tilgovi/pyramid-oauthlib/>`_ library.
+The code is also inspired by the following OAuth libraries:
 
 * https://github.com/thomsonreuters/bottle-oauthlib
 * https://github.com/lepture/flask-oauthlib
 
-Example usage:
-
-Get Token::
-
-    http://localhost:8000/oauth/token?grant_type=client_credentials&client_id=alice&client_secret=secret
-
-Use Token::
-
-    http://localhost:8000/ows/proxy/emu?access_token=TOKEN&service=wps&request=Execute&version=1.0.0&DataInputs=name=Stranger
-
-TODO:
-
-* use external login service (github, esgf, ...)
-* use external oauth service for compute
-
-Resources:
+Further reading:
 
 * https://oauthlib.readthedocs.io/en/latest/index.html
-* https://oauthlib.readthedocs.io/en/latest/oauth2/tokens/bearer.html
 * https://pypi.org/project/PyJWT/
 * https://requests-oauthlib.readthedocs.io/en/latest/index.html
 * https://www.slideshare.net/alvarosanchezmariscal/stateless-authentication-with-oauth-2-and-jwt-javazone-2015
-* https://github.com/lepture/authlib
-* https://github.com/tilgovi/pyramid-oauthlib
+* https://docs.apigee.com/api-platform/security/oauth/oauth-20-client-credentials-grant-type
 """
 
 import datetime

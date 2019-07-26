@@ -1,5 +1,7 @@
 """
-The owsproxy is based on `papyrus_ogcproxy <https://github.com/elemoine/papyrus_ogcproxy>`_
+The owsproxy is a service which acts as a proxy for registered OWS services.
+
+The implementation of owsproxy is based on `papyrus_ogcproxy <https://github.com/elemoine/papyrus_ogcproxy>`_
 
 See also: https://github.com/nive/outpost/blob/master/outpost/proxy.py
 """

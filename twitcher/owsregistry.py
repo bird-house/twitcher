@@ -6,7 +6,7 @@ LOGGER = logging.getLogger("TWITCHER")
 
 class OWSRegistry(object):
     """
-    OWS Service Registry.
+    OWS Service Registry is a service to register OWS services for the OWS proxy.
     """
     def __init__(self, servicestore):
         self.store = servicestore

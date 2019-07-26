@@ -1,6 +1,12 @@
+.. _api:
+
 #############
 API Reference
 #############
+
+.. contents::
+    :local:
+    :depth: 1
 
 .. automodule:: twitcher
 
@@ -17,14 +23,18 @@ Twitcher CLI
 .. automodule:: twitcher.scripts.twitcherctl
   :members:
 
-Twitcher OpenAPI
-----------------
+.. _openapi_api:
+
+OpenAPI interface
+=================
 
 .. autoclass:: twitcher.api.TwitcherAPI
   :members:
 
-OWS Security
-============
+.. _oauth2_api:
+
+OAuth2 Tokens
+=============
 
 .. automodule:: twitcher.oauth2
   :members:
@@ -38,11 +48,15 @@ OWS Security
 .. autoclass:: twitcher.oauth2.CustomTokenValidator
   :members:
 
+.. _ows_registry_api:
+
 OWS Registry
 ============
 
 .. autoclass:: twitcher.owsregistry.OWSRegistry
   :members:
+
+.. _ows_proxy_api:
 
 OWS Proxy
 =========
