@@ -91,5 +91,5 @@ def includeme(config):
 
     def owsregistry(request):
         adapter = get_adapter_factory(request)
-        return OWSRegistry(adapter.servicestore_factory(request))
+        return adapter.owsregistry_factory(request)
     config.add_request_method(owsregistry, reify=True)

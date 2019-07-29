@@ -4,6 +4,7 @@ Basic Authentication.
 Taken from:
 https://docs.pylonsproject.org/projects/pyramid-cookbook/en/latest/auth/basic.html
 """
+from pyramid.settings import asbool
 from pyramid.authentication import BasicAuthAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.httpexceptions import HTTPForbidden
@@ -14,6 +15,8 @@ from pyramid.security import (
     Authenticated,
     forget)
 from pyramid.view import forbidden_view_config
+
+from twitcher.utils import get_settings
 
 
 @forbidden_view_config()
@@ -45,8 +48,10 @@ class Root:
 
 
 def includeme(config):
-    authn_policy = BasicAuthAuthenticationPolicy(check=check_credentials, debug=True)
-    authz_policy = ACLAuthorizationPolicy()
-    config.set_authorization_policy(authz_policy)
-    config.set_authentication_policy(authn_policy)
-    config.set_root_factory(lambda request: Root())
+    settings = get_settings(config)
+    if asbool(settings.get('twitcher.basicauth', True)):
+        authn_policy = BasicAuthAuthenticationPolicy(check=check_credentials, debug=True)
+        authz_policy = ACLAuthorizationPolicy()
+        config.set_authorization_policy(authz_policy)
+        config.set_authentication_policy(authn_policy)
+        config.set_root_factory(lambda request: Root())

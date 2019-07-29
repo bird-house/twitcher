@@ -17,7 +17,6 @@ from twitcher.utils import (
     get_settings,
     get_twitcher_url,
     is_valid_url)
-from twitcher.owsrequest import OWSRequest
 
 import logging
 LOGGER = logging.getLogger('TWITCHER')
@@ -160,23 +159,9 @@ def owsproxy_view(request):
         service = request.owsregistry.get_service_by_name(service_name)
     except Exception:
         return OWSAccessFailed("Could not find service")
-    if verify_request(request, service) is False:
+    if request.verify_ows_request is False:
         raise OWSAccessForbidden("Access to service is forbidden.")
     return _send_request(request, service, extra_path, request_params=request.query_string)
-
-
-def verify_request(request, service):
-    ows_request = OWSRequest(request)
-    if ows_request.service_allowed() is False:
-        return False
-    if service.get('public', False) is True:
-        return True
-    if ows_request.public_access() is True:
-        return True
-    if service.get('auth', '') == 'cert':
-        return request.headers.get('X-Ssl-Client-Verify', '') == 'SUCCESS'
-    else:
-        return request.verify_request(scopes=["compute"])
 
 
 def owsproxy_defaultconfig(config):
@@ -187,6 +172,7 @@ def owsproxy_defaultconfig(config):
 
         config.include('twitcher.oauth2')
         config.include('twitcher.owsregistry')
+        config.include('twitcher.owssecurity')
         config.add_route('owsproxy', protected_path + '/proxy/{service_name}')
         config.add_route('owsproxy_extra', protected_path + '/proxy/{service_name}/{extra_path:.*}')
         config.add_view(owsproxy_view, route_name='owsproxy')

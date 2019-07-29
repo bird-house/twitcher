@@ -15,44 +15,15 @@ from twitcher.exceptions import (
 from twitcher.utils import baseurl
 from twitcher import models
 
-from typing import TYPE_CHECKING
 from sqlalchemy.exc import DBAPIError
 
-if TYPE_CHECKING:
-    from twitcher.models.service import Service
-    from pyramid.request import Request
-    from typing import AnyStr, List
 
-
-class ServiceStoreInterface(object):
-    def __init__(self, request):        # type: (Request) -> None
-        self.request = request
-
-    def save_service(self, name, url, *args, **kwargs):    # type: (Service) -> None
-        raise NotImplementedError
-
-    def delete_service(self, name):     # type: (AnyStr) -> None
-        raise NotImplementedError
-
-    def list_services(self):            # type: () -> List[Service]
-        raise NotImplementedError
-
-    def fetch_by_name(self, name):      # type: (AnyStr) -> Service
-        raise NotImplementedError
-
-    def fetch_by_url(self, url):        # type: (AnyStr) -> Service
-        raise NotImplementedError
-
-    def clear_services(self):           # type: () -> None
-        raise NotImplementedError
-
-
-class ServiceStore(ServiceStoreInterface):
+class ServiceStore(object):
     """
     Stores a services. It inserts or updates the service with a given name.
     """
     def __init__(self, request):
-        super(ServiceStore, self).__init__(request)
+        self.request = request
 
     def save_service(self, name, url, *args, **kwargs):
         """

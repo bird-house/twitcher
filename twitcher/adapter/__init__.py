@@ -9,10 +9,8 @@ import logging
 LOGGER = logging.getLogger("TWITCHER")
 
 if TYPE_CHECKING:
-    from twitcher.store import ServiceStoreInterface
     from twitcher.typedefs import AnySettingsContainer
-    from pyramid.request import Request
-    from typing import AnyStr, Type, Union
+    from typing import AnyStr, Type
 
 
 def import_adapter(name):
@@ -62,34 +60,3 @@ def get_adapter_factory(container):
             LOGGER.error("Adapter '{!s}' raised an exception during instantiation : '{!r}'".format(adapter_type, e))
             raise
     return DefaultAdapter(container)
-
-
-def get_adapter_store_factory(
-        adapter,        # type: AdapterInterface
-        store_name,     # type: AnyStr
-        request,        # type: Request
-):                      # type: (...) -> Union[ServiceStoreInterface]
-    """
-    Retrieves the adapter store by name if it is defined.
-
-    If another adapter than :class:`twitcher.adapter.default.DefaultAdapter` is provided, and that the store
-    cannot be found with it, `DefaultAdapter` is used as fallback to find the "default" store implementation.
-
-    :returns: found store.
-    :raises NotImplementedError: when the store is not available from the adapter.
-    :raises Exception: when store instance was found but generated an error on creation.
-    """
-    try:
-        store = getattr(adapter, store_name)
-        return store(request)
-    except NotImplementedError:
-        if isinstance(adapter, DefaultAdapter):
-            LOGGER.exception("Adapter 'DefaultAdapter' doesn't implement '{!r}', no way to recover.".format(store_name))
-            raise
-        LOGGER.warning("Adapter '{!r}' doesn't implement '{!r}', falling back to 'DefaultAdapter' implementation."
-                       .format(adapter, store_name))
-        return get_adapter_store_factory(DefaultAdapter(request), store_name, request)
-    except Exception as e:
-        LOGGER.error("Adapter '{!r}' raised an exception while instantiating '{!r}' : '{!r}'"
-                     .format(adapter, store_name, e))
-        raise

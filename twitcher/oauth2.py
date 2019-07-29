@@ -53,6 +53,8 @@ from oauthlib.oauth2 import RequestValidator
 from oauthlib.oauth2.rfc6749 import tokens
 import jwt
 
+from pyramid.settings import asbool
+
 from twitcher import models
 from twitcher.utils import get_settings
 
@@ -223,40 +225,41 @@ def register_client_app_view(request):
 
 def includeme(config):
     settings = get_settings(config)
-    config.include('pyramid_oauthlib')
-    # using basic auth for client app registration
-    config.include('twitcher.basicauth')
+    if asbool(settings.get('twitcher.oauth', True)):
+        config.include('pyramid_oauthlib')
+        # using basic auth for client app registration
+        config.include('twitcher.basicauth')
 
-    # Validator callback functions are passed Pyramid request objects so
-    # you can access your request properties, database sessions, etc.
-    # The request object is populated with accessors for the properties
-    # referred to in the OAuthLib docs and used by its built in types.
-    token_type = settings.get('twitcher.token.type', 'random_token')
-    if token_type == 'random_token':
-        validator = RandomTokenValidator()
-    elif token_type == 'signed_token':
-        validator = SignedTokenValidator(
-            cert=settings.get('twitcher.token.certfile'),
-            key=settings.get('twitcher.token.keyfile'),
-            issuer=settings.get('twitcher.token.issuer'))
-    elif token_type == 'custom_token':
-        validator = CustomTokenValidator(
-            secret=settings.get('twitcher.token.secret'),
-            issuer=settings.get('twitcher.token.issuer'))
-    else:  # default
-        validator = RandomTokenValidator()
+        # Validator callback functions are passed Pyramid request objects so
+        # you can access your request properties, database sessions, etc.
+        # The request object is populated with accessors for the properties
+        # referred to in the OAuthLib docs and used by its built in types.
+        token_type = settings.get('twitcher.token.type', 'random_token')
+        if token_type == 'random_token':
+            validator = RandomTokenValidator()
+        elif token_type == 'signed_token':
+            validator = SignedTokenValidator(
+                cert=settings.get('twitcher.token.certfile'),
+                key=settings.get('twitcher.token.keyfile'),
+                issuer=settings.get('twitcher.token.issuer'))
+        elif token_type == 'custom_token':
+            validator = CustomTokenValidator(
+                secret=settings.get('twitcher.token.secret'),
+                issuer=settings.get('twitcher.token.issuer'))
+        else:  # default
+            validator = RandomTokenValidator()
 
-    # Register grant types to validate token requests.
-    config.add_grant_type('oauthlib.oauth2.ClientCredentialsGrant',
-                          request_validator=validator)
+        # Register grant types to validate token requests.
+        config.add_grant_type('oauthlib.oauth2.ClientCredentialsGrant',
+                              request_validator=validator)
 
-    # Register the token types to use at token endpoints.
-    config.add_token_type('oauthlib.oauth2.BearerToken',
-                          request_validator=validator,
-                          token_generator=validator.generate_access_token,
-                          expires_in=int(settings.get('twitcher.token.expires_in', '3600')))
+        # Register the token types to use at token endpoints.
+        config.add_token_type('oauthlib.oauth2.BearerToken',
+                              request_validator=validator,
+                              token_generator=validator.generate_access_token,
+                              expires_in=int(settings.get('twitcher.token.expires_in', '3600')))
 
-    config.add_route('access_token', TOKEN_ENDPOINT)
-    config.add_view(generate_token_view, route_name='access_token')
-    config.add_route('client', CLIENT_APP_ENDPOINT)
-    config.add_view(register_client_app_view, route_name='client', renderer='json', permission='view')
+        config.add_route('access_token', TOKEN_ENDPOINT)
+        config.add_view(generate_token_view, route_name='access_token')
+        config.add_route('client', CLIENT_APP_ENDPOINT)
+        config.add_view(register_client_app_view, route_name='client', renderer='json', permission='view')
