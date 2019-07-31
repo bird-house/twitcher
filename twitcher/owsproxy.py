@@ -159,7 +159,7 @@ def owsproxy_view(request):
         service = request.owsregistry.get_service_by_name(service_name)
     except Exception:
         return OWSAccessFailed("Could not find service")
-    if request.verify_ows_request is False:
+    if request.is_verified is False:
         raise OWSAccessForbidden("Access to service is forbidden.")
     return _send_request(request, service, extra_path, request_params=request.query_string)
 

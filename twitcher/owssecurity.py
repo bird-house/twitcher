@@ -25,7 +25,7 @@ class OWSSecurity(OWSSecurityInterface):
 def includeme(config):
     from twitcher.adapter import get_adapter_factory
 
-    def verify_ows_request(request):
+    def is_verified(request):
         adapter = get_adapter_factory(request)
         return adapter.owssecurity_factory().verify_request(request)
-    config.add_request_method(verify_ows_request, reify=True)
+    config.add_request_method(is_verified, reify=True)
