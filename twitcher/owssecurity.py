@@ -1,5 +1,8 @@
+from pyramid.settings import asbool
+
 from twitcher.interface import OWSSecurityInterface
 from twitcher.owsrequest import OWSRequest
+from twitcher.utils import get_settings
 
 
 class OWSSecurity(OWSSecurityInterface):
@@ -24,8 +27,12 @@ class OWSSecurity(OWSSecurityInterface):
 
 def includeme(config):
     from twitcher.adapter import get_adapter_factory
+    settings = get_settings(config)
+    security_enabled = asbool(settings.get('twitcher.ows_security', True))
 
     def is_verified(request):
+        if not security_enabled:
+            return True
         adapter = get_adapter_factory(request)
         return adapter.owssecurity_factory().verify_request(request)
     config.add_request_method(is_verified, reify=True)
