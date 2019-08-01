@@ -48,6 +48,14 @@ OAuth2 Tokens
 .. autoclass:: twitcher.oauth2.CustomTokenValidator
   :members:
 
+.. _ows_security_api:
+
+OWS Security
+============
+
+.. autoclass:: twitcher.owssecurity.OWSSecurity
+  :members:
+
 .. _ows_registry_api:
 
 OWS Registry

@@ -7,6 +7,12 @@ from twitcher.utils import get_settings
 
 class OWSSecurity(OWSSecurityInterface):
     def verify_request(self, request):
+        """Verify that the service request is allowed.
+
+        This method verifies that the provided credentials are valid.
+        Depending on the authentication configuration this could be
+        a client X509 certificate or an OAuth2 token.
+        """
         ows_request = OWSRequest(request)
         if ows_request.service_allowed() is False:
             return False
@@ -20,8 +26,11 @@ class OWSSecurity(OWSSecurityInterface):
         if ows_request.public_access() is True:
             return True
         if service.get('auth', '') == 'cert':
+            # Check the verification result of the client certificate.
+            # Verifcation is done by nginx.
             return request.headers.get('X-Ssl-Client-Verify', '') == 'SUCCESS'
         else:
+            # verify the oauth token for compute scope.
             return request.verify_request(scopes=["compute"])
 
 

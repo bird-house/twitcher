@@ -45,7 +45,7 @@ You can try Twitcher online using Binder, or view the notebooks on NBViewer.
    :alt: Binder Launcher
    :height: 20
 
-.. image:: https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.png
+.. image:: https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg
    :target: https://nbviewer.jupyter.org/github/bird-house/twitcher/tree/dev-oauth/notebooks/
    :alt: NBViewer
    :height: 20
