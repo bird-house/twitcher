@@ -53,6 +53,39 @@ Do the same as above using the ``Makefile``.
     $ make lint
     $ make coverage
 
+Upgrade Database
+----------------
+
+Initialize and upgrade the database using Alembic_.
+
+Generate your first revision:
+
+.. code-block:: console
+
+  $ conda activate twitcher
+  $ alembic -c development.ini revision --autogenerate -m "init"
+
+.. warning::
+
+    This first step is only needed in development to generate a new database schema version.
+
+Upgrade to that revision:
+
+.. code-block:: console
+
+  $ alembic -c development.ini upgrade head
+
+Load default data into the database using a script.
+
+.. code-block:: console
+
+  $ initialize_twitcher_db development.ini
+
+.. note::
+
+  You can use `make migrate` as a shortcut to upgrade or init the twitcher database (last two steps).
+
+
 Building the docs
 -----------------
 
@@ -84,3 +117,4 @@ See the bumpversion_ documentation for details.
 
 .. _bumpversion: https://pypi.org/project/bumpversion/
 .. _pytest: https://docs.pytest.org/en/latest/
+.. _Alembic: https://alembic.sqlalchemy.org/en/latest/

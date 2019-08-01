@@ -1,5 +1,6 @@
 import os
 import unittest
+import json
 
 from pyramid import testing
 
@@ -22,7 +23,11 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp(
             settings={
-                'sqlalchemy.url': 'sqlite:///:memory:'
+                'sqlalchemy.url': 'sqlite:///:memory:',
+                'twitcher.username': 'testuser',
+                'twitcher.password': 'testpassword',
+                'twitcher.token.type': 'custom_token',
+                'twitcher.token.secret': 'testsecret',
             })
         self.config.include('twitcher.models')
         settings = self.config.get_settings()
@@ -41,6 +46,19 @@ class BaseTest(unittest.TestCase):
     def init_database(self):
         from twitcher.models.meta import Base
         Base.metadata.create_all(self.engine)
+        # add test client
+        from twitcher import models
+        self.session.add(models.Client(client_id='dev', client_secret='dev'))
+
+    def create_token(self):
+        resp = self.app.get('/oauth/token?grant_type={}&client_id={}&client_secret={}'.format(
+            'client_credentials',
+            'dev',
+            'dev'))
+        assert resp.status_code == 200
+        assert resp.content_type == 'application/json'
+        resp.mustcontain('access_token')
+        return json.loads(resp.text)['access_token']
 
     def tearDown(self):
         from twitcher.models.meta import Base

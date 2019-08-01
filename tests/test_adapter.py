@@ -1,7 +1,7 @@
 from twitcher.adapter import import_adapter, get_adapter_factory, TWITCHER_ADAPTER_DEFAULT
 from twitcher.adapter.base import AdapterInterface
 from twitcher.adapter.default import DefaultAdapter
-from twitcher.store import ServiceStoreInterface
+from twitcher.interface import OWSSecurityInterface
 from pyramid.testing import DummyRequest
 from pathlib import Path
 import pytest
@@ -30,15 +30,10 @@ def test_adapter_factory_none_specified():
 
 # noinspection PyAbstractClass,PyMethodMayBeStatic
 class DummyAdapter(AdapterInterface):
-    def servicestore_factory(self, request):
-        class DummyServiceStore(ServiceStoreInterface):
-            def save_service(self, service): return True    # noqa: E704
-            def delete_service(self, service): pass         # noqa: E704
-            def list_services(self): return ["test"]        # noqa: E704
-            def fetch_by_name(self, name): return name      # noqa: E704
-            def fetch_by_url(self, url): return url         # noqa: E704
-            def clear_services(self): pass                  # noqa: E704
-        return DummyServiceStore(request)
+    def owssecurity_factory(self, request):
+        class DummyOWSSecurity(OWSSecurityInterface):
+            def verify_request(self, request): return True   # noqa: E704
+        return DummyOWSSecurity()
 
 
 # noinspection PyPep8Naming
@@ -103,9 +98,9 @@ def test_adapter_factory_TestAdapter_invalid_raised():
 
 
 # noinspection PyTypeChecker
-def test_adapter_factory_call_servicestore_factory():
+def test_adapter_factory_call_owssecurity_factory():
     settings = {'twitcher.adapter': DummyAdapter({}).name}
     adapter = get_adapter_factory(settings)
-    store = adapter.servicestore_factory(DummyRequest())
-    assert isinstance(store, ServiceStoreInterface)
-    assert store.fetch_by_name("test") == "test", "Requested adapter with corresponding store should have been called."
+    security = adapter.owssecurity_factory(DummyRequest())
+    assert isinstance(security, OWSSecurityInterface)
+    assert security.verify_request(DummyRequest()) is True, "Requested adapter should have been called."

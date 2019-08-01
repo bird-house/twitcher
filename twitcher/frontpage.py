@@ -1,5 +1,6 @@
 from twitcher.adapter import get_adapter_factory
 from twitcher.utils import get_twitcher_url, is_json_serializable
+from twitcher.oauth2 import CLIENT_APP_ENDPOINT, TOKEN_ENDPOINT
 from twitcher import __version__
 from pyramid.view import view_config
 
@@ -13,6 +14,10 @@ def frontpage(request):
         'message': 'Twitcher Frontpage',
         'information_uri': get_twitcher_url(request) + INFORMATION_PATH,
         'versions_uri': get_twitcher_url(request) + VERSIONS_PATH,
+        'services_uri': "{}/services".format(get_twitcher_url(request)),
+        'client_uri': "{}{}".format(get_twitcher_url(request), CLIENT_APP_ENDPOINT),
+        'token_uri': "{}{}".format(get_twitcher_url(request), TOKEN_ENDPOINT),
+        'openapi_uri': "{}/__api__".format(get_twitcher_url(request)),
     }
 
 
