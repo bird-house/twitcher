@@ -21,9 +21,13 @@ It is used to generate access tokens and to register OWS services.
 
    URL on which twitcher server is listening (default "http://localhost:8000/").
 
--t, --token
+-u, --username
 
-   OAuth access token for twitcher service.
+   Username to access twitcher server.
+
+-p, --password
+
+   Password to access twitcher server.
 
 -k, --insecure
 
@@ -52,7 +56,7 @@ Register an application using basic authentication with username and password
 
 .. code-block:: console
 
-    $ twitcherctl -k add --username demo --password demo --name demo_app --redirect-uri http://localhost/demo_app
+    $ twitcherctl -k --username demo --password demo add --name demo_app --redirect-uri http://localhost/demo_app
     {'client_id': 'id', 'client_secret': 'secret'}
 
 The result is an OAuth *client_id* and *client_secret*.
@@ -67,7 +71,13 @@ Get an OAuth access token using *client_id* and *client_secret* for given *scope
    $ twitcherctl -k gentoken -i client_id -s client_secret --scope compute
    {'access_token': 'TOKEN', 'expires_in': 3600, 'scope': ['compute'], 'token_type': 'Bearer'}
 
-Possible scopes are: compute, register
+Possible scopes are: compute, register.
+
+You can also get a token from a Keycloak OAuth service using the client credentials workflow:
+
+.. code-block:: console
+
+   $ twitcherctl -k -s http://localhost:8080 gentoken -i client_id -s client_secret --scope compute --keycloak
 
 Register an OWS Service for the OWS Proxy
 -----------------------------------------
@@ -82,7 +92,7 @@ Register a local WPS service using an OAuth access token:
 
 .. code-block:: console
 
-   $ twitcherctl -k -t TOKEN register http://localhost:5000/wps
+   $ twitcherctl -k --username demo --password demo register http://localhost:5000/wps
    tiny_buzzard
 
 You can use the ``--name`` option to provide a name (used by the OWS proxy).
@@ -95,7 +105,7 @@ The ``list`` command shows the registered OWS services:
 
 .. code-block:: console
 
-   $ twitcherctl -k list
+   $ twitcherctl -k --username demo --password demo list
    [{'url': 'http://localhost:5000/wps', 'type': 'wps', 'name': 'tiny_buzzard', 'auth': 'token'}]
 
 """
@@ -130,8 +140,10 @@ class TwitcherCtl(object):
                             metavar='URL',
                             default='http://localhost:8000',
                             help='URL on which twitcher server is listening (default "http://localhost:8000").')
-        parser.add_argument("-t", "--token",
-                            help="Access token for service.")
+        parser.add_argument("-u", "--username",
+                            help="Username to use for authentication with server.")
+        parser.add_argument("-p", "--password",
+                            help="Password to use for authentication with server")
         parser.add_argument("-k", "--insecure",  # like curl
                             help="Don't validate the server's certificate.",
                             action="store_true")
@@ -148,10 +160,6 @@ class TwitcherCtl(object):
 
         # add
         subparser = subparsers.add_parser('add', help="Add OAuth2 client application")
-        subparser.add_argument("-u", "--username",
-                               help="Username to use for authentication with server.")
-        subparser.add_argument("-p", "--password",
-                               help="Password to use for authentication with server")
         subparser.add_argument("-n", "--name",
                                help="Client application name")
         subparser.add_argument("-r", "--redirect-uri",
@@ -165,6 +173,9 @@ class TwitcherCtl(object):
         subparser.add_argument("-i", "--client-id", help="OAuth client-id")
         subparser.add_argument("-s", "--client-secret", help="OAuth client-secret")
         subparser.add_argument("-S", "--scope", nargs='+', default='compute', help="OAuth scope: compute or register")
+        subparser.add_argument("-K", "--keycloak",
+                               help="Use keycloak token endpoint.",
+                               action="store_true")
 
         # service registry
         # ----------------
@@ -205,8 +216,21 @@ class TwitcherCtl(object):
             urllib3.disable_warnings()
             LOGGER.warning('disabled certificate verification!')
 
+        username = password = None
+        if args.cmd != 'gentoken':
+            username = args.username
+            if not username:
+                username = input('Username: ')
+            password = args.password
+            if not password:
+                password = getpass.getpass(prompt='Password: ')
+
         verify_ssl = args.insecure is False
-        service = TwitcherService(url=args.serverurl, verify=verify_ssl)
+        service = TwitcherService(
+            url=args.serverurl,
+            username=username,
+            password=password,
+            verify=verify_ssl)
 
         try:
             if args.cmd == 'list':
@@ -217,25 +241,16 @@ class TwitcherCtl(object):
                         'auth': args.auth,
                         'verify': args.verify}
                 return service.register_service(
-                    access_token=args.token,
                     name=args.name or get_random_name(),
                     url=args.url,
                     data=data,
                 )
             elif args.cmd == 'unregister':
-                return service.unregister_service(access_token=args.token, name=args.name)
+                return service.unregister_service(name=args.name)
             elif args.cmd == 'clear':
-                return service.clear_services(access_token=args.token)
+                return service.clear_services()
             elif args.cmd == 'add':
-                username = args.username
-                if not username:
-                    username = input('Username: ')
-                password = args.password
-                if not password:
-                    password = getpass.getpass(prompt='Password: ')
                 return service.add_client_app(
-                    username,
-                    password,
                     name=args.name,
                     redirect_uri=args.redirect_uri)
             elif args.cmd == 'gentoken':
@@ -248,7 +263,8 @@ class TwitcherCtl(object):
                 return service.fetch_token(
                     client_id=client_id,
                     client_secret=client_secret,
-                    scope=args.scope)
+                    scope=args.scope,
+                    keycloak=args.keycloak)
         except Exception as e:
             LOGGER.error("Error: {}".format(e))
         return None

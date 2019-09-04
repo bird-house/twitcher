@@ -43,7 +43,7 @@ a *client_id* and *client_secret*:
 
 .. code-block:: console
 
-  $ twitcherctl -k add --username demo --password demo --name demo_app
+  $ twitcherctl -k --username demo --password demo add --name demo_app
   {'name': 'demo_app', 'client_id': 'id', 'client_secret': 'secret'}
 
 Get an access token to use the registration service using your
@@ -57,11 +57,11 @@ OAuth *client_id* and *client_secret* with scope *register*:
 Register a WPS service
 ----------------------
 
-Register the Emu WPS service at the Twitcher ``OWSProxy`` using an OAuth access token.
+Register the Emu WPS service at the Twitcher ``OWSProxy``:
 
 .. code-block:: console
 
-   $ twitcherctl -k -t TOKEN register --name emu http://localhost:5000/wps
+   $ twitcherctl -k --username demo --password demo register --name emu http://localhost:5000/wps
 
 If you don't provide a name with ``--name`` option then a nice name will be generated, for example ``sleepy_flamingo``.
 
@@ -69,7 +69,7 @@ Use the ``list`` command to see which WPS services are registered with OWSProxy:
 
 .. code-block:: console
 
-   $ twitcherctl -k list
+   $ twitcherctl -k --username demo --password demo list
    [{'url': 'http://localhost:5000/wps', 'type': 'wps', 'name': 'emu', 'auth': 'token'}]
 
 
@@ -147,7 +147,7 @@ Register the Emu WPS service at the Twitcher ``OWSProxy`` with ``auth`` option `
 
 .. code-block:: console
 
-   $ twitcherctl -k -t TOKEN register --name emu --auth cert http://localhost:5000/wps
+   $ twitcherctl -k --username demo --password demo register --name emu --auth cert http://localhost:5000/wps
 
 The ``GetCapabilities``  and ``DescribeProcess`` requests are not blocked:
 

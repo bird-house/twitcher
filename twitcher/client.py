@@ -9,22 +9,18 @@ from twitcher.oauth2 import TOKEN_ENDPOINT, CLIENT_APP_ENDPOINT
 import logging
 LOGGER = logging.getLogger("TWITCHER")
 
-
-def get_headers(access_token=None):
-    if access_token:
-        headers = {'Authorization': 'Bearer {}'.format(access_token)}
-    else:
-        headers = {}
-    return headers
+KEYCLOAK_TOKEN_ENDPOINT = '/auth/realms/demo/protocol/openid-connect/token'
 
 
 class TwitcherService(object):
     """TwitcherService is a twitcher client to talk to the twitcher service API."""
-    def __init__(self, url, verify=True):
+    def __init__(self, url, username=None, password=None, verify=True):
         self.base_url = url
+        self.username = username
+        self.password = password
         self.verify = verify
 
-    def add_client_app(self, username, password, name=None, redirect_uri=None):
+    def add_client_app(self, name=None, redirect_uri=None):
         """Add a client application to twitcher with optional name."""
         name = name or ''
         redirect_uri = redirect_uri or ''
@@ -33,17 +29,21 @@ class TwitcherService(object):
             CLIENT_APP_ENDPOINT,
             name,
             redirect_uri)
-        resp = requests.get(req_url, auth=(username, password), verify=self.verify)
+        resp = requests.get(req_url, auth=(self.username, self.password), verify=self.verify)
         if not resp.ok:
             LOGGER.error("Could not add client app.")
         else:
             return resp.json()
 
-    def fetch_token(self, client_id, client_secret, scope=None):
+    def fetch_token(self, client_id, client_secret, scope=None, keycloak=False):
         """Get an access token with given scope."""
         scope = scope or 'compute'
         os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-        token_url = "{}{}".format(self.base_url, TOKEN_ENDPOINT)
+        if keycloak is True:
+            endpoint = KEYCLOAK_TOKEN_ENDPOINT
+        else:
+            endpoint = TOKEN_ENDPOINT
+        token_url = "{}{}".format(self.base_url, endpoint)
         client = BackendApplicationClient(client_id=client_id)
         oauth = OAuth2Session(client=client)
         return oauth.fetch_token(token_url,
@@ -56,31 +56,33 @@ class TwitcherService(object):
     def list_services(self):
         """List all registered OWS services."""
         req_url = "{}/services".format(self.base_url)
-        resp = requests.get(req_url, verify=self.verify)
+        resp = requests.get(req_url, auth=(self.username, self.password), verify=self.verify)
         if not resp.ok:
             LOGGER.error("Could not list services")
         else:
             return resp.json()
 
-    def register_service(self, access_token, name, url, data=None):
+    def register_service(self, name, url, data=None):
         """Register a service."""
         data = data or {}
         data.update({"name": name, "url": url})
         req_url = "{}/services".format(self.base_url)
         import json
         resp = requests.post(req_url, data=json.dumps(data),
-                             headers=get_headers(access_token),
+                             auth=(self.username, self.password),
+                             headers={},
                              verify=self.verify)
         if not resp.ok:
             LOGGER.error("Could not add service")
         else:
             return resp.json()
 
-    def clear_services(self, access_token):
+    def clear_services(self):
         """Remove all OWS services."""
         req_url = "{}/services".format(self.base_url)
         resp = requests.delete(req_url,
-                               headers=get_headers(access_token),
+                               auth=(self.username, self.password),
+                               headers={},
                                verify=self.verify)
         if not resp.ok:
             LOGGER.error("Could not clear services")
@@ -90,17 +92,20 @@ class TwitcherService(object):
     def get_service(self, name):
         """Get an OWS service with given name."""
         req_url = "{}/services/{}".format(self.base_url, name)
-        resp = requests.get(req_url, verify=self.verify)
+        resp = requests.get(req_url,
+                            auth=(self.username, self.password),
+                            verify=self.verify)
         if not resp.ok:
             LOGGER.error("Could not get service")
         else:
             return resp.json()
 
-    def unregister_service(self, access_token, name):
+    def unregister_service(self, name):
         """Remove registered service with given name."""
         req_url = "{}/services/{}".format(self.base_url, name)
         resp = requests.delete(req_url,
-                               headers=get_headers(access_token),
+                               auth=(self.username, self.password),
+                               headers={},
                                verify=self.verify)
         if not resp.ok:
             LOGGER.error("Could not remove service")

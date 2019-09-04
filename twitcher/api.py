@@ -11,10 +11,12 @@ LOGGER = logging.getLogger("TWITCHER")
 # Rest API Services
 services = Service(name='services',
                    path='/services',
+                   permission='view',
                    description="List, add or clear services")
 
 service = Service(name='service',
                   path='/services/{name}',
+                  permission='view',
                   description="Get or remove a service item")
 
 
@@ -50,8 +52,6 @@ class TwitcherAPI(object):
     @services.delete(tags=['services', 'clear'])
     def clear_services(request):
         """Clear all services."""
-        if request.verify_request(scopes=["register"]) is False:
-            return '{"success": False}'
         return request.owsregistry.clear_services()
 
     @services.post(tags=['services', 'register'],
@@ -59,8 +59,6 @@ class TwitcherAPI(object):
                    schema=ServicesPostBodySchema())
     def register_service(request):
         """Register a service."""
-        if request.verify_request(scopes=["register"]) is False:
-            return '{"success": False}'
         LOGGER.debug("request validated={}".format(request.validated))
         return request.owsregistry.register_service(**request.validated)
 
@@ -72,12 +70,11 @@ class TwitcherAPI(object):
     @service.delete(tags=['service', 'unregister'])
     def unregister_service(request):
         """Remove registered service."""
-        if request.verify_request(scopes=["register"]) is False:
-            return '{"success": False}'
         return request.owsregistry.unregister_service(name=request.matchdict['name'])
 
 
 def includeme(config):
+    config.include('twitcher.basicauth')
     config.include('cornice')
     config.include('cornice_swagger')
     config.include('twitcher.oauth2')
@@ -85,9 +82,13 @@ def includeme(config):
     # Create views to serve our OpenAPI spec
     config.cornice_enable_openapi_view(
         api_path='/__api__',
+        # permission='view',
         title='Twitcher API',
         description="OpenAPI documentation",
         version=__version__
     )
     # Create views to serve OpenAPI spec UI explorer
-    config.cornice_enable_openapi_explorer(api_explorer_path='/api-explorer')
+    config.cornice_enable_openapi_explorer(
+        api_explorer_path='/api-explorer',
+        # permission='view'
+    )
