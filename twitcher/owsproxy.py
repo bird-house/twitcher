@@ -67,20 +67,20 @@ def _send_request(request, service, extra_path=None, request_params=None):
     url = service['url']
     if extra_path:
         url += '/' + extra_path
+    elif request.url.endswith('/'):
+        url += '/'
     if request_params:
         url += '?' + request_params
     LOGGER.debug('url = %s', url)
 
-    # forward request to target (without Host Header)
     h = dict(request.headers)
-    h.pop("Host", h)
     h['Accept-Encoding'] = None
     #
     service_type = service['type']
     if service_type and (service_type.lower() != 'wps'):
         try:
             resp_iter = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
-                                         stream=True, verify=service.verify)
+                                         stream=True, verify=service.verify, allow_redirects=False)
         except Exception as e:
             return OWSAccessFailed("Request failed: {}".format(e))
 
