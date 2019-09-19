@@ -85,9 +85,10 @@ def _send_request(request, service, extra_path=None, request_params=None):
             return OWSAccessFailed("Request failed: {}".format(e))
 
         # Headers meaningful only for a single transport-level connection
-        hop_by_hop = ['Connection', 'Keep-Alive', 'Public', 'Proxy-Authenticate', 'Transfer-Encoding', 'Upgrade']
+        hop_by_hop = ['connection', 'keep-alive', 'public', 'proxy-authenticate', 'transfer-encoding', 'upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
-                        headers={k: v for k, v in list(resp_iter.headers.items()) if k not in hop_by_hop})
+                        headers={k: v for k, v in list(resp_iter.headers.items()) if k.lower() not in hop_by_hop},
+                        status_code=resp_iter.status_code)
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
