@@ -34,7 +34,7 @@ OAuth2 Token Generator
 ----------------------
 
 Twitcher uses `OAuth2 tokens`_ to control OWS service access.
-You can use three types of tokens.
+You can use several types of tokens.
 
 Random Token
 ++++++++++++
@@ -93,11 +93,13 @@ Edit the configuration file:
 
   twitcher.token.type = keycloak_token
 
-You need to copy the public key of your Keycloak realm to the configuration:
+You need to copy the public key of your Keycloak realm to the configuration (see screenshot):
 
 .. code-block:: ini
 
   keycloak.token.secret = secret
+
+.. image:: _images/keycloak-realm-public-key.png
 
 .. _OAuth2 tokens: https://oauthlib.readthedocs.io/en/latest/oauth2/tokens/bearer.html
 .. _JWT tokens: https://pyjwt.readthedocs.io/en/latest/usage.html

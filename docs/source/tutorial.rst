@@ -171,6 +171,21 @@ Let's say your proxy certificate is ``cert.pem``, then run the exceute request a
 
   $ curl --cert cert.pem --key cert.pem -k "http://localhost:8000/ows/proxy/emu?service=WPS&version=1.0.0request=Execute&identifier=hello&DataInputs=name=tux"
 
+Keycloak example
+================
+
+Set-up a demo Keycloak service using Ansible `playbook <https://github.com/cehbrecht/Ansible-Keycloak-Playbook/tree/pingudev>`_.
+
+Get a client secret in Keycloak from `Clients/demo/Credentials/Secret` (see screenshot).
+
+.. image:: _images/keycloak-client-secret.png
+
+Try the notebook.
+
+.. toctree::
+   :maxdepth: 1
+
+   notebooks/twitcher-keycloak-demo
 
 .. _ESGF: https://esgf.llnl.gov/
 .. _esgf-pyclient: https://github.com/ESGF/esgf-pyclient

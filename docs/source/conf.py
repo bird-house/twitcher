@@ -29,6 +29,7 @@ needs_sphinx = '1.7'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'nbsphinx',
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
@@ -288,3 +289,7 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+# -- nbsphinx options ----------------------------------------------------------
+# https://nbsphinx.readthedocs.io/en/0.4.2/executing-notebooks.html
+nbsphinx_execute = 'never'
