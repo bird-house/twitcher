@@ -198,7 +198,7 @@ Start the twitcher service and register the Emu_ WPS:
 
 Try the demo notebook to access a token from the keycloak and execute a WPS process.
 
-Use ``cliend_id=demo`` and copy the client secret in Keycloak from `Clients/demo/Credentials/Secret` (see screenshot).
+Use ``client_id=demo`` and copy the client secret from Keycloak in `Clients/demo/Credentials/Secret` (see screenshot).
 
 .. image:: _images/keycloak-client-secret.png
 
