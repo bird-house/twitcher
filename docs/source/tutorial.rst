@@ -174,13 +174,33 @@ Let's say your proxy certificate is ``cert.pem``, then run the exceute request a
 Keycloak example
 ================
 
-Set-up a demo Keycloak service using Ansible `playbook <https://github.com/cehbrecht/Ansible-Keycloak-Playbook/tree/pingudev>`_.
+Set-up a demo Keycloak service using Ansible `playbook <https://github.com/bird-house/ansible-keycloak-playbook>`_.
 
-Get a client secret in Keycloak from `Clients/demo/Credentials/Secret` (see screenshot).
+The keycloak service is available at (``username=admin``, ``password=admin``):
+http://localhost:8080/auth/
+
+You need to copy the public key of your Keycloak realm to the configuration (see screenshot):
+
+.. image:: _images/keycloak-realm-public-key.png
+
+Update your twitcher configuration:
+
+.. code-block:: ini
+
+  twitcher.token.type = keycloak_token
+  keycloak.token.secret = secret
+
+Start the twitcher service and register the Emu_ WPS:
+
+.. code-block:: console
+
+  twitcherctl -k --username demo --password demo register --name emu http://localhost:5000/wps
+
+Try the notebook to access a token from the keycloak and execute a WPS process.
+
+Use a client secret in Keycloak from `Clients/demo/Credentials/Secret` (see screenshot).
 
 .. image:: _images/keycloak-client-secret.png
-
-Try the notebook.
 
 .. toctree::
    :maxdepth: 1
@@ -190,3 +210,4 @@ Try the notebook.
 .. _ESGF: https://esgf.llnl.gov/
 .. _esgf-pyclient: https://github.com/ESGF/esgf-pyclient
 .. _playbook: https://github.com/bird-house/ansible-wps-playbook
+.. _Emu: https://github.com/bird-house/emu
