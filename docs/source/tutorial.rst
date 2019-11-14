@@ -43,7 +43,7 @@ a *client_id* and *client_secret*:
 
 .. code-block:: console
 
-  $ twitcherctl -k add --username demo --password demo --name demo_app
+  $ twitcherctl -k --username demo --password demo add --name demo_app
   {'name': 'demo_app', 'client_id': 'id', 'client_secret': 'secret'}
 
 Get an access token to use the registration service using your
@@ -57,11 +57,11 @@ OAuth *client_id* and *client_secret* with scope *register*:
 Register a WPS service
 ----------------------
 
-Register the Emu WPS service at the Twitcher ``OWSProxy`` using an OAuth access token.
+Register the Emu WPS service at the Twitcher ``OWSProxy``:
 
 .. code-block:: console
 
-   $ twitcherctl -k -t TOKEN register --name emu http://localhost:5000/wps
+   $ twitcherctl -k --username demo --password demo register --name emu http://localhost:5000/wps
 
 If you don't provide a name with ``--name`` option then a nice name will be generated, for example ``sleepy_flamingo``.
 
@@ -69,7 +69,7 @@ Use the ``list`` command to see which WPS services are registered with OWSProxy:
 
 .. code-block:: console
 
-   $ twitcherctl -k list
+   $ twitcherctl -k --username demo --password demo list
    [{'url': 'http://localhost:5000/wps', 'type': 'wps', 'name': 'emu', 'auth': 'token'}]
 
 
@@ -147,7 +147,7 @@ Register the Emu WPS service at the Twitcher ``OWSProxy`` with ``auth`` option `
 
 .. code-block:: console
 
-   $ twitcherctl -k -t TOKEN register --name emu --auth cert http://localhost:5000/wps
+   $ twitcherctl -k --username demo --password demo register --name emu --auth cert http://localhost:5000/wps
 
 The ``GetCapabilities``  and ``DescribeProcess`` requests are not blocked:
 
@@ -171,7 +171,43 @@ Let's say your proxy certificate is ``cert.pem``, then run the exceute request a
 
   $ curl --cert cert.pem --key cert.pem -k "http://localhost:8000/ows/proxy/emu?service=WPS&version=1.0.0request=Execute&identifier=hello&DataInputs=name=tux"
 
+Keycloak example
+================
+
+Set-up a demo Keycloak service using an Ansible `playbook <https://github.com/bird-house/ansible-keycloak-playbook>`_.
+
+The keycloak service is available at (``username=admin``, ``password=admin``):
+http://localhost:8080/auth/
+
+You need to copy the public key of your Keycloak realm to the twitcher configuration (see screenshot):
+
+.. image:: _images/keycloak-realm-public-key.png
+
+Update your twitcher configuration in ``development.ini``:
+
+.. code-block:: ini
+
+  twitcher.token.type = keycloak_token
+  keycloak.token.secret = public_key_copied_from_keycloak
+
+Start the twitcher service and register the Emu_ WPS:
+
+.. code-block:: console
+
+  $ twitcherctl -k --username demo --password demo register --name emu http://localhost:5000/wps
+
+Try the demo notebook to access a token from the keycloak and execute a WPS process.
+
+Use ``client_id=demo`` and copy the client secret from Keycloak in `Clients/demo/Credentials/Secret` (see screenshot).
+
+.. image:: _images/keycloak-client-secret.png
+
+.. toctree::
+   :maxdepth: 1
+
+   notebooks/twitcher-keycloak-demo
 
 .. _ESGF: https://esgf.llnl.gov/
 .. _esgf-pyclient: https://github.com/ESGF/esgf-pyclient
 .. _playbook: https://github.com/bird-house/ansible-wps-playbook
+.. _Emu: https://github.com/bird-house/emu

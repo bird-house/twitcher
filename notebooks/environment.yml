@@ -3,4 +3,9 @@ name: twitcher
 channels:
   - defaults
 dependencies:
+  - pip
   - jupyterlab
+  - requests
+  - oauthlib
+  - pip:
+    - requests-oauthlib

@@ -3,5 +3,6 @@ pytest-cov
 WebTest
 flake8
 sphinx
+nbsphinx
 bump2version
 twine
