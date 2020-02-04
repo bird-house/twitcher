@@ -191,7 +191,7 @@ class CustomTokenValidator(BaseValidator):
 
 class KeycloakTokenValidator(BaseValidator):
     def __init__(self, secret):
-        self.public_key = '-----BEGIN PUBLIC KEY-----\n{}\n-----END PUBLIC KEY-----'.format(secret)
+        self.public_key = '-----BEGIN CERTIFICATE-----\n{}\n-----END CERTIFICATE-----'.format(secret)
 
     def generate_access_token(self, request):
         raise NotImplementedError("This validator can only validate tokens.")
