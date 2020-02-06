@@ -2,10 +2,12 @@
 name: twitcher
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - pip
   - jupyterlab
   - requests
   - oauthlib
+  - birdy
   - pip:
     - requests-oauthlib
