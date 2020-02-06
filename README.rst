@@ -41,12 +41,12 @@ Twitcher is implemented with the Python `Pyramid`_ web framework.
 You can try Twitcher online using Binder, or view the notebooks on NBViewer.
 
 .. image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/bird-house/twitcher.git/dev-oauth?filepath=notebooks
+   :target: https://mybinder.org/v2/gh/bird-house/twitcher.git/master?filepath=notebooks
    :alt: Binder Launcher
    :height: 20
 
 .. image:: https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg
-   :target: https://nbviewer.jupyter.org/github/bird-house/twitcher/tree/dev-oauth/notebooks/
+   :target: https://nbviewer.jupyter.org/github/bird-house/twitcher/tree/master/notebooks/
    :alt: NBViewer
    :height: 20
 
