@@ -27,7 +27,7 @@ def ows_security_tween_factory(handler, registry):
             security.check_request(request)
             return handler(request)
         except OWSException as err:
-            LOGGER.exception("security check failed.")
+            LOGGER.warning("security check failed.")
             return err
         except Exception as err:
             LOGGER.exception("unknown error")
