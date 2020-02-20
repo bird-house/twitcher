@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.5.3 (2020-02-20)
+==================
+
 Changes:
 
 * Reduce log level of ``"failed security check"`` from ``exception`` to ``warning`` as it corresponds to the expected
