@@ -4,7 +4,6 @@ Changes
 Unreleased
 ==========
 
-
 0.6.0 (2020-04-01)
 ==================
 
@@ -12,6 +11,13 @@ Changes:
 
 * Added Keycloak support (#91).
 * Added Keycloak demo notebook (#92, #93, #94).
+
+0.5.4 (2020-10-29)
+==================
+
+Changes:
+
+* Replace ``waitress`` by ``gunicorn`` to resolve issue related to slow download of large files (#97).
 
 0.5.3 (2020-02-20)
 ==================
