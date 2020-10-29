@@ -13,6 +13,7 @@ pyramid_debugtoolbar
 plaster_pastedeploy
 # wsgi
 gunicorn
+waitress
 # database
 pyramid_retry
 pyramid_tm
