@@ -22,9 +22,12 @@ install:
   - source activate twitcher
   # Install twitcher
   - pip install ".[dev]"
+stages:
+  - test  # default (script)
+  - smoke-test
 jobs:
   include:
-    - stage: test
+    - stage: smoke-test
       name: "Smoke Test"
       script: make docker-build docker-test
 script:
