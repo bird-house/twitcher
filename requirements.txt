@@ -14,7 +14,7 @@ pyramid_debugtoolbar
 # deploy
 plaster_pastedeploy
 # wsgi
-waitress
+gunicorn
 # database
 pyramid_retry
 pyramid_tm
