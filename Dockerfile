@@ -33,7 +33,8 @@ RUN apk update \
         libffi-dev \
         openssl-dev \
     && apk add --virtual .build-deps \
-        python-dev \
+        python3-dev \
+        py-pip \
         gcc \
         musl-dev \
     && pip install --no-cache-dir --upgrade pip setuptools \

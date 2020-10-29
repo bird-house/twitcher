@@ -22,6 +22,11 @@ install:
   - source activate twitcher
   # Install twitcher
   - pip install ".[dev]"
+jobs:
+  include:
+    - stage: test
+      name: "Smoke Test"
+      script: make docker-build docker-test
 script:
   - pytest -v -m 'not online' tests/
   - flake8
