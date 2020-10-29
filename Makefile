@@ -1,5 +1,5 @@
 # Configuration
-VERSION := 0.5.3
+VERSION := 0.5.4
 APP_ROOT := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 INI_FILE ?= development.ini
 

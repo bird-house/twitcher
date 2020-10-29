@@ -4,6 +4,13 @@ Changes
 Unreleased
 ==========
 
+0.5.4 (2020-10-29)
+==================
+
+Changes: 
+
+* Replace ``waitress`` by ``gunicorn`` to resolve issue related to slow download of large files (#97).
+
 0.5.3 (2020-02-20)
 ==================
 
