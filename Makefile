@@ -133,13 +133,13 @@ docker-push:
 
 .PHONY: docker-stop
 docker-stop:
-	@echo "Stopping test docker image: $(DOCKER_TEST)"
-	@-docker container stop "$(shell docker container ls -q --filter name=$(DOCKER_TEST))" 2>/dev/null || true
+	@echo "Stopping test docker container: $(DOCKER_TEST)"
+	@-docker container stop "$(DOCKER_TEST)" 2>/dev/null || true
 	@-docker rm $(DOCKER_TEST) 2>/dev/null || true
 
 .PHONY: docker-test
 docker-test: docker-build docker-stop
-	@echo "Smoke test of docker image: $(DOCKER_TAG)"
+	@echo "Smoke test of docker container: $(DOCKER_TAG)"
 	docker run --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
 	sleep 2
 	echo "Testing docker image..."
@@ -156,7 +156,7 @@ test:
 	@bash -c 'pytest -v -m "not slow and not online" tests/'
 
 .PHONY: test-local
-test:
+test-local:
 	@echo "Running tests (skip slow and online tests) ..."
 	@bash -c 'pytest -v -m "not online" tests/'
 
