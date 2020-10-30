@@ -25,6 +25,7 @@ install:
 stages:
   - test  # default (script)
 jobs:
+  fast_finish: true
   include:
     - stage: test
       name: "Code Lint"
