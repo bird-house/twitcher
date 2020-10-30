@@ -24,12 +24,14 @@ install:
   - pip install ".[dev]"
 stages:
   - test  # default (script)
-  - smoke-test
 jobs:
   include:
-    - stage: smoke-test
+    - stage: test
+      name: "Code Lint"
+      script: flake8
+    - stage: test
+      name: "Unit Tests"
+      script: make test-local
+    - stage: test
       name: "Smoke Test"
       script: make docker-build docker-test
-script:
-  - pytest -v -m 'not online' tests/
-  - flake8

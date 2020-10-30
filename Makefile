@@ -144,9 +144,9 @@ docker-test: docker-build docker-stop
 	sleep 2
 	echo "Testing docker image..."
 	@(curl http://localhost:8000 | grep "Twitcher Frontpage" && \
-	 $(MAKE) docker-stop --no-print-directory || \
- 	($(MAKE) docker-stop --no-print-directory && \
- 	 echo "Failed to obtain expected response from twitcher docker"; exit 1 ))
+	  $(MAKE) docker-stop --no-print-directory || \
+ 	 ($(MAKE) docker-stop --no-print-directory && \
+ 	  echo "Failed to obtain expected response from twitcher docker"; exit 1 ))
 
 ## Test targets
 
@@ -154,6 +154,11 @@ docker-test: docker-build docker-stop
 test:
 	@echo "Running tests (skip slow and online tests) ..."
 	@bash -c 'pytest -v -m "not slow and not online" tests/'
+
+.PHONY: test-local
+test:
+	@echo "Running tests (skip slow and online tests) ..."
+	@bash -c 'pytest -v -m "not online" tests/'
 
 .PHONY: test-all
 test-all:
