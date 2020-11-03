@@ -3,7 +3,8 @@ VERSION := 0.5.4
 APP_ROOT := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 INI_FILE ?= development.ini
 
-DOCKER_TAG := birdhouse/twitcher:$(VERSION)
+DOCKER_TAG := birdhouse/twitcher:v$(VERSION)
+DOCKER_TEST := smoke-test-twitcher
 
 # Bumpversion 'dry' config
 # if 'dry' is specified as target, any bumpversion call using 'BUMP_XARGS' will not apply changes
@@ -127,12 +128,34 @@ docker-push:
 	@echo "Pushing docker image: $(DOCKER_TAG)"
 	@-docker push "$(DOCKER_TAG)"
 
+.PHONY: docker-stop
+docker-stop:
+	@echo "Stopping test docker container: $(DOCKER_TEST)"
+	@-docker container stop "$(DOCKER_TEST)" 2>/dev/null || true
+	@-docker rm $(DOCKER_TEST) 2>/dev/null || true
+
+.PHONY: docker-test
+docker-test: docker-build docker-stop
+	@echo "Smoke test of docker image: $(DOCKER_TAG)"
+	docker run --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
+	sleep 2
+	echo "Testing docker image..."
+	@(curl http://localhost:8000 | grep "Twitcher Frontpage" && \
+	  $(MAKE) docker-stop --no-print-directory || \
+ 	 ($(MAKE) docker-stop --no-print-directory && \
+ 	  echo "Failed to obtain expected response from twitcher docker"; exit 1 ))
+
 ## Test targets
 
 .PHONY: test
 test:
 	@echo "Running tests (skip slow and online tests) ..."
 	@bash -c 'pytest -v -m "not slow and not online" tests/'
+
+.PHONY: test-local
+test-local:
+	@echo "Running tests (skip slow and online tests) ..."
+	@bash -c 'pytest -v -m "not online" tests/'
 
 .PHONY: test-all
 test-all:
