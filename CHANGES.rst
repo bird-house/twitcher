@@ -4,10 +4,19 @@ Changes
 Unreleased
 ==========
 
+0.5.5 (2021-01-27)
+==================
+
+Fixes:
+
+* Update invalid reference to `python3-dev` in docker image.
+  Travis-CI is also updated to run a smoke test build of this docker image prior to merge to help early detection
+  of problems prior to deploy triggers from tags.
+
 0.5.4 (2020-10-29)
 ==================
 
-Changes: 
+Changes:
 
 * Replace ``waitress`` by ``gunicorn`` to resolve issue related to slow download of large files (#97).
 
