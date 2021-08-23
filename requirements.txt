@@ -20,9 +20,13 @@ waitress
 pyramid_retry
 pyramid_tm
 alembic
-SQLAlchemy
+# 'sqlalchemy==2.0' breaks 'zope.sqlalchemy'
+# (https://github.com/zopefoundation/zope.sqlalchemy/issues/60)
+sqlalchemy>=1.4,<2
 transaction
-zope.sqlalchemy
+# avoid using 'zope.sqlalchemy==1.4' with regression since 'sqlalchemy==1.4' support
+# (https://github.com/zopefoundation/zope.sqlalchemy/pull/66)
+zope.sqlalchemy>=1.5
 # oauth2
 pyramid_oauthlib>=0.4.1
 oauthlib<3

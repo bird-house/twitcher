@@ -31,11 +31,13 @@ RUN apk update \
         libxslt-dev \
         libxml2 \
         libffi-dev \
-        openssl-dev \
+        libressl-dev \
     && apk add --virtual .build-deps \
         python3-dev \
         py-pip \
+        cargo \
         gcc \
+        g++ \
         musl-dev \
     && pip install --no-cache-dir --upgrade pip setuptools \
     && pip install --no-cache-dir -e $TWITCHER_DIR \
