@@ -6,8 +6,8 @@ Twitcher: OWS Security Proxy
    :target: http://twitcher.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
    
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3736163.svg
-   :target: https://doi.org/10.5281/zenodo.3736163
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3736114.svg
+   :target: https://doi.org/10.5281/zenodo.3736114
    :alt: Zenodo DOI
 
 .. image:: https://travis-ci.org/bird-house/twitcher.svg?branch=master
