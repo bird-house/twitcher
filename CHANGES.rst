@@ -4,6 +4,13 @@ Changes
 Unreleased
 ==========
 
+Fixes:
+
+* Pin packages ``zope.sqlalchemy>=1.5`` and ``sqlalchemy>=1.4,<2`` to avoid errors with conflicting and upcoming
+  release and features employed in code.
+* Fix failing ``cryptography`` package build step in Docker image due to missing ``g++`` and ``rust`` dependencies
+  (``rust`` installed via ``cargo``).
+
 0.5.5 (2021-01-27)
 ==================
 
