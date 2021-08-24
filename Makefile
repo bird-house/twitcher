@@ -179,6 +179,7 @@ lint:
 coverage: .coverage
 	@bash -c 'coverage report -m'
 	@bash -c 'coverage html -d coverage'
+	@bash -c 'coverage xml -i -o coverage/coverage.xml'
 	@-echo "Coverage report: open file://$(APP_ROOT)/coverage/index.html"
 
 ## Sphinx targets

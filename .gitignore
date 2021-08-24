@@ -21,6 +21,7 @@ __pycache__
 nosetests.xml
 unit_tests/testdata.json
 coverage/
+coverage.*
 
 # R
 *.Rhistory

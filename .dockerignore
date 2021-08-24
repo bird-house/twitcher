@@ -24,6 +24,7 @@ Makefile.config
 # Unit test / Coverage reports
 **/*.cache
 **/*.coverage
+**/coverage.*
 **/*.pytest_cache
 **/*.tox
 **/nosetests.xml
