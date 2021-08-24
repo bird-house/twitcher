@@ -6,7 +6,8 @@ Unreleased
 
 Changes:
 
-
+* Add Github Actions workflow to run local tests and Docker smoke tests for pre-validation of features and changes.
+* Add Github issue, feature request and pull request templates.
 
 Fixes:
 
