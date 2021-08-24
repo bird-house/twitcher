@@ -177,7 +177,7 @@ class CustomTokenValidator(BaseValidator):
             # "aud": request.client_id,
             "iss": self.issuer,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=request.expires_in)
-        }, self.secret, algorithm='HS256').decode()
+        }, self.secret, algorithm='HS256')
         return token
 
     def validate_bearer_token(self, token, scopes, request):

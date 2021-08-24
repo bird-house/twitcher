@@ -31,4 +31,4 @@ zope.sqlalchemy>=1.5
 pyramid_oauthlib>=0.4.1
 oauthlib<3
 requests_oauthlib<1.2.0
-PyJWT
+PyJWT>=2

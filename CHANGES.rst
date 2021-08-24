@@ -15,6 +15,7 @@ Fixes:
   and upcoming release and features employed in code.
 * Fix failing ``cryptography`` package build step in Docker image due to missing ``g++`` and ``rust`` dependencies
   (``rust`` installed via ``cargo``).
+* Fix invalid call to ``decode()`` for JWT tokens directly returned as strings for ``PyJWT>=2``.
 
 0.6.0 (2020-04-01)
 ==================
