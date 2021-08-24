@@ -37,6 +37,8 @@ help:
 	@echo "  docker-push       to push the built docker image to the tagged repository."
 	@echo "\nTesting targets:"
 	@echo "  test              to run tests (but skip long running tests)."
+	@echo "  test-local        to run only local tests (skip online tests)."
+	@echo "  test-docker       to run smoke test of docker build and execution."
 	@echo "  test-all          to run all tests (including long running tests)."
 	@echo "  lint              to run code style checks with flake8."
 	@echo "  coverage          to generate an HTML report from tests coverage analysis."
@@ -138,8 +140,8 @@ docker-stop:
 docker-test: docker-build docker-stop
 	@echo "Smoke test of docker image: $(DOCKER_TAG)"
 	docker run --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
-	sleep 2
-	echo "Testing docker image..."
+	@sleep 2
+	@echo "Testing docker image..."
 	@(curl http://localhost:8000 | grep "Twitcher Frontpage" && \
 	  $(MAKE) docker-stop --no-print-directory || \
  	 ($(MAKE) docker-stop --no-print-directory && \
