@@ -74,7 +74,7 @@ jobs:
         if: ${{ matrix.python-version != 'None' }}
         # install package and dependencies directly,
         # skip sys/conda setup to use active python
-        run: make install develop version
+        run: make install develop
       - name: Display Packages
         if: ${{ matrix.python-version != 'None' }}
         run: pip freeze
