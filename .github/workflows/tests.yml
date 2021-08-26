@@ -87,7 +87,7 @@ jobs:
           hash -r
           env | sort
       - name: Run Tests
-        run: make ${{ matrix.test-case }}
+        run: make --no-keep-going ${{ matrix.test-case }}
       - name: Stop Workers
         if: ${{ matrix.python-version == 'None' }}
         run: make docker-stop

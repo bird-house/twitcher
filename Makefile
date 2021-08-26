@@ -142,7 +142,7 @@ docker-stop:
 .PHONY: docker-test
 docker-test: docker-build docker-stop
 	@echo "Smoke test of docker image: $(DOCKER_TAG)"
-	docker run --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
+	docker run --pull never --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
 	@sleep 2
 	@echo "Testing docker image..."
 	@(curl http://localhost:8000 | grep "Twitcher Frontpage" && \
