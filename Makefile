@@ -5,6 +5,7 @@ INI_FILE ?= development.ini
 
 DOCKER_TAG := birdhouse/twitcher:v$(VERSION)
 DOCKER_TEST := smoke-test-twitcher
+DOCKER_BUILD_XARGS ?= 
 
 # Bumpversion 'dry' config
 # if 'dry' is specified as target, any bumpversion call using 'BUMP_XARGS' will not apply changes
@@ -126,12 +127,12 @@ clean-dist: clean
 .PHONY: docker-build
 docker-build:
 	@echo "Building docker image: $(DOCKER_TAG)"
-	@-docker build "$(APP_ROOT)" -t "$(DOCKER_TAG)"
+	@docker build $(DOCKER_BUILD_XARGS) "$(APP_ROOT)" -t "$(DOCKER_TAG)"
 
 .PHONY: docker-push
 docker-push:
 	@echo "Pushing docker image: $(DOCKER_TAG)"
-	@-docker push "$(DOCKER_TAG)"
+	@docker push "$(DOCKER_TAG)"
 
 .PHONY: docker-stop
 docker-stop:
@@ -206,7 +207,7 @@ dist: clean
 	@echo "Builds source and wheel package ..."
 	@-python setup.py sdist
 	@-python setup.py bdist_wheel
-	ls -l dist
+	@ls -l dist
 
 ## Security
 
