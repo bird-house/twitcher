@@ -1,4 +1,4 @@
-pyramid>=1.10
+pyramid>=1.10,<2
 pyramid_rpc
 webob
 requests
