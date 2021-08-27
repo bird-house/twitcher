@@ -5,6 +5,7 @@ INI_FILE ?= development.ini
 
 DOCKER_TAG := birdhouse/twitcher:v$(VERSION)
 DOCKER_TEST := smoke-test-twitcher
+DOCKER_BUILD_XARGS ?= 
 
 # Bumpversion 'dry' config
 # if 'dry' is specified as target, any bumpversion call using 'BUMP_XARGS' will not apply changes
@@ -37,6 +38,8 @@ help:
 	@echo "  docker-push       to push the built docker image to the tagged repository."
 	@echo "\nTesting targets:"
 	@echo "  test              to run tests (but skip long running tests)."
+	@echo "  test-local        to run only local tests (skip online tests)."
+	@echo "  test-docker       to run smoke test of docker build and execution."
 	@echo "  test-all          to run all tests (including long running tests)."
 	@echo "  lint              to run code style checks with flake8."
 	@echo "  coverage          to generate an HTML report from tests coverage analysis."
@@ -124,12 +127,12 @@ clean-dist: clean
 .PHONY: docker-build
 docker-build:
 	@echo "Building docker image: $(DOCKER_TAG)"
-	@-docker build "$(APP_ROOT)" -t "$(DOCKER_TAG)"
+	@docker build $(DOCKER_BUILD_XARGS) "$(APP_ROOT)" -t "$(DOCKER_TAG)"
 
 .PHONY: docker-push
 docker-push:
 	@echo "Pushing docker image: $(DOCKER_TAG)"
-	@-docker push "$(DOCKER_TAG)"
+	@docker push "$(DOCKER_TAG)"
 
 .PHONY: docker-stop
 docker-stop:
@@ -140,9 +143,9 @@ docker-stop:
 .PHONY: docker-test
 docker-test: docker-build docker-stop
 	@echo "Smoke test of docker image: $(DOCKER_TAG)"
-	docker run --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
-	sleep 2
-	echo "Testing docker image..."
+	docker run --pull never --name $(DOCKER_TEST) -p 8000:8000 -d $(DOCKER_TAG)
+	@sleep 2
+	@echo "Testing docker image..."
 	@(curl http://localhost:8000 | grep "Twitcher Frontpage" && \
 	  $(MAKE) docker-stop --no-print-directory || \
  	 ($(MAKE) docker-stop --no-print-directory && \
@@ -180,6 +183,7 @@ lint:
 coverage: .coverage
 	@bash -c 'coverage report -m'
 	@bash -c 'coverage html -d coverage'
+	@bash -c 'coverage xml -i -o coverage/coverage.xml'
 	@-echo "Coverage report: open file://$(APP_ROOT)/coverage/index.html"
 
 ## Sphinx targets
@@ -203,7 +207,7 @@ dist: clean
 	@echo "Builds source and wheel package ..."
 	@-python setup.py sdist
 	@-python setup.py bdist_wheel
-	ls -l dist
+	@ls -l dist
 
 ## Security
 

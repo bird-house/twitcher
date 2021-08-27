@@ -31,7 +31,7 @@ RUN apk update \
         libxslt-dev \
         libxml2 \
         libffi-dev \
-        libressl-dev \
+        openssl-dev \
     && apk add --virtual .build-deps \
         python3-dev \
         py-pip \
