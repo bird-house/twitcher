@@ -20,8 +20,8 @@ pyramid_tm
 alembic
 # 'sqlalchemy==2.0' breaks 'zope.sqlalchemy'
 # (https://github.com/zopefoundation/zope.sqlalchemy/issues/60)
-sqlalchemy>=1.4,<2
+sqlalchemy>=1.3,<2
 transaction
 # avoid using 'zope.sqlalchemy==1.4' with regression since 'sqlalchemy==1.4' support
 # (https://github.com/zopefoundation/zope.sqlalchemy/pull/66)
-zope.sqlalchemy>=1.5
+zope.sqlalchemy>=1.3,!=1.4.*
