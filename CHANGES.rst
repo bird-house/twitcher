@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.5.6 (2021-09-10)
+==================
+
 Changes:
 
 * Add Github Actions workflow to run local tests and Docker smoke tests for pre-validation of features and changes.
