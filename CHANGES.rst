@@ -71,10 +71,6 @@ Changes:
 * Reduce log level of ``"failed security check"`` from ``exception`` to ``warning`` as it corresponds to the expected
   code behavior (unauthorised access) when ``OWSException`` is raised, instead of dumping an unhandled error traceback.
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 0.5.2 (2019-07-11)
 ==================
 
