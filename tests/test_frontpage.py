@@ -1,5 +1,3 @@
-from .common import BaseTest
-
 from twitcher import main, __version__
 from twitcher.adapter.default import TWITCHER_ADAPTER_DEFAULT
 from twitcher.frontpage import INFORMATION_PATH, VERSIONS_PATH
@@ -14,7 +12,8 @@ class TestFrontpageAPI(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.settings = {
             'twitcher.url': 'localhost',
-            'sqlalchemy.url': 'sqlite:///:memory:'
+            'sqlalchemy.url': 'sqlite:///:memory:',
+            'twitcher.ows_security': False,
         }
         cls.config = testing.setUp(settings=cls.settings)
         cls.app = TestApp(main({}, **cls.config.registry.settings))

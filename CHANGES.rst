@@ -4,6 +4,28 @@ Changes
 Unreleased
 ==========
 
+Changes:
+
+* Integrate functionality changes of ``0.5.x`` branch back into ``0.6.x``.
+* Align ``twitcher.adapter`` features of ``0.6.x`` branch to support ``0.5.x`` behaviour
+  in order to return to a linear development stream.
+
+0.6.0 (2020-04-01)
+==================
+
+Changes:
+
+* Added Keycloak support (`#91 <https://github.com/bird-house/twitcher/issues/91>`_).
+* Added Keycloak demo notebook (
+  `#92 <https://github.com/bird-house/twitcher/issues/92>`_,
+  `#93 <https://github.com/bird-house/twitcher/issues/93>`_,
+  `#94 <https://github.com/bird-house/twitcher/issues/94>`_).
+* Refactor models definitions (``Service``, ``Client``, ``Token``).
+* Refactor ``twitcher.adapter`` instantiation.
+* Drop ``rpcinterface`` feature and endpoint.
+* Drop ``owsproxy_delegate`` endpoint.
+* Drop ``owsproxy_secure`` endpoint.
+
 0.5.6 (2021-09-10)
 ==================
 
@@ -43,6 +65,10 @@ Changes:
 * Reduce log level of ``"failed security check"`` from ``exception`` to ``warning`` as it corresponds to the expected
   code behavior (unauthorised access) when ``OWSException`` is raised, instead of dumping an unhandled error traceback.
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 0.5.2 (2019-07-11)
 ==================
 

@@ -3,8 +3,7 @@ from twitcher.utils import get_settings
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from twitcher.typedefs import AnySettingsContainer, JSON
-    from twitcher.store import AccessTokenStoreInterface, ServiceStoreInterface
-    from twitcher.owssecurity import OWSSecurityInterface
+    from twitcher.interface import OWSSecurityInterface, OWSRegistryInterface
     from pyramid.config import Configurator
     from pyramid.request import Request
 
@@ -35,24 +34,17 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def tokenstore_factory(self, request):
-        # type: (Request) -> AccessTokenStoreInterface
-        """
-        Returns the 'tokenstore' implementation of the adapter.
-        """
-        raise NotImplementedError
-
-    def servicestore_factory(self, request):
-        # type: (Request) -> ServiceStoreInterface
-        """
-        Returns the 'servicestore' implementation of the adapter.
-        """
-        raise NotImplementedError
-
-    def owssecurity_factory(self, request):
-        # type: (Request) -> OWSSecurityInterface
+    def owssecurity_factory(self):
+        # type: () -> OWSSecurityInterface
         """
         Returns the 'owssecurity' implementation of the adapter.
+        """
+        raise NotImplementedError
+
+    def owsregistry_factory(self, request):
+        # type: (Request) -> OWSRegistryInterface
+        """
+        Returns the 'owsregistry' implementation of the adapter.
         """
         raise NotImplementedError
 

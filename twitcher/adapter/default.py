@@ -3,8 +3,9 @@ Factories to create storage backends.
 """
 
 from twitcher.adapter.base import AdapterInterface
-from twitcher.store import AccessTokenStore, ServiceStore
 from twitcher.owssecurity import OWSSecurity
+from twitcher.owsregistry import OWSRegistry
+from twitcher.store import ServiceStore
 from twitcher.utils import get_settings
 from pyramid.config import Configurator
 
@@ -24,16 +25,11 @@ class DefaultAdapter(AdapterInterface):
         settings = get_settings(container)
         return Configurator(settings=settings)
 
-    def tokenstore_factory(self, request):
-        return AccessTokenStore(request)
+    def owssecurity_factory(self):
+        return OWSSecurity()
 
-    def servicestore_factory(self, request):
-        return ServiceStore(request)
-
-    def owssecurity_factory(self, request):
-        token_store = self.tokenstore_factory(request)
-        service_store = self.servicestore_factory(request)
-        return OWSSecurity(token_store, service_store)
+    def owsregistry_factory(self, request):
+        return OWSRegistry(ServiceStore(request))
 
     def owsproxy_config(self, container):
         from twitcher.owsproxy import owsproxy_defaultconfig

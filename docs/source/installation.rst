@@ -55,34 +55,11 @@ For development you can use this command:
 Initialize Database
 ===================
 
-Initialize and upgrade the database using Alembic_.
-
-Generate your first revision:
+Before you can start the service you need to initialize or upgrade the database:
 
 .. code-block:: console
 
-  $ conda activate twitcher
-  $ alembic -c development.ini revision --autogenerate -m "init"
-
-.. warning::
-
-    This first step is only needed in development to generate a new database schema version.
-
-Upgrade to that revision:
-
-.. code-block:: console
-
-  $ alembic -c development.ini upgrade head
-
-Load default data into the database using a script.
-
-.. code-block:: console
-
-  $ initialize_twitcher_db development.ini
-
-.. note::
-
-  You can use `make migrate` as a shortcut to upgrade or init the twitcher database (last two steps).
+  $ make migrate
 
 Starting Twitcher Service
 =========================
@@ -94,6 +71,8 @@ Start the twitcher service using the `development.ini` configuration:
 .. code-block:: console
 
    $ pserve development.ini --reload
+   OR
+   $ make start
 
 .. _waitress: https://docs.pylonsproject.org/projects/waitress/en/latest/
 .. _Conda: https://conda.io/en/latest/

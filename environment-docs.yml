@@ -1,0 +1,14 @@
+# conda env create -f environment-docs.yml
+name: twitcher
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  # twitcher
+  - lxml
+  - requests
+  # sphinx
+  - sphinx
+  - ipython
+  - nbsphinx

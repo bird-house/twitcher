@@ -1,36 +1,73 @@
-.. toctree::
-   :hidden:
-
 .. _api:
 
-*************************
-XML-RPC API Documentation
-*************************
+#############
+API Reference
+#############
 
 .. contents::
     :local:
-    :depth: 2
+    :depth: 1
 
+.. automodule:: twitcher
 
-To use the XML-RPC interface, connect to twitcher’s HTTP port with any XML-RPC client library and run commands against it.
-An example of doing this using Python’s ``xmlrpclib`` client library is as follows.
+Twitcher Client
+===============
 
-.. code-block:: python
+.. autoclass:: twitcher.client.TwitcherService
+  :members:
+  :undoc-members:
 
-   import xmlrpc.client as xmlrpclib
-   server = xmlrpclib.Server('http://localhost:8000/RPC2')
+Twitcher CLI
+============
 
-.. warning::
+.. automodule:: twitcher.scripts.twitcherctl
+  :members:
 
-   When accessing the default HTTPS service you need to deactivate SSL verfication.
-   See ``twitcher/client.py`` how this can be done. You may also use the following code::
+.. _openapi_api:
 
-   >> from twitcher import client
-   >> server = client._create_server('https://localhost:8000/RPC2', verify_ssl=False)
+OpenAPI interface
+=================
 
-The `XML-RPC <http://xmlrpc.scripting.com/>`_ interface can also be accessed from Java and other languages.
+.. autoclass:: twitcher.api.TwitcherAPI
+  :members:
 
-See the ``twitcher/rpcinterface.py`` module for the available xmlrpc methods:
+.. _oauth2_api:
 
-.. autoclass:: twitcher.rpcinterface.RPCInterface
-   :members:
+OAuth2 Tokens
+=============
+
+.. automodule:: twitcher.oauth2
+  :members:
+
+.. autoclass:: twitcher.oauth2.RandomTokenValidator
+  :members:
+
+.. autoclass:: twitcher.oauth2.SignedTokenValidator
+  :members:
+
+.. autoclass:: twitcher.oauth2.CustomTokenValidator
+  :members:
+
+.. _ows_security_api:
+
+OWS Security
+============
+
+.. autoclass:: twitcher.owssecurity.OWSSecurity
+  :members:
+
+.. _ows_registry_api:
+
+OWS Registry
+============
+
+.. autoclass:: twitcher.owsregistry.OWSRegistry
+  :members:
+
+.. _ows_proxy_api:
+
+OWS Proxy
+=========
+
+.. automodule:: twitcher.owsproxy
+  :members:

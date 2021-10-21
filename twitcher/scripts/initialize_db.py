@@ -4,7 +4,7 @@ import sys
 from pyramid.paster import bootstrap, setup_logging
 from sqlalchemy.exc import OperationalError
 
-from .. import models
+# from .. import models
 
 
 def setup_models(dbsession):
@@ -12,15 +12,7 @@ def setup_models(dbsession):
     Add or update models / fixtures in the database.
 
     """
-    # dbsession.add(models.token.AccessToken(token='123', expires_at='60'))
-    # dbsession.add(models.service.Service(
-    #     name='wps',
-    #     url='http://localhost:5000/wps',
-    #     public=True,
-    #     verify=True,
-    #     purl=None,
-    #     type='WPS',
-    #     auth='token'))
+    # dbsession.add(models.oauth.Client(client_id='dev', client_secret='dev'))
     pass
 
 

@@ -1,10 +1,14 @@
-=====================================
-Twitcher: A simple OWS Security Proxy
-=====================================
+============================
+Twitcher: OWS Security Proxy
+============================
 
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
    :target: http://twitcher.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
+   
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3736114.svg
+   :target: https://doi.org/10.5281/zenodo.3736114
+   :alt: Zenodo DOI
 
 .. image:: https://travis-ci.org/bird-house/twitcher.svg?branch=master
    :target: https://travis-ci.org/bird-house/twitcher
@@ -22,13 +26,12 @@ Twitcher: A simple OWS Security Proxy
 Twitcher (the bird-watcher)
   *a birdwatcher mainly interested in catching sight of rare birds.* (`Leo <https://dict.leo.org/ende/index_en.html>`_).
 
-Twitcher is a security proxy for Web Processing Services (WPS). The execution of a WPS process is blocked by the proxy.
-The proxy service uses access tokens (UUID) to run a WPS process.
-The access tokens are valid only for a short period of time.
-In addition one can also use X.509 certificates for WPS client authentication.
+Twitcher is a security proxy for OWS services like Web Processing Services (WPS).
+The proxy service uses OAuth2 access tokens to protect the OWS service access.
+In addition one can also use X.509 certificates for client authentication.
 
 The implementation is not restricted to WPS services.
-It will be extended to more OWS services like WMS (Web Map Service) and CSW (Catalogue Service for the Web)
+It will be extended to more OWS services like WMS (Web Map Service)
 and might also be used for Thredds catalog services.
 
 Twitcher extensions:
@@ -38,6 +41,18 @@ Twitcher extensions:
   for workflow execution and a Swagger RESTful interface for Web Processing Services.
 
 Twitcher is implemented with the Python `Pyramid`_ web framework.
+
+You can try Twitcher online using Binder, or view the notebooks on NBViewer.
+
+.. image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/bird-house/twitcher.git/master?filepath=notebooks
+   :alt: Binder Launcher
+   :height: 20
+
+.. image:: https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg
+   :target: https://nbviewer.jupyter.org/github/bird-house/twitcher/tree/master/notebooks/
+   :alt: NBViewer
+   :height: 20
 
 Twitcher is part of the `Birdhouse`_ project. The documentation is on `ReadTheDocs`_.
 

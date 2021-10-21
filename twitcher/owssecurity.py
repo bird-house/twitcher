@@ -1,81 +1,47 @@
-from twitcher.exceptions import AccessTokenNotFound, ServiceNotFound
-from twitcher.owsexceptions import OWSAccessForbidden, OWSInvalidParameterValue
-from twitcher.utils import path_elements, parse_service_name
+from pyramid.settings import asbool
+
+from twitcher.interface import OWSSecurityInterface
 from twitcher.owsrequest import OWSRequest
-from pyramid.httpexceptions import HTTPNotFound
-
-import logging
-LOGGER = logging.getLogger("TWITCHER")
-
-
-def verify_cert(request):
-    if not request.headers.get('X-Ssl-Client-Verify', '') == 'SUCCESS':
-        raise OWSAccessForbidden("A valid X.509 client certificate is needed.")
-
-
-class OWSSecurityInterface(object):
-
-    def check_request(self, request):
-        raise NotImplementedError
+from twitcher.utils import get_settings
 
 
 class OWSSecurity(OWSSecurityInterface):
+    def verify_request(self, request):
+        """Verify that the service request is allowed.
 
-    def __init__(self, tokenstore, servicestore):
-        self.tokenstore = tokenstore
-        self.servicestore = servicestore
-
-    @staticmethod
-    def get_token_param(request):
-        token = None
-        if 'token' in request.params:
-            token = request.params['token']   # in params
-        elif 'access_token' in request.params:
-            token = request.params['access_token']   # in params
-        elif 'Access-Token' in request.headers:
-            token = request.headers['Access-Token']  # in header
-        else:  # in path
-            elements = path_elements(request.path)
-            if len(elements) > 1:  # there is always /ows/
-                token = elements[-1]   # last path element
-        return token
-
-    def verify_access(self, request, service):
-        # TODO: public service access handling is confusing.
+        This method verifies that the provided credentials are valid.
+        Depending on the authentication configuration this could be
+        a client X509 certificate or an OAuth2 token.
+        """
+        ows_request = OWSRequest(request)
+        if ows_request.service_allowed() is False:
+            return False
         try:
-            if service.auth == 'cert':
-                verify_cert(request)
-            else:  # token
-                self._verify_access_token(request)
-        except OWSAccessForbidden:
-            if not service.public:
-                raise
+            service_name = request.matchdict.get('service_name')
+            service = request.owsregistry.get_service_by_name(service_name)
+        except Exception:
+            return False
+        if service.get('public', False) is True:
+            return True
+        if ows_request.public_access() is True:
+            return True
+        if service.get('auth', '') == 'cert':
+            # Check the verification result of the client certificate.
+            # Verifcation is done by nginx.
+            return request.headers.get('X-Ssl-Client-Verify', '') == 'SUCCESS'
+        else:
+            # verify the oauth token for compute scope.
+            return request.verify_request(scopes=["compute"])
 
-    def _verify_access_token(self, request):
-        try:
-            # try to get access_token ... if no access restrictions then don't complain.
-            token = self.get_token_param(request)
-            access_token = self.tokenstore.fetch_by_token(token)
-            if access_token.is_expired():
-                raise OWSAccessForbidden("Access token is expired.")
-        except AccessTokenNotFound:
-            raise OWSAccessForbidden("Access token is required to access this service.")
 
-    def check_request(self, request):
-        protected_path = request.registry.settings.get('twitcher.ows_proxy_protected_path ', '/ows')
-        if request.path.startswith(protected_path):
-            # TODO: refactor this code
-            try:
-                service_name = parse_service_name(request.path, protected_path)
-                service = self.servicestore.fetch_by_name(service_name)
-                if service.public is True:
-                    LOGGER.warning('public access for service %s', service_name)
-            except ServiceNotFound:
-                raise OWSInvalidParameterValue(
-                    "Service not found", value="service", status_base=HTTPNotFound)
-            ows_request = OWSRequest(request)
-            if not ows_request.service_allowed():
-                raise OWSInvalidParameterValue(
-                    "Service {} not supported".format(ows_request.service), value="service")
-            if not ows_request.public_access():
-                self.verify_access(request, service)
+def includeme(config):
+    from twitcher.adapter import get_adapter_factory
+    settings = get_settings(config)
+    security_enabled = asbool(settings.get('twitcher.ows_security', True))
+
+    def is_verified(request):
+        if not security_enabled:
+            return True
+        adapter = get_adapter_factory(request)
+        return adapter.owssecurity_factory().verify_request(request)
+    config.add_request_method(is_verified, reify=True)

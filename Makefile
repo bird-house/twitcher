@@ -1,5 +1,5 @@
 # Configuration
-VERSION := 0.5.6
+VERSION := 0.6.0
 APP_ROOT := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 INI_FILE ?= development.ini
 
@@ -50,6 +50,9 @@ help:
 	@echo "  bump              to update the package version."
 	@echo "  dry               to only display results (not applied) when combined with 'bump'."
 	@echo "  dist              to build source and wheel package."
+	@echo "\nSecurity targets:"
+	@echo "  gensecret         to generate a secret hash key."
+	@echo "  gencert           to generate a self-signed certificate."
 
 .PHONY: debug
 debug:
@@ -205,3 +208,16 @@ dist: clean
 	@-python setup.py sdist
 	@-python setup.py bdist_wheel
 	@ls -l dist
+
+## Security
+
+.PHONY: gensecret
+gensecret:
+	@echo "Generate a secret ..."
+	@-python -c 'import uuid; print(uuid.uuid4().hex)'
+
+.PHONY: gencert
+gencert:
+	@echo "Generate a self-signed certificate ..."
+	@-bash -c "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem"
+	@-bash -c "openssl x509 -pubkey -noout -in cert.pem > pubkey.pem"

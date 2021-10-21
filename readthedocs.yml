@@ -2,6 +2,12 @@ version: 2
 build:
     image: latest
 
+sphinx:
+    configuration: docs/source/conf.py
+
+# Optionally build your docs in additional formats such as PDF and ePub
+formats: all
+
 python:
     version: 3
     install:
@@ -9,4 +15,4 @@ python:
         path: .
 
 conda:
-    environment: environment.yml
+    environment: environment-docs.yml
