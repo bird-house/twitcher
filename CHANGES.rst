@@ -11,6 +11,10 @@ Changes:
 * Revert removal of ``ServiceStoreInterface`` to provide relevant implementation details to external adapters.
 * Apply missing interface classes as bases to default implementations.
 * Add ``owsproxy_uri`` in frontpage response.
+* Use ``hybrid_property`` to provide direct ``twitcher.models.Service.verify`` setter instead of protected ``_verify``.
+* Add more logging and handling of errors to catch cases where adapter doesn't return a valid ``Service`` instance.
+* Add ``scoped_session`` to ``session_factory`` object to ensure distinct connections and transactions are created for
+  concurrent requests.
 
 0.6.0 (2020-04-01)
 ==================

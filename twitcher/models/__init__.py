@@ -93,6 +93,8 @@ def includeme(config):
     Activate this setup using ``config.include('twitcher.models')``.
 
     """
+    LOGGER.debug("Preparing database session.")
+
     settings = config.get_settings()
     settings['tm.manager_hook'] = 'pyramid_tm.explicit_manager'
 
