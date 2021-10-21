@@ -3,6 +3,8 @@ from sqlalchemy import (
     Integer,
     String,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
+from typing import Union
 
 from .meta import Base
 
@@ -17,11 +19,15 @@ class Service(Base):
     _verify = Column(Integer)  # sqlite does not support Boolean
     auth = Column(String(40))
 
-    @property
+    @hybrid_property
     def verify(self):
         if self._verify == 1:
             return True
         return False
+
+    @verify.setter
+    def verify(self, verify: Union[bool, int]):
+        self._verify = int(verify)
 
     @property
     def public(self):

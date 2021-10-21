@@ -158,7 +158,11 @@ def owsproxy_view(request):
     try:
         extra_path = request.matchdict.get('extra_path')
         service = request.owsregistry.get_service_by_name(service_name)
-    except Exception:
+        if not service:
+            LOGGER.debug("No error raised but service was not found: %s", service_name)
+            raise OWSAccessFailed("Could not find service: {}".format(service_name))
+    except Exception as exc:
+        LOGGER.debug("Error occurred while trying to retrieve service: %s", service_name, exc_info=exc)
         return OWSAccessFailed("Could not find service: {}".format(service_name))
     try:
         if not request.is_verified:
