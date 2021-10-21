@@ -9,6 +9,8 @@ Changes:
 * Integrate functionality changes of ``0.5.x`` branch back into ``0.6.x``.
 * Align ``twitcher.adapter`` features of ``0.6.x`` branch to support ``0.5.x`` behaviour
   in order to return to a linear development stream.
+* Revert removal of ``ServiceStoreInterface`` to provide relevant implementation details to external adapters.
+* Apply missing interface classes as bases to default implementations.
 
 0.6.0 (2020-04-01)
 ==================

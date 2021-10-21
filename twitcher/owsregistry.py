@@ -1,10 +1,11 @@
+from twitcher.interface import OWSRegistryInterface
 from twitcher.utils import sanitize
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
 
 
-class OWSRegistry(object):
+class OWSRegistry(OWSRegistryInterface):
     """
     OWS Service Registry is a service to register OWS services for the OWS proxy.
     """

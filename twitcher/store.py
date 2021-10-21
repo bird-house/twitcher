@@ -7,30 +7,27 @@ See also:
     - :class:`twitcher.adapter.base.AdapterInterface`
     - :func:`twitcher.adapter.get_adapter_factory`
 """
-
 from twitcher.exceptions import (
     ServiceNotFound,
     DatabaseError
 )
+from twitcher.interface import ServiceStoreInterface
 from twitcher.utils import baseurl
 from twitcher import models
 
 from sqlalchemy.exc import DBAPIError
 
 
-class ServiceStore(object):
+class ServiceStore(ServiceStoreInterface):
     """
     Stores a services. It inserts or updates the service with a given name.
     """
-    def __init__(self, request):
-        self.request = request
-
     def save_service(self, name, url, *args, **kwargs):
         """
         Stores an OWS service in database (insert or update).
 
         :param name: A service name string.
-        :parm url: A URL string.
+        :param url: A URL string.
         """
         try:
             query = self.request.dbsession.query(models.Service)

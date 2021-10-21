@@ -1,12 +1,49 @@
 """
-Twitcher interfaces to allow alternative implementions in adapters.
+Twitcher interfaces to allow alternative implementations in adapters.
 """
-from typing import Dict, List
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any, AnyStr, Dict, List
+
+    from pyramid.request import Request
+
+    from twitcher.models import Service
 
 
 class OWSSecurityInterface(object):
     def verify_request(self, request) -> bool:
         """Verify that the service request is allowed."""
+        raise NotImplementedError
+
+
+class ServiceStoreInterface(object):
+    def __init__(self, request):
+        # type: (Request) -> None
+        self.request = request
+
+    def save_service(self, name, url, *args, **kwargs):
+        # type: (AnyStr, AnyStr, Any, Any) -> None
+        raise NotImplementedError
+
+    def delete_service(self, name):
+        # type: (AnyStr) -> None
+        raise NotImplementedError
+
+    def list_services(self):
+        # type: () -> List[Service]
+        raise NotImplementedError
+
+    def fetch_by_name(self, name):
+        # type: (AnyStr) -> Service
+        raise NotImplementedError
+
+    def fetch_by_url(self, url):
+        # type: (AnyStr) -> Service
+        raise NotImplementedError
+
+    def clear_services(self):
+        # type: () -> None
         raise NotImplementedError
 
 
