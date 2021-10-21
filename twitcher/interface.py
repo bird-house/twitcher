@@ -1,14 +1,11 @@
 """
 Twitcher interfaces to allow alternative implementations in adapters.
 """
-from typing import TYPE_CHECKING
+from typing import Any, Dict, List
 
-if TYPE_CHECKING:
-    from typing import Any, AnyStr, Dict, List
+from pyramid.request import Request
 
-    from pyramid.request import Request
-
-    from twitcher.models import Service
+from twitcher.models import Service
 
 
 class OWSSecurityInterface(object):
@@ -18,32 +15,25 @@ class OWSSecurityInterface(object):
 
 
 class ServiceStoreInterface(object):
-    def __init__(self, request):
-        # type: (Request) -> None
+    def __init__(self, request: Request) -> None:
         self.request = request
 
-    def save_service(self, name, url, *args, **kwargs):
-        # type: (AnyStr, AnyStr, Any, Any) -> None
+    def save_service(self, name: str, url: str, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError
 
-    def delete_service(self, name):
-        # type: (AnyStr) -> None
+    def delete_service(self, name: str) -> None:
         raise NotImplementedError
 
-    def list_services(self):
-        # type: () -> List[Service]
+    def list_services(self) -> List[Service]:
         raise NotImplementedError
 
-    def fetch_by_name(self, name):
-        # type: (AnyStr) -> Service
+    def fetch_by_name(self, name: str) -> Service:
         raise NotImplementedError
 
-    def fetch_by_url(self, url):
-        # type: (AnyStr) -> Service
+    def fetch_by_url(self, url: str) -> Service:
         raise NotImplementedError
 
-    def clear_services(self):
-        # type: () -> None
+    def clear_services(self) -> None:
         raise NotImplementedError
 
 
