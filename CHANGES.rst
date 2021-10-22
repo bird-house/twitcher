@@ -186,14 +186,14 @@ New Features:
 0.3.5 (2018-03-01)
 ==================
 
-* Fix PEP8
-* Updated makefile
-* Updated buildout recipes
-* Fixed nginx dependency
-* Updated mongodb 3.4
-* Configured csrf in xmlrpc
-* Fixed tutorial example
-* Added readthedocs, licence and chat badges
+* Fix PEP8.
+* Updated makefile.
+* Updated buildout recipes.
+* Fixed nginx dependency.
+* Updated mongodb 3.4.
+* Configured csrf in ``xmlrpc``.
+* Fixed tutorial example.
+* Added readthedocs, licence and chat badges.
 
 0.3.4 (2017-05-05)
 ==================
@@ -215,7 +215,7 @@ New Features:
 ==================
 
 * Fix PEP8.
-* Set permission of certfile.
+* Set permission of ``certfile``.
 * Added option ``ows-proxy-delegate``.
 
 0.3.0 (2017-01-11)
@@ -286,7 +286,7 @@ Fixes:
 
 * Updated docs.
 * Renamed Python package to ``pyramid_twitcher``.
-* Conda ``envionment.yml`` added.
+* Conda ``environment.yml`` added.
 * Using ``get_sane_name()``.
 * Replaced ``httplib2`` by ``requests``.
 
