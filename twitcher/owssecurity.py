@@ -27,7 +27,7 @@ class OWSSecurity(OWSSecurityInterface):
             return True
         if service.get('auth', '') == 'cert':
             # Check the verification result of the client certificate.
-            # Verifcation is done by nginx.
+            # Verification is done by nginx.
             return request.headers.get('X-Ssl-Client-Verify', '') == 'SUCCESS'
         else:
             # verify the oauth token for compute scope.
