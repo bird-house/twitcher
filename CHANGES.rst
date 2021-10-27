@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.6.1 (2021-10-27)
+==================
+
 Changes:
 
 * Integrate functionality changes of ``0.5.x`` branch back into ``0.6.x``.
