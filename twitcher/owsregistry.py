@@ -1,10 +1,11 @@
+from twitcher.interface import OWSRegistryInterface
 from twitcher.utils import sanitize
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
 
 
-class OWSRegistry(object):
+class OWSRegistry(OWSRegistryInterface):
     """
     OWS Service Registry is a service to register OWS services for the OWS proxy.
     """
@@ -43,8 +44,10 @@ class OWSRegistry(object):
         """
         try:
             service = self.store.fetch_by_name(name=name)
-        except Exception:
-            LOGGER.error('Could not get service with name {}'.format(name))
+        except Exception as exc:
+            msg = 'Could not get service with name {}'.format(name)
+            LOGGER.debug(msg, exc_info=exc)
+            LOGGER.error(msg)
             return {}
         else:
             return service.json()

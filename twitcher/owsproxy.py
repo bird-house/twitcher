@@ -11,7 +11,7 @@ from pyramid.response import Response
 from pyramid.settings import asbool
 from typing import TYPE_CHECKING
 
-from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed
+from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed, OWSException, OWSNoApplicableCode
 from twitcher.utils import (
     replace_caps_url,
     get_settings,
@@ -116,7 +116,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
                 return OWSAccessForbidden(msg)
         else:
             # return OWSAccessFailed("Could not get content type from response.")
-            LOGGER.warn("Could not get content type from response")
+            LOGGER.warning("Could not get content type from response")
 
         try:
             if ct in ['text/xml', 'application/xml', 'text/xml;charset=ISO-8859-1']:
@@ -154,15 +154,26 @@ def owsproxy_base_url(container):
 
 
 def owsproxy_view(request):
+    service_name = request.matchdict.get('service_name')
     try:
-        service_name = request.matchdict.get('service_name')
         extra_path = request.matchdict.get('extra_path')
         service = request.owsregistry.get_service_by_name(service_name)
-    except Exception:
-        return OWSAccessFailed("Could not find service")
-    if request.is_verified is False:
-        raise OWSAccessForbidden("Access to service is forbidden.")
-    return _send_request(request, service, extra_path, request_params=request.query_string)
+        if not service:
+            LOGGER.debug("No error raised but service was not found: %s", service_name)
+            raise OWSAccessFailed("Could not find service: {}".format(service_name))
+    except Exception as exc:
+        LOGGER.debug("Error occurred while trying to retrieve service: %s", service_name, exc_info=exc)
+        return OWSAccessFailed("Could not find service: {}".format(service_name))
+    try:
+        if not request.is_verified:
+            raise OWSAccessForbidden("Access to service is forbidden.")
+        return _send_request(request, service, extra_path, request_params=request.query_string)
+    except OWSException as exc:
+        LOGGER.warning("Security check failed but was not handled as expected by 'is_verified' method.", exc_info=exc)
+        raise
+    except Exception as exc:
+        LOGGER.exception("Security check failed due to unhandled error.", exc_info=exc)
+        raise OWSNoApplicableCode("Unhandled error: {!s}".format(exc))
 
 
 def owsproxy_defaultconfig(config):

@@ -1,6 +1,7 @@
+import logging
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import configure_mappers
+from sqlalchemy.orm import configure_mappers, scoped_session
 import zope.sqlalchemy
 
 # import or define all models here to ensure they are attached to the
@@ -8,6 +9,8 @@ import zope.sqlalchemy
 from .service import Service   # noqa: F401
 from .oauth import Client  # noqa: F401
 from .oauth import Token  # noqa: F401
+
+LOGGER = logging.getLogger("TWITCHER")
 
 # run configure_mappers after defining all of the models to ensure
 # all relationships can be setup
@@ -21,7 +24,7 @@ def get_engine(settings, prefix='sqlalchemy.'):
 def get_session_factory(engine):
     factory = sessionmaker()
     factory.configure(bind=engine)
-    return factory
+    return scoped_session(factory)
 
 
 def get_tm_session(session_factory, transaction_manager):
@@ -90,6 +93,8 @@ def includeme(config):
     Activate this setup using ``config.include('twitcher.models')``.
 
     """
+    LOGGER.debug("Preparing database session.")
+
     settings = config.get_settings()
     settings['tm.manager_hook'] = 'pyramid_tm.explicit_manager'
 

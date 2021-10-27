@@ -5,7 +5,7 @@ INI_FILE ?= development.ini
 
 DOCKER_TAG := birdhouse/twitcher:v$(VERSION)
 DOCKER_TEST := smoke-test-twitcher
-DOCKER_BUILD_XARGS ?= 
+DOCKER_BUILD_XARGS ?=
 
 # Bumpversion 'dry' config
 # if 'dry' is specified as target, any bumpversion call using 'BUMP_XARGS' will not apply changes

@@ -44,16 +44,19 @@ class ServicesPostBodySchema(colander.MappingSchema):
 class TwitcherAPI(object):
     """Twitcher API defined with OpenAPI."""
 
+    @staticmethod
     @services.get(tags=['services', 'list'])
     def list_services(request):
         """Returns a list of registered services."""
         return request.owsregistry.list_services()
 
+    @staticmethod
     @services.delete(tags=['services', 'clear'])
     def clear_services(request):
         """Clear all services."""
         return request.owsregistry.clear_services()
 
+    @staticmethod
     @services.post(tags=['services', 'register'],
                    validators=(colander_body_validator, ),
                    schema=ServicesPostBodySchema())
@@ -62,11 +65,13 @@ class TwitcherAPI(object):
         LOGGER.debug("request validated={}".format(request.validated))
         return request.owsregistry.register_service(**request.validated)
 
+    @staticmethod
     @service.get(tags=['service', 'get'])
     def get_service(request):
         """Get registered service."""
         return request.owsregistry.get_service_by_name(name=request.matchdict['name'])
 
+    @staticmethod
     @service.delete(tags=['service', 'unregister'])
     def unregister_service(request):
         """Remove registered service."""

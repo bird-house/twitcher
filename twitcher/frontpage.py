@@ -1,7 +1,9 @@
 from twitcher.adapter import get_adapter_factory
-from twitcher.utils import get_twitcher_url, is_json_serializable
+from twitcher.utils import get_settings, get_twitcher_url, is_json_serializable
 from twitcher.oauth2 import CLIENT_APP_ENDPOINT, TOKEN_ENDPOINT
+from twitcher.owsproxy import owsproxy_base_url
 from twitcher import __version__
+from pyramid.settings import asbool
 from pyramid.view import view_config
 
 VERSIONS_PATH = '/versions'
@@ -10,15 +12,22 @@ INFORMATION_PATH = '/info'
 
 @view_config(route_name='frontpage', renderer='json')
 def frontpage(request):
-    return {
+    url = get_twitcher_url(request)
+    body = {
         'message': 'Twitcher Frontpage',
-        'information_uri': get_twitcher_url(request) + INFORMATION_PATH,
-        'versions_uri': get_twitcher_url(request) + VERSIONS_PATH,
-        'services_uri': "{}/services".format(get_twitcher_url(request)),
-        'client_uri': "{}{}".format(get_twitcher_url(request), CLIENT_APP_ENDPOINT),
-        'token_uri': "{}{}".format(get_twitcher_url(request), TOKEN_ENDPOINT),
-        'openapi_uri': "{}/__api__".format(get_twitcher_url(request)),
+        'information_uri': url + INFORMATION_PATH,
+        'versions_uri': url + VERSIONS_PATH,
+        'services_uri': "{}/services".format(url),
+        'client_uri': "{}{}".format(url, CLIENT_APP_ENDPOINT),
+        'token_uri': "{}{}".format(url, TOKEN_ENDPOINT),
+        'openapi_uri': "{}/__api__".format(url),
     }
+    settings = get_settings(request)
+    if asbool(settings.get('twitcher.ows_proxy', True)):
+        body["owsproxy_uri"] = owsproxy_base_url(request) + "/proxy"
+    else:
+        body["owsproxy_uri"] = None
+    return body
 
 
 @view_config(route_name='information', renderer='json')

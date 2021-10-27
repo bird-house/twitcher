@@ -6,16 +6,15 @@ Unreleased
 
 Changes:
 
-* Add Github Actions workflow to run local tests and Docker smoke tests for pre-validation of features and changes.
-* Add Github issue, feature request and pull request templates.
-
-Fixes:
-
-* Pin packages ``pyramid<2``, ``zope.sqlalchemy>=1.5`` and ``sqlalchemy>=1.4,<2`` to avoid errors with conflicting
-  and upcoming release and features employed in code.
-* Fix failing ``cryptography`` package build step in Docker image due to missing ``g++`` and ``rust`` dependencies
-  (``rust`` installed via ``cargo``).
-* Fix invalid call to ``decode()`` for JWT tokens directly returned as strings for ``PyJWT>=2``.
+* Integrate functionality changes of ``0.5.x`` branch back into ``0.6.x``.
+* Align ``twitcher.adapter`` features of ``0.6.x`` branch to support ``0.5.x`` behaviour.
+* Revert removal of ``ServiceStoreInterface`` to provide relevant implementation details to external adapters.
+* Apply missing interface classes as bases to default implementations.
+* Add ``owsproxy_uri`` in frontpage response.
+* Use ``hybrid_property`` to provide direct ``twitcher.models.Service.verify`` setter instead of protected ``_verify``.
+* Add more logging and handling of errors to catch cases where adapter doesn't return a valid ``Service`` instance.
+* Add ``scoped_session`` to ``session_factory`` object to ensure distinct connections and transactions are created for
+  concurrent requests.
 
 0.6.0 (2020-04-01)
 ==================
@@ -27,6 +26,35 @@ Changes:
   `#92 <https://github.com/bird-house/twitcher/issues/92>`_,
   `#93 <https://github.com/bird-house/twitcher/issues/93>`_,
   `#94 <https://github.com/bird-house/twitcher/issues/94>`_).
+* Refactor models definitions (``Service``, ``Client``, ``Token``).
+* Refactor ``twitcher.adapter`` instantiation.
+* Drop ``rpcinterface`` feature and endpoint.
+* Drop ``owsproxy_delegate`` endpoint.
+* Drop ``owsproxy_secure`` endpoint.
+
+0.5.6 (2021-09-10)
+==================
+
+Changes:
+
+* Add Github Actions workflow to run local tests and Docker smoke tests for pre-validation of features and changes.
+* Add Github issue, feature request and pull request templates.
+
+Fixes:
+
+* Pin packages ``pyramid<2``, ``zope.sqlalchemy>=1.5`` and ``sqlalchemy>=1.4,<2`` to avoid errors with conflicting
+  and upcoming release and features employed in code.
+* Fix failing ``cryptography`` package build step in Docker image due to missing ``g++`` and ``rust`` dependencies
+  (``rust`` installed via ``cargo``).
+
+0.5.5 (2021-01-27)
+==================
+
+Fixes:
+
+* Update invalid reference to ``python3-dev`` in docker image.
+  Travis-CI is also updated to run a smoke test build of this docker image prior to merge to help early detection
+  of problems prior to deploy triggers from tags.
 
 0.5.4 (2020-10-29)
 ==================
@@ -42,7 +70,6 @@ Changes:
 
 * Reduce log level of ``"failed security check"`` from ``exception`` to ``warning`` as it corresponds to the expected
   code behavior (unauthorised access) when ``OWSException`` is raised, instead of dumping an unhandled error traceback.
-
 
 0.5.2 (2019-07-11)
 ==================
@@ -159,14 +186,14 @@ New Features:
 0.3.5 (2018-03-01)
 ==================
 
-* Fix PEP8
-* Updated makefile
-* Updated buildout recipes
-* Fixed nginx dependency
-* Updated mongodb 3.4
-* Configured csrf in xmlrpc
-* Fixed tutorial example
-* Added readthedocs, licence and chat badges
+* Fix PEP8.
+* Updated makefile.
+* Updated buildout recipes.
+* Fixed nginx dependency.
+* Updated mongodb 3.4.
+* Configured csrf in ``xmlrpc``.
+* Fixed tutorial example.
+* Added readthedocs, licence and chat badges.
 
 0.3.4 (2017-05-05)
 ==================
@@ -188,7 +215,7 @@ New Features:
 ==================
 
 * Fix PEP8.
-* Set permission of certfile.
+* Set permission of ``certfile``.
 * Added option ``ows-proxy-delegate``.
 
 0.3.0 (2017-01-11)
@@ -259,7 +286,7 @@ Fixes:
 
 * Updated docs.
 * Renamed Python package to ``pyramid_twitcher``.
-* Conda ``envionment.yml`` added.
+* Conda ``environment.yml`` added.
 * Using ``get_sane_name()``.
 * Replaced ``httplib2`` by ``requests``.
 
