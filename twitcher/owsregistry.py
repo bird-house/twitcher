@@ -95,4 +95,11 @@ def includeme(config):
     def owsregistry(request):
         adapter = get_adapter_factory(request)
         return adapter.owsregistry_factory(request)
-    config.add_request_method(owsregistry, reify=True)
+
+    # In case the adapter employs caching or other per-request/session dependent transaction details, we must ensure
+    # to regenerate the owsregistry object each time since the service-store it provides (amongst other things),
+    # only initializes the request once instead of per-request method calls.
+    # For example, 'request.owsregistry.get_service_by_name' will call 'ServiceStore.fetch_by_name' with
+    # the 'ServiceStore' initialized and stored with the first ever request (if reify=True). All following service
+    # operations would employ the stored database session contained within this request.
+    config.add_request_method(owsregistry, reify=False, property=True)
