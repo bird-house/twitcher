@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.6.2 (2021-12-01)
+==================
+
 Changes:
 
 * Enforce regeneration of the ``OWSRegistry`` object on each request to avoid incorrect handling by adapters that
