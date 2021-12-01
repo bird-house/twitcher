@@ -4,6 +4,11 @@ Changes
 Unreleased
 ==========
 
+Changes:
+
+* Enforce regeneration of the ``OWSRegistry`` object on each request to avoid incorrect handling by adapters that
+  require the new transaction or refreshed database session state each time.
+
 0.6.1 (2021-10-27)
 ==================
 
