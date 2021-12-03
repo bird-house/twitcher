@@ -10,9 +10,9 @@ Twitcher: OWS Security Proxy
    :target: https://doi.org/10.5281/zenodo.3736114
    :alt: Zenodo DOI
 
-.. image:: https://travis-ci.org/bird-house/twitcher.svg?branch=master
-   :target: https://travis-ci.org/bird-house/twitcher
-   :alt: Travis Build
+.. image:: https://github.com/bird-house/twitcher/actions/workflows/tests.yml/badge.svg?branch=master
+   :target: https://github.com/bird-house/twitcher/actions/workflows/tests.yml
+   :alt: GitHub Actions Status
 
 .. image:: https://img.shields.io/github/license/bird-house/twitcher.svg
    :target: https://github.com/bird-house/twitcher/blob/master/LICENSE.txt
