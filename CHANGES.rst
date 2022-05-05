@@ -4,6 +4,11 @@ Changes
 Unreleased
 ==========
 
+Changes:
+
+* Add request and response hooks operations to adapter allowing derived implementations to modify OWS proxied requests
+  and returned responses from the service. The default adapter applies no modifications to the original definitions.
+
 0.6.2 (2021-12-01)
 ==================
 

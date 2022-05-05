@@ -32,3 +32,5 @@ pyramid_oauthlib>=0.4.1
 oauthlib<3
 requests_oauthlib<1.2.0
 PyJWT>=2
+# typing extension required for TypedDict
+typing_extensions; python_version < "3.8"
