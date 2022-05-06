@@ -25,7 +25,7 @@ class AdapterWithHooks(DefaultAdapter):
         # json property re-generates from it, cannot set value direct on dict returned by it
         data = json.loads(response.text)
         data["Hook-Test-Service"] = service["name"]
-        response.body = json.dumps(data).encode()
+        response.body = json.dumps(data).encode("UTF-8")
         return response
 
 
@@ -73,7 +73,7 @@ class TestAdapterWithHooks(FunctionalTest):
             _resp = _req.response
             _resp.content_type = "application/json"
             _resp.status_code = 200
-            _resp.body = json.dumps({"response": "ok"}).encode()
+            _resp.body = json.dumps({"response": "ok"}).encode("UTF-8")
             _resp.content = _resp.body
             _resp.ok = True
             return _resp
