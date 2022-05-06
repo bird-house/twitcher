@@ -38,8 +38,8 @@ class DefaultAdapter(AdapterInterface):
             container = self.configurator_factory(container)
         owsproxy_defaultconfig(container)
 
-    def pre_request_hook(self, request, service):
+    def request_hook(self, request, service):
         return request
 
-    def post_request_hook(self, response, service):
+    def response_hook(self, response, service):
         return response

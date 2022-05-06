@@ -18,7 +18,7 @@ class OAuth2AppTests(FunctionalTest):
         self.config.include('twitcher.oauth2')
         self.config.add_route('compute', '/api/compute')
         self.config.add_view(compute_view, route_name='compute', renderer='json')
-        self.app = self.test_app()
+        self.app = self.get_test_app()
 
     def test_compute_with_param(self):
         access_token = self.create_token()
