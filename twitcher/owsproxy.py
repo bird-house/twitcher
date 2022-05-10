@@ -18,10 +18,11 @@ import logging
 LOGGER = logging.getLogger('TWITCHER')
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Iterable, Optional
 
     from pyramid.config import Configurator
     from pyramid.request import Request
+    from requests.models import Response as RequestsResponse
 
     from twitcher.adapter.base import AdapterInterface
     from twitcher.models.service import ServiceConfig
@@ -58,9 +59,11 @@ allowed_hosts = (
 # requests.models.Response defaults its chunk size to 128 bytes, which is very slow
 class BufferedResponse(object):
     def __init__(self, resp):
+        # type: (RequestsResponse) -> None
         self.resp = resp
 
     def __iter__(self):
+        # type: () -> Iterable[bytes]
         return self.resp.iter_content(64 * 1024)
 
 
@@ -93,7 +96,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
         hop_by_hop = ['connection', 'keep-alive', 'public', 'proxy-authenticate', 'transfer-encoding', 'upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
                         headers={k: v for k, v in list(resp_iter.headers.items()) if k.lower() not in hop_by_hop},
-                        status_code=resp_iter.status_code)
+                        status_code=resp_iter.status_code, request=request)
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
@@ -139,7 +142,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
         headers = {}
         if ct:
             headers["Content-Type"] = ct
-        return Response(content, status=resp.status_code, headers=headers)
+        return Response(content, status=resp.status_code, headers=headers, request=request)
 
 
 def owsproxy_base_path(container):
@@ -170,9 +173,12 @@ def owsproxy_view(request):
     try:
         if not request.is_verified:
             raise OWSAccessForbidden("Access to service is forbidden.")
-        request = request.adapter.request_hook(request, service)
+        # since request can be modified by hooks, keep reference to original adapter
+        # in order to ensure both request/response operations are handled by the same logic
+        adapter = request.adapter
+        request = adapter.request_hook(request, service)
         response = _send_request(request, service, extra_path, request_params=request.query_string)
-        response = request.adapter.response_hook(response, service)
+        response = adapter.response_hook(response, service)
         return response
     except OWSException as exc:
         LOGGER.warning("Security check failed but was not handled as expected by 'is_verified' method.", exc_info=exc)
