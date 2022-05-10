@@ -18,7 +18,7 @@ import logging
 LOGGER = logging.getLogger('TWITCHER')
 
 if TYPE_CHECKING:
-    from typing import Iterable, Optional
+    from typing import Iterator, Optional
 
     from pyramid.config import Configurator
     from pyramid.request import Request
@@ -63,7 +63,7 @@ class BufferedResponse(object):
         self.resp = resp
 
     def __iter__(self):
-        # type: () -> Iterable[bytes]
+        # type: () -> Iterator[bytes]
         return self.resp.iter_content(64 * 1024)
 
 
