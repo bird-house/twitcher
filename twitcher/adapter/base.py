@@ -2,10 +2,13 @@ from twitcher.utils import get_settings
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from twitcher.typedefs import AnySettingsContainer, JSON
-    from twitcher.interface import OWSSecurityInterface, OWSRegistryInterface
     from pyramid.config import Configurator
     from pyramid.request import Request
+    from pyramid.response import Response
+
+    from twitcher.interface import OWSSecurityInterface, OWSRegistryInterface
+    from twitcher.models.service import ServiceConfig
+    from twitcher.typedefs import AnySettingsContainer, JSON
 
 
 class AdapterInterface(object):
@@ -52,5 +55,33 @@ class AdapterInterface(object):
         # type: (AnySettingsContainer) -> None
         """
         Returns the 'owsproxy' implementation of the adapter.
+        """
+        raise NotImplementedError
+
+    def request_hook(self, request, service):
+        # type: (Request, ServiceConfig) -> Request
+        """
+        Apply modifications onto the request before sending it.
+
+        .. versionadded:: 0.7.0
+
+        Request members employed after this hook is called include:
+        - :meth:`Request.headers`
+        - :meth:`Request.method`
+        - :meth:`Request.body`
+
+        This method can modified those members to adapt the request for specific service logic.
+        """
+        raise NotImplementedError
+
+    def response_hook(self, response, service):
+        # type: (Response, ServiceConfig) -> Response
+        """
+        Apply modifications onto the response from sent request.
+
+        .. versionadded:: 0.7.0
+
+        The received response from the proxied service is normally returned directly.
+        This method can modify the response to adapt it for specific service logic.
         """
         raise NotImplementedError

@@ -20,15 +20,16 @@ def dummy_request(dbsession):
 
 
 class BaseTest(unittest.TestCase):
+    settings = {
+        'sqlalchemy.url': 'sqlite:///:memory:',
+        'twitcher.username': 'testuser',
+        'twitcher.password': 'testpassword',
+        'twitcher.token.type': 'custom_token',
+        'twitcher.token.secret': 'testsecret',
+    }
+
     def setUp(self):
-        self.config = testing.setUp(
-            settings={
-                'sqlalchemy.url': 'sqlite:///:memory:',
-                'twitcher.username': 'testuser',
-                'twitcher.password': 'testpassword',
-                'twitcher.token.type': 'custom_token',
-                'twitcher.token.secret': 'testsecret',
-            })
+        self.config = testing.setUp(settings=self.settings)
         self.config.include('twitcher.models')
         settings = self.config.get_settings()
 

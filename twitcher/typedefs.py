@@ -1,3 +1,4 @@
+import typing
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import AnyStr, Dict, List, Tuple, Union
@@ -9,6 +10,11 @@ if TYPE_CHECKING:
     from webob.response import Response as WebobResponse
     from webob.headers import ResponseHeaders, EnvironHeaders
     from webtest.response import TestResponse
+
+    if hasattr(typing, "TypedDict"):
+        from typing import TypedDict  # pylint: disable=E0611,no-name-in-module
+    else:
+        from typing_extensions import TypedDict  # noqa
 
     Number = Union[int, float]
     AnyValue = Union[AnyStr, Number, bool, None]

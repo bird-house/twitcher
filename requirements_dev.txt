@@ -6,3 +6,4 @@ sphinx
 nbsphinx
 bump2version
 twine
+mock

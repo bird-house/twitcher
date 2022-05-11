@@ -19,7 +19,7 @@ class OWSProxyAppTest(FunctionalTest):
         self.init_store()
 
         self.config.include('twitcher.owsproxy')
-        self.app = self.test_app()
+        self.app = self.get_test_app()
 
     @pytest.mark.online
     def test_getcaps(self):

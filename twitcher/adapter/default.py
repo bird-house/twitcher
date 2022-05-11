@@ -37,3 +37,9 @@ class DefaultAdapter(AdapterInterface):
         if not isinstance(container, Configurator):
             container = self.configurator_factory(container)
         owsproxy_defaultconfig(container)
+
+    def request_hook(self, request, service):
+        return request
+
+    def response_hook(self, response, service):
+        return response

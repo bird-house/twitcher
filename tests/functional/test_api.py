@@ -14,7 +14,7 @@ class APITest(FunctionalTest):
         self.init_store()
 
         self.config.include('twitcher.api')
-        self.app = self.test_app()
+        self.app = self.get_test_app()
 
     @pytest.mark.skip(reason="not working")
     def test_register_service_and_unregister_it(self):

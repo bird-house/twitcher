@@ -12,19 +12,21 @@ from pyramid.settings import asbool
 from typing import TYPE_CHECKING
 
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed, OWSException, OWSNoApplicableCode
-from twitcher.utils import (
-    replace_caps_url,
-    get_settings,
-    get_twitcher_url,
-    is_valid_url)
+from twitcher.utils import get_settings, get_twitcher_url, is_valid_url, replace_caps_url
 
 import logging
 LOGGER = logging.getLogger('TWITCHER')
 
 if TYPE_CHECKING:
-    from twitcher.typedefs import AnySettingsContainer  # noqa: F401
-    from pyramid.config import Configurator             # noqa: F401
-    from typing import AnyStr                           # noqa: F401
+    from typing import Iterator, Optional
+
+    from pyramid.config import Configurator
+    from pyramid.request import Request
+    from requests.models import Response as RequestsResponse
+
+    from twitcher.adapter.base import AdapterInterface
+    from twitcher.models.service import ServiceConfig
+    from twitcher.typedefs import AnySettingsContainer
 
 
 allowed_content_types = (
@@ -57,13 +59,16 @@ allowed_hosts = (
 # requests.models.Response defaults its chunk size to 128 bytes, which is very slow
 class BufferedResponse(object):
     def __init__(self, resp):
+        # type: (RequestsResponse) -> None
         self.resp = resp
 
     def __iter__(self):
+        # type: () -> Iterator[bytes]
         return self.resp.iter_content(64 * 1024)
 
 
 def _send_request(request, service, extra_path=None, request_params=None):
+    # type: (Request, ServiceConfig, Optional[str], Optional[str]) -> Response
 
     # TODO: fix way to build url
     url = service['url']
@@ -91,7 +96,7 @@ def _send_request(request, service, extra_path=None, request_params=None):
         hop_by_hop = ['connection', 'keep-alive', 'public', 'proxy-authenticate', 'transfer-encoding', 'upgrade']
         return Response(app_iter=BufferedResponse(resp_iter),
                         headers={k: v for k, v in list(resp_iter.headers.items()) if k.lower() not in hop_by_hop},
-                        status_code=resp_iter.status_code)
+                        status_code=resp_iter.status_code, request=request)
     else:
         try:
             resp = requests.request(method=request.method.upper(), url=url, data=request.body, headers=h,
@@ -137,23 +142,24 @@ def _send_request(request, service, extra_path=None, request_params=None):
         headers = {}
         if ct:
             headers["Content-Type"] = ct
-        return Response(content, status=resp.status_code, headers=headers)
+        return Response(content, status=resp.status_code, headers=headers, request=request)
 
 
 def owsproxy_base_path(container):
-    # type: (AnySettingsContainer) -> AnyStr
+    # type: (AnySettingsContainer) -> str
     settings = get_settings(container)
     return settings.get('twitcher.ows_proxy_protected_path', '/ows').rstrip('/').strip()
 
 
 def owsproxy_base_url(container):
-    # type: (AnySettingsContainer) -> AnyStr
+    # type: (AnySettingsContainer) -> str
     twitcher_url = get_twitcher_url(container)
     owsproxy_path = owsproxy_base_path(container)
     return twitcher_url + owsproxy_path
 
 
 def owsproxy_view(request):
+    # type: (Request) -> Response
     service_name = request.matchdict.get('service_name')
     try:
         extra_path = request.matchdict.get('extra_path')
@@ -167,7 +173,13 @@ def owsproxy_view(request):
     try:
         if not request.is_verified:
             raise OWSAccessForbidden("Access to service is forbidden.")
-        return _send_request(request, service, extra_path, request_params=request.query_string)
+        # since request can be modified by hooks, keep reference to original adapter
+        # in order to ensure both request/response operations are handled by the same logic
+        adapter = request.adapter
+        request = adapter.request_hook(request, service)
+        response = _send_request(request, service, extra_path, request_params=request.query_string)
+        response = adapter.response_hook(response, service)
+        return response
     except OWSException as exc:
         LOGGER.warning("Security check failed but was not handled as expected by 'is_verified' method.", exc_info=exc)
         raise
@@ -192,5 +204,13 @@ def owsproxy_defaultconfig(config):
 
 
 def includeme(config):
+    # type: (Configurator) -> None
     from twitcher.adapter import get_adapter_factory
+
+    def get_adapter(request):
+        # type: (Request) -> AdapterInterface
+        adapter = get_adapter_factory(request)
+        return adapter
+
     get_adapter_factory(config).owsproxy_config(config)
+    config.add_request_method(get_adapter, reify=False, property=True, name="adapter")

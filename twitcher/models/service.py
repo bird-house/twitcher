@@ -4,9 +4,22 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.ext.hybrid import hybrid_property
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from .meta import Base
+
+if TYPE_CHECKING:
+    from twitcher.typedefs import TypedDict
+
+    ServiceConfig = TypedDict("ServiceConfig", {
+        "url": str,
+        "name": str,
+        "type": str,
+        "purl": str,
+        "auth": str,
+        "public": bool,
+        "verify": bool
+    }, total=True)
 
 
 class Service(Base):
@@ -21,20 +34,22 @@ class Service(Base):
 
     @hybrid_property
     def verify(self):
+        # type: () -> bool
         if self._verify == 1:
             return True
         return False
 
     @verify.setter
-    def verify(self, verify: Union[bool, int]):
+    def verify(self, verify: Union[bool, int]) -> None:
         self._verify = int(verify)
 
     @property
-    def public(self):
+    def public(self) -> bool:
         """Return true if public access."""
         return self.auth not in ['token', 'cert']
 
     def json(self):
+        # type: () -> ServiceConfig
         return {
             'url': self.url,
             'name': self.name,

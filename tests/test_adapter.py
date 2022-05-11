@@ -2,6 +2,7 @@ from twitcher.adapter import import_adapter, get_adapter_factory, TWITCHER_ADAPT
 from twitcher.adapter.base import AdapterInterface
 from twitcher.adapter.default import DefaultAdapter
 from twitcher.interface import OWSSecurityInterface
+
 from pyramid.testing import DummyRequest
 from pathlib import Path
 import pytest
@@ -30,7 +31,7 @@ def test_adapter_factory_none_specified():
 
 # noinspection PyAbstractClass,PyMethodMayBeStatic
 class DummyAdapter(AdapterInterface):
-    def owssecurity_factory(self, request):
+    def owssecurity_factory(self):
         class DummyOWSSecurity(OWSSecurityInterface):
             def verify_request(self, request): return True   # noqa: E704
         return DummyOWSSecurity()
@@ -101,6 +102,6 @@ def test_adapter_factory_TestAdapter_invalid_raised():
 def test_adapter_factory_call_owssecurity_factory():
     settings = {'twitcher.adapter': DummyAdapter({}).name}
     adapter = get_adapter_factory(settings)
-    security = adapter.owssecurity_factory(DummyRequest())
+    security = adapter.owssecurity_factory()
     assert isinstance(security, OWSSecurityInterface)
     assert security.verify_request(DummyRequest()) is True, "Requested adapter should have been called."

@@ -6,7 +6,7 @@ from twitcher.store import ServiceStore
 
 
 class FunctionalTest(BaseTest):
-    def test_app(self):
+    def get_test_app(self):
         app = webtest.TestApp(
             self.config.make_wsgi_app(),
             extra_environ={'db.session': self.session, 'tm.active': True})
