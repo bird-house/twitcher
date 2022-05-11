@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.7.0 (2022-05-11)
+==================
+
 Changes:
 
 * Add request and response hooks operations to adapter allowing derived implementations to modify OWS proxied requests
