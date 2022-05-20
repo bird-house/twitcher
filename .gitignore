@@ -12,6 +12,8 @@
 *.sqlite
 *.bak
 __pycache__
+build
+dist
 
 # Unit test / Coverage reports
 .pytest_cache

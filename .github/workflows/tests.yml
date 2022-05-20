@@ -13,7 +13,7 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip && ! contains(github.ref, 'refs/tags') }}
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@master
@@ -98,3 +98,23 @@ jobs:
           files: ./coverage/coverage.xml
           fail_ci_if_error: true
           verbose: true
+
+  deploy_pypi:
+    needs: tests
+    if: ${{ success() && (contains(github.ref, 'refs/tags') || github.ref == 'refs/heads/master') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+      - name: Build Distribution Package
+        run: make develop dist
+      - name: Push Package to PyPi
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
