@@ -34,3 +34,4 @@ requests_oauthlib<1.2.0
 PyJWT>=2
 # typing extension required for TypedDict
 typing_extensions; python_version < "3.8"
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
