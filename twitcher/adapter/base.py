@@ -85,3 +85,16 @@ class AdapterInterface(object):
         This method can modify the response to adapt it for specific service logic.
         """
         raise NotImplementedError
+
+    def send_request(self, request, service):
+        # type: (Request, ServiceConfig) -> Response
+        """
+        Performs the provided request in order to obtain a proxied response.
+
+        .. versionadded:: 0.8.0
+
+        The operation should consider the service definition to resolve where the
+        request redirection should be proxied to, and handle any relevant response
+        errors, such as an unauthorized access or an unreachable service.
+        """
+        raise NotImplementedError

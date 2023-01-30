@@ -4,6 +4,15 @@ Changes
 Unreleased
 ==========
 
+Changes:
+
+* Add the OWS proxy ``send_request`` operation under the ``twitcher.adapter`` interface to allow it applying relevant
+  proxying adjustments when using derived implementation. The ``DefaultAdapater`` simply calls the original funciton
+  that was previously called directly instead of using the adapter's method.
+* Removed the ``extra_path`` and ``request_params`` arguments from OWS proxy ``send_request`` to better align them with
+  arguments from other adapter methods. These parameters are directly retrieved from the ``request`` argument which was
+  also provided as input to ``send_request``.
+
 0.7.0 (2022-05-11)
 ==================
 

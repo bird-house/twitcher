@@ -67,8 +67,14 @@ class BufferedResponse(object):
         return self.resp.iter_content(64 * 1024)
 
 
-def _send_request(request, service, extra_path=None, request_params=None):
-    # type: (Request, ServiceConfig, Optional[str], Optional[str]) -> Response
+def send_request(request, service):
+    # type: (Request, ServiceConfig) -> Response
+    """
+    Send the request to the proxied service and handle its response.
+    """
+
+    extra_path = request.matchdict.get('extra_path')
+    request_params = request.query_string
 
     # TODO: fix way to build url
     url = service['url']
@@ -162,7 +168,6 @@ def owsproxy_view(request):
     # type: (Request) -> Response
     service_name = request.matchdict.get('service_name')
     try:
-        extra_path = request.matchdict.get('extra_path')
         service = request.owsregistry.get_service_by_name(service_name)
         if not service:
             LOGGER.debug("No error raised but service was not found: %s", service_name)
@@ -177,7 +182,7 @@ def owsproxy_view(request):
         # in order to ensure both request/response operations are handled by the same logic
         adapter = request.adapter
         request = adapter.request_hook(request, service)
-        response = _send_request(request, service, extra_path, request_params=request.query_string)
+        response = adapter.send_request(request, service)
         response = adapter.response_hook(response, service)
         return response
     except OWSException as exc:

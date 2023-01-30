@@ -3,6 +3,7 @@ Factories to create storage backends.
 """
 
 from twitcher.adapter.base import AdapterInterface
+from twitcher.owsproxy import send_request
 from twitcher.owssecurity import OWSSecurity
 from twitcher.owsregistry import OWSRegistry
 from twitcher.store import ServiceStore
@@ -43,3 +44,7 @@ class DefaultAdapter(AdapterInterface):
 
     def response_hook(self, response, service):
         return response
+
+    def send_request(self, request, service):
+        # type: (Request, ServiceConfig) -> Response
+        return send_request(request, service)
