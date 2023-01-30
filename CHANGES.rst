@@ -6,12 +6,22 @@ Unreleased
 
 Changes:
 
+* Add ``/ows/verify/{service_name}[/{extra_path}]`` endpoint analoguous to ``/ows/proxy/{service_name}[/{extra_path}]``
+  to only verify if access is granted to this service, for that specific resource path, and for the authenticated user,
+  without perfoming the proxied request. This can be employed by servers and external entities to validate that
+  authorization will be granted for the user without executing potentially heavy computation or large data transfers
+  from the targetted resource that would otherwise be performed by requesting the ``/ows/proxy`` equivalent location.
+  One usage example of this feature is using |nginx-auth|_ to verify an alternate resource prior to proxing a service
+  request that needs authenticated access to the first resource.
 * Add the OWS proxy ``send_request`` operation under the ``twitcher.adapter`` interface to allow it applying relevant
   proxying adjustments when using derived implementation. The ``DefaultAdapater`` simply calls the original function
   that was previously called directly instead of using the adapter's method.
 * Removed the ``extra_path`` and ``request_params`` arguments from OWS proxy ``send_request`` to better align them with
   arguments from other adapter methods. These parameters are directly retrieved from the ``request`` argument, which was
   also provided as input to ``send_request``.
+
+.. _nginx-auth: https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/
+.. |nginx-auth| replace:: NGINX Authentication Based on Subrequest Result
 
 0.7.0 (2022-05-11)
 ==================

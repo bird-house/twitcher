@@ -193,6 +193,27 @@ def owsproxy_view(request):
         raise OWSNoApplicableCode("Unhandled error: {!s}".format(exc))
 
 
+def owsverify_view(request):
+    # type: (Request) -> Response
+    """
+    Verifies if request access is allowed, but without performing the proxied request and response handling.
+    """
+    message, status, access = "forbidden", 403, False
+    try:
+        service_name = request.matchdict.get('service_name')
+        service = request.owsregistry.get_service_by_name(service_name)
+        if service and request.is_verified:
+            message, status, access = "allowed", 200, True
+    except Exception as exc:
+        LOGGER.exception("Security check failed due to unhandled error.", exc_info=exc)
+        pass
+    return Response(
+        json={"description": "Access to service is {!s}.".format(message), "access": access},
+        status=status,
+        request=request,
+    )
+
+
 def owsproxy_defaultconfig(config):
     # type: (Configurator) -> None
     settings = get_settings(config)
@@ -204,8 +225,12 @@ def owsproxy_defaultconfig(config):
         config.include('twitcher.owssecurity')
         config.add_route('owsproxy', protected_path + '/proxy/{service_name}')
         config.add_route('owsproxy_extra', protected_path + '/proxy/{service_name}/{extra_path:.*}')
+        config.add_route('owsverify', protected_path + '/verify/{service_name}')
+        config.add_route('owsverify_extra', protected_path + '/verify/{service_name}/{extra_path:.*}')
         config.add_view(owsproxy_view, route_name='owsproxy')
         config.add_view(owsproxy_view, route_name='owsproxy_extra')
+        config.add_view(owsverify_view, route_name='owsverify')
+        config.add_view(owsverify_view, route_name='owsverify_extra')
 
 
 def includeme(config):
