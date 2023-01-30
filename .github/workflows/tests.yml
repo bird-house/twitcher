@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.6", "3.7", "3.8"]
+        python-version: ["3.7", "3.8"]
         allow-failure: [false]
         test-case: [test-local]
         include:
@@ -61,6 +61,11 @@ jobs:
             python-version: None  # doesn't matter which one (in docker), but match default of repo
             allow-failure: false
             test-case: docker-test
+          # deprecated versions
+          - os: ubuntu-20.04
+            python-version: 3.6
+            allow-failure: false
+            test-case: test-local
     steps:
       - uses: actions/checkout@v2
         with:
