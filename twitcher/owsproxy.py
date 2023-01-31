@@ -18,7 +18,7 @@ import logging
 LOGGER = logging.getLogger('TWITCHER')
 
 if TYPE_CHECKING:
-    from typing import Iterator, Optional
+    from typing import Iterator
 
     from pyramid.config import Configurator
     from pyramid.request import Request

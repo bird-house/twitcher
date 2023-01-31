@@ -10,6 +10,13 @@ from twitcher.store import ServiceStore
 from twitcher.utils import get_settings
 from pyramid.config import Configurator
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from pyramid.request import Request
+    from pyramid.response import Response
+
+    from twitcher.models.service import ServiceConfig
+
 TWITCHER_ADAPTER_DEFAULT = 'default'
 
 
