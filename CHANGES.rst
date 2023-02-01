@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.8.0 (2023-02-01)
+==================
+
 Changes:
 
 * Add ``/ows/verify/{service_name}[/{extra_path}]`` endpoint analoguous to ``/ows/proxy/{service_name}[/{extra_path}]``

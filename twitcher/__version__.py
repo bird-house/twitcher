@@ -6,4 +6,4 @@
 __doc__ = """Security Proxy for OGC Services like WPS."""
 __author__ = """Carsten Ehbrecht"""
 __email__ = 'ehbrecht@dkrz.de'
-__version__ = '0.7.0'
+__version__ = '0.8.0'
