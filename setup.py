@@ -16,6 +16,7 @@ setup(name='pyramid_twitcher',
       version=about['__version__'],
       description=about['__doc__'],
       long_description=README + '\n\n' + CHANGES,
+      long_description_content_type="text/x-rst",
       classifiers=[
           "Development Status :: 4 - Beta",
           "Framework :: Pyramid",

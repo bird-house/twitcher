@@ -106,7 +106,8 @@ jobs:
 
   deploy_pypi:
     needs: tests
-    if: ${{ success() && (contains(github.ref, 'refs/tags') || github.ref == 'refs/heads/master') }}
+    # Don't match master branch for upload to avoid duplicate error, even if the tag is usually applied on master.
+    if: ${{ success() && github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -123,3 +124,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+          verbose: true  # For debugging 'twine upload' if a problem occurs.
