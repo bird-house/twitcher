@@ -18,7 +18,7 @@ import logging
 LOGGER = logging.getLogger('TWITCHER')
 
 if TYPE_CHECKING:
-    from typing import Iterator, Optional
+    from typing import Iterator
 
     from pyramid.config import Configurator
     from pyramid.request import Request
@@ -67,8 +67,14 @@ class BufferedResponse(object):
         return self.resp.iter_content(64 * 1024)
 
 
-def _send_request(request, service, extra_path=None, request_params=None):
-    # type: (Request, ServiceConfig, Optional[str], Optional[str]) -> Response
+def send_request(request, service):
+    # type: (Request, ServiceConfig) -> Response
+    """
+    Send the request to the proxied service and handle its response.
+    """
+
+    extra_path = request.matchdict.get('extra_path')
+    request_params = request.query_string
 
     # TODO: fix way to build url
     url = service['url']
@@ -162,7 +168,6 @@ def owsproxy_view(request):
     # type: (Request) -> Response
     service_name = request.matchdict.get('service_name')
     try:
-        extra_path = request.matchdict.get('extra_path')
         service = request.owsregistry.get_service_by_name(service_name)
         if not service:
             LOGGER.debug("No error raised but service was not found: %s", service_name)
@@ -177,7 +182,7 @@ def owsproxy_view(request):
         # in order to ensure both request/response operations are handled by the same logic
         adapter = request.adapter
         request = adapter.request_hook(request, service)
-        response = _send_request(request, service, extra_path, request_params=request.query_string)
+        response = adapter.send_request(request, service)
         response = adapter.response_hook(response, service)
         return response
     except OWSException as exc:
@@ -186,6 +191,27 @@ def owsproxy_view(request):
     except Exception as exc:
         LOGGER.exception("Security check failed due to unhandled error.", exc_info=exc)
         raise OWSNoApplicableCode("Unhandled error: {!s}".format(exc))
+
+
+def owsverify_view(request):
+    # type: (Request) -> Response
+    """
+    Verifies if request access is allowed, but without performing the proxied request and response handling.
+    """
+    message, status, access = "forbidden", 403, False
+    try:
+        service_name = request.matchdict.get('service_name')
+        service = request.owsregistry.get_service_by_name(service_name)
+        if service and request.is_verified:
+            message, status, access = "allowed", 200, True
+    except Exception as exc:
+        LOGGER.exception("Security check failed due to unhandled error.", exc_info=exc)
+        pass
+    return Response(
+        json={"description": "Access to service is {!s}.".format(message), "access": access},
+        status=status,
+        request=request,
+    )
 
 
 def owsproxy_defaultconfig(config):
@@ -199,8 +225,12 @@ def owsproxy_defaultconfig(config):
         config.include('twitcher.owssecurity')
         config.add_route('owsproxy', protected_path + '/proxy/{service_name}')
         config.add_route('owsproxy_extra', protected_path + '/proxy/{service_name}/{extra_path:.*}')
+        config.add_route('owsverify', protected_path + '/verify/{service_name}')
+        config.add_route('owsverify_extra', protected_path + '/verify/{service_name}/{extra_path:.*}')
         config.add_view(owsproxy_view, route_name='owsproxy')
         config.add_view(owsproxy_view, route_name='owsproxy_extra')
+        config.add_view(owsverify_view, route_name='owsverify')
+        config.add_view(owsverify_view, route_name='owsverify_extra')
 
 
 def includeme(config):
