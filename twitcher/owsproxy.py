@@ -18,6 +18,7 @@ import logging
 LOGGER = logging.getLogger('TWITCHER')
 
 if TYPE_CHECKING:
+    # pylint: disable=F401  # unused imports for typings
     from typing import Iterator
 
     from pyramid.config import Configurator

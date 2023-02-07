@@ -2,6 +2,7 @@ from twitcher.utils import get_settings
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    # pylint: disable=F401  # unused imports for typings
     from pyramid.config import Configurator
     from pyramid.request import Request
     from pyramid.response import Response

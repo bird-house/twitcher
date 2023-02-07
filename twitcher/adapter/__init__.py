@@ -9,6 +9,7 @@ import logging
 LOGGER = logging.getLogger("TWITCHER")
 
 if TYPE_CHECKING:
+    # pylint: disable=F401  # unused imports for typings
     from twitcher.typedefs import AnySettingsContainer
     from typing import AnyStr, Type
 

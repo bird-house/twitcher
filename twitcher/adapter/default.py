@@ -12,6 +12,7 @@ from pyramid.config import Configurator
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    # pylint: disable=F401  # unused imports for typings
     from pyramid.request import Request
     from pyramid.response import Response
 
