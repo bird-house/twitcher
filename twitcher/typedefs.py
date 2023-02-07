@@ -7,7 +7,6 @@ from pyramid.request import Request as PyramidRequest
 from pyramid.response import Response as PyramidResponse
 from webob.response import Response as WebobResponse
 from webob.headers import ResponseHeaders, EnvironHeaders
-from webtest.response import TestResponse
 
 if hasattr(typing, "TypedDict"):
     from typing import TypedDict  # pylint: disable=E0611,no-name-in-module
@@ -33,4 +32,4 @@ HeadersBaseType = Union[HeadersType, HeadersTupleType]
 OptionalHeaderCookiesType = Union[Tuple[None, None], Tuple[HeadersBaseType, CookiesBaseType]]
 AnyHeadersContainer = Union[HeadersBaseType, ResponseHeaders, EnvironHeaders, CaseInsensitiveDict]
 AnyCookiesContainer = Union[CookiesBaseType, PyramidRequest, AnyHeadersContainer]
-AnyResponseType = Union[WebobResponse, PyramidResponse, TestResponse]
+AnyResponseType = Union[WebobResponse, PyramidResponse]
