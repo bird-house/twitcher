@@ -42,18 +42,18 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.7", "3.8"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
         allow-failure: [false]
         test-case: [test-local]
         include:
           # linter tests
           - os: ubuntu-latest
-            python-version: 3.7
+            python-version: 3.11
             allow-failure: false
             test-case: lint
           # coverage test
           - os: ubuntu-latest
-            python-version: 3.7
+            python-version: 3.11
             allow-failure: false
             test-case: coverage
           # smoke test of Docker image
