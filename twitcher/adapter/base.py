@@ -1,66 +1,55 @@
+from pyramid.config import Configurator
+from pyramid.request import Request
+from pyramid.response import Response
+
+from twitcher.interface import OWSSecurityInterface, OWSRegistryInterface
+from twitcher.models.service import ServiceConfig
+from twitcher.typedefs import AnySettingsContainer, JSON
 from twitcher.utils import get_settings
-
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    # pylint: disable=F401  # unused imports for typings
-    from pyramid.config import Configurator
-    from pyramid.request import Request
-    from pyramid.response import Response
-
-    from twitcher.interface import OWSSecurityInterface, OWSRegistryInterface
-    from twitcher.models.service import ServiceConfig
-    from twitcher.typedefs import AnySettingsContainer, JSON
 
 
 class AdapterInterface(object):
     """
     Common interface allowing functionality overriding using an adapter implementation.
     """
-    def __init__(self, container):
-        # type: (AnySettingsContainer) -> None
+    def __init__(self, container: AnySettingsContainer) -> None:
         self.settings = get_settings(container)
 
     @property
     def name(self):
         return '{}.{}'.format(self.__module__, type(self).__name__)
 
-    def describe_adapter(self):
-        # type: () -> JSON
+    def describe_adapter(self) -> JSON:
         """
         Returns a JSON serializable dictionary describing the adapter implementation.
         """
         raise NotImplementedError
 
-    def configurator_factory(self, container):
-        # type: (AnySettingsContainer) -> Configurator
+    def configurator_factory(self, container: AnySettingsContainer) -> Configurator:
         """
         Returns the 'configurator' implementation of the adapter.
         """
         raise NotImplementedError
 
-    def owssecurity_factory(self):
-        # type: () -> OWSSecurityInterface
+    def owssecurity_factory(self) -> OWSSecurityInterface:
         """
         Returns the 'owssecurity' implementation of the adapter.
         """
         raise NotImplementedError
 
-    def owsregistry_factory(self, request):
-        # type: (Request) -> OWSRegistryInterface
+    def owsregistry_factory(self, request: Request) -> OWSRegistryInterface:
         """
         Returns the 'owsregistry' implementation of the adapter.
         """
         raise NotImplementedError
 
-    def owsproxy_config(self, container):
-        # type: (AnySettingsContainer) -> None
+    def owsproxy_config(self, container: AnySettingsContainer) -> None:
         """
         Returns the 'owsproxy' implementation of the adapter.
         """
         raise NotImplementedError
 
-    def request_hook(self, request, service):
-        # type: (Request, ServiceConfig) -> Request
+    def request_hook(self, request: Request, service: ServiceConfig) -> Request:
         """
         Apply modifications onto the request before sending it.
 
@@ -75,8 +64,7 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def response_hook(self, response, service):
-        # type: (Response, ServiceConfig) -> Response
+    def response_hook(self, response: Response, service: ServiceConfig) -> Response:
         """
         Apply modifications onto the response from sent request.
 
@@ -87,8 +75,7 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def send_request(self, request, service):
-        # type: (Request, ServiceConfig) -> Response
+    def send_request(self, request: Request, service: ServiceConfig) -> Response:
         """
         Performs the provided request in order to obtain a proxied response.
 

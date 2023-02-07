@@ -7,27 +7,21 @@ See also: https://github.com/nive/outpost/blob/master/outpost/proxy.py
 """
 import requests
 
+from pyramid.config import Configurator
+from pyramid.request import Request
 from pyramid.response import Response
 from pyramid.settings import asbool
-from typing import TYPE_CHECKING
+from requests.models import Response as RequestsResponse
+from typing import Iterator
 
+from twitcher.adapter.base import AdapterInterface
+from twitcher.models.service import ServiceConfig
 from twitcher.owsexceptions import OWSAccessForbidden, OWSAccessFailed, OWSException, OWSNoApplicableCode
+from twitcher.typedefs import AnySettingsContainer
 from twitcher.utils import get_settings, get_twitcher_url, is_valid_url, replace_caps_url
 
 import logging
 LOGGER = logging.getLogger('TWITCHER')
-
-if TYPE_CHECKING:
-    # pylint: disable=F401  # unused imports for typings
-    from typing import Iterator
-
-    from pyramid.config import Configurator
-    from pyramid.request import Request
-    from requests.models import Response as RequestsResponse
-
-    from twitcher.adapter.base import AdapterInterface
-    from twitcher.models.service import ServiceConfig
-    from twitcher.typedefs import AnySettingsContainer
 
 
 allowed_content_types = (
@@ -59,17 +53,14 @@ allowed_hosts = (
 
 # requests.models.Response defaults its chunk size to 128 bytes, which is very slow
 class BufferedResponse(object):
-    def __init__(self, resp):
-        # type: (RequestsResponse) -> None
+    def __init__(self, resp: RequestsResponse) -> None:
         self.resp = resp
 
-    def __iter__(self):
-        # type: () -> Iterator[bytes]
+    def __iter__(self) -> Iterator[bytes]:
         return self.resp.iter_content(64 * 1024)
 
 
-def send_request(request, service):
-    # type: (Request, ServiceConfig) -> Response
+def send_request(request: Request, service: ServiceConfig) -> Response:
     """
     Send the request to the proxied service and handle its response.
     """
@@ -152,21 +143,18 @@ def send_request(request, service):
         return Response(content, status=resp.status_code, headers=headers, request=request)
 
 
-def owsproxy_base_path(container):
-    # type: (AnySettingsContainer) -> str
+def owsproxy_base_path(container: AnySettingsContainer) -> str:
     settings = get_settings(container)
     return settings.get('twitcher.ows_proxy_protected_path', '/ows').rstrip('/').strip()
 
 
-def owsproxy_base_url(container):
-    # type: (AnySettingsContainer) -> str
+def owsproxy_base_url(container: AnySettingsContainer) -> str:
     twitcher_url = get_twitcher_url(container)
     owsproxy_path = owsproxy_base_path(container)
     return twitcher_url + owsproxy_path
 
 
-def owsproxy_view(request):
-    # type: (Request) -> Response
+def owsproxy_view(request: Request) -> Response:
     service_name = request.matchdict.get('service_name')
     try:
         service = request.owsregistry.get_service_by_name(service_name)
@@ -194,8 +182,7 @@ def owsproxy_view(request):
         raise OWSNoApplicableCode("Unhandled error: {!s}".format(exc))
 
 
-def owsverify_view(request):
-    # type: (Request) -> Response
+def owsverify_view(request: Request) -> Response:
     """
     Verifies if request access is allowed, but without performing the proxied request and response handling.
     """
@@ -215,8 +202,7 @@ def owsverify_view(request):
     )
 
 
-def owsproxy_defaultconfig(config):
-    # type: (Configurator) -> None
+def owsproxy_defaultconfig(config: Configurator) -> None:
     settings = get_settings(config)
     if asbool(settings.get('twitcher.ows_proxy', True)):
         protected_path = owsproxy_base_path(settings)
@@ -234,12 +220,10 @@ def owsproxy_defaultconfig(config):
         config.add_view(owsverify_view, route_name='owsverify_extra')
 
 
-def includeme(config):
-    # type: (Configurator) -> None
+def includeme(config: Configurator) -> None:
     from twitcher.adapter import get_adapter_factory
 
-    def get_adapter(request):
-        # type: (Request) -> AdapterInterface
+    def get_adapter(request: Request) -> AdapterInterface:
         adapter = get_adapter_factory(request)
         return adapter
 

@@ -8,6 +8,7 @@ Changes:
 
 * Add CI workflow tests for Python 3.9, 3.10 and 3.11, and use 3.11 by default for all linting and coverage tests.
 * Use Python 3.11 in Dockerfile for latest performance improvements and security fixes.
+* Convert comment typing definitions into typing annotations.
 
 0.8.0 (2023-02-01)
 ==================
