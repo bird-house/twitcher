@@ -4,24 +4,20 @@ from pyramid.registry import Registry
 from datetime import datetime
 from urllib import parse as urlparse
 from lxml import etree
-from typing import TYPE_CHECKING
 import json
 import time
 import pytz
 import re
+from typing import AnyStr, Optional
 
 from twitcher.exceptions import ServiceNotFound
+from twitcher.typedefs import AnySettingsContainer, SettingsType
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
 
-if TYPE_CHECKING:
-    from twitcher.typedefs import AnySettingsContainer, SettingsType
-    from typing import AnyStr, Optional
 
-
-def get_settings(container):
-    # type: (AnySettingsContainer) -> Optional[SettingsType]
+def get_settings(container: AnySettingsContainer) -> Optional[SettingsType]:
     """
     Retrieves the application ``settings`` from various containers referencing to it.
 
@@ -36,8 +32,7 @@ def get_settings(container):
     raise TypeError("Could not retrieve settings from container object of type [{}]".format(type(container)))
 
 
-def get_twitcher_url(container):
-    # type: (AnySettingsContainer) -> AnyStr
+def get_twitcher_url(container: AnySettingsContainer) -> AnyStr:
     settings = get_settings(container)
     return settings.get('twitcher.url').rstrip('/').strip()
 
@@ -65,8 +60,7 @@ def is_json_serializable(item):
         return False
 
 
-def parse_service_name(url, protected_path):
-    # type: (str, str) -> Optional[str]
+def parse_service_name(url: str, protected_path: str) -> Optional[str]:
     parsed_url = urlparse.urlparse(url)
     service_name = None
     if parsed_url.path.startswith(protected_path):

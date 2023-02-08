@@ -1,20 +1,16 @@
 from twitcher.adapter.default import DefaultAdapter, TWITCHER_ADAPTER_DEFAULT
 from twitcher.adapter.base import AdapterInterface
+from twitcher.typedefs import AnySettingsContainer
 from twitcher.utils import get_settings
 from importlib import import_module
 from inspect import isclass
-from typing import TYPE_CHECKING
+from typing import Type
 
 import logging
 LOGGER = logging.getLogger("TWITCHER")
 
-if TYPE_CHECKING:
-    from twitcher.typedefs import AnySettingsContainer
-    from typing import AnyStr, Type
 
-
-def import_adapter(name):
-    # type: (AnyStr) -> Type[AdapterInterface]
+def import_adapter(name: str) -> Type[AdapterInterface]:
     """Attempts import of the class specified by python string ``package.module.class``."""
     components = name.split('.')
     mod_name = components[0]
@@ -33,15 +29,13 @@ def import_adapter(name):
     return mod
 
 
-def get_adapter_type(container):
-    # type: (AnySettingsContainer) -> AnyStr
+def get_adapter_type(container: AnySettingsContainer) -> str:
     """Finds the specified adapter from configuration settings."""
     settings = get_settings(container)
     return str(settings.get('twitcher.adapter', TWITCHER_ADAPTER_DEFAULT.lower()))
 
 
-def get_adapter_factory(container):
-    # type: (AnySettingsContainer) -> AdapterInterface
+def get_adapter_factory(container: AnySettingsContainer) -> AdapterInterface:
     """
     Creates an adapter interface according to `twitcher.adapter` setting.
     By default the :class:`twitcher.adapter.default.DefaultAdapter` implementation will be used.
