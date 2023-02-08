@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.9.0 (2023-02-08)
+==================
+
 Changes:
 
 * Add CI workflow tests for Python 3.9, 3.10 and 3.11, and use 3.11 by default for all linting and coverage tests.
