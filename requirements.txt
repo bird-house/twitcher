@@ -34,5 +34,5 @@ requests_oauthlib<1.2.0
 PyJWT>=2
 # typing extension required for TypedDict
 typing_extensions; python_version < "3.8"
-setuptools<60; python_version <= "3.6"  # pyup: ignore
-setuptools>=65.5.1; python_version >= "3.7"
+setuptools<70.0.0; python_version <= "3.6"  # pyup: ignore
+setuptools>=70.0.0; python_version >= "3.7"
