@@ -7,24 +7,31 @@ on:
   - release
   - workflow_dispatch
 
+# cancel the current workflow if another commit was pushed on the same PR or reference
+# uses the GitHub workflow name to avoid collision with other workflows running on the same PR/reference
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   # see: https://github.com/fkirc/skip-duplicate-actions
-#  skip_duplicate:
-#    continue-on-error: true
-#    runs-on: ubuntu-latest
-#    outputs:
-#      should_skip: ${{ steps.skip_duplicate.outputs.should_skip }}
-#    steps:
-#      - uses: fkirc/skip-duplicate-actions@master
-#        with:
-#          concurrent_skipping: "same_content_newer"
-#          skip_after_successful_duplicate: "true"
-#          do_not_skip: '["pull_request", "workflow_dispatch", "schedule", "release"]'
+  skip_duplicate:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_duplicate.outputs.should_skip && ! contains(github.ref, 'refs/tags') }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: "same_content"
+          skip_after_successful_duplicate: "true"
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule", "release"]'
 
   # see: https://github.com/actions/setup-python
   tests:
-    #needs: skip_duplicate
-    #if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
+    needs: skip_duplicate
+    if: ${{ needs.skip_duplicate.outputs.should_skip != 'true' }}
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.allow-failure }}
     env:
@@ -67,7 +74,7 @@ jobs:
         with:
           fetch-depth: "0"
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         if: ${{ matrix.python-version != 'None' }}
         with:
           python-version: ${{ matrix.python-version }}
@@ -106,7 +113,7 @@ jobs:
         with:
           fetch-depth: "0"
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Build Distribution Package
