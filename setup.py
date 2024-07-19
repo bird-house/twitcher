@@ -10,7 +10,10 @@ with open(os.path.join(here, 'twitcher', '__version__.py'), 'r') as f:
     exec(f.read(), about)
 
 reqs = [line.strip() for line in open('requirements.txt')]
-dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
+dev_reqs = [
+    line.strip() for line in open('requirements_dev.txt')
+    if not line.startswith("-r ")
+]
 
 setup(name='pyramid_twitcher',
       version=about['__version__'],
