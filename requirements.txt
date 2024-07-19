@@ -1,6 +1,5 @@
 pyramid>=1.10,<2
 webob
-requests
 argcomplete
 pytz
 lxml
