@@ -32,4 +32,4 @@ pyramid_oauthlib>=0.4.1
 oauthlib<3
 requests_oauthlib<1.2.0
 PyJWT>=2
-setuptools>=65.5.1
+setuptools>=71.0.3
