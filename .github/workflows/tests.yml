@@ -67,7 +67,7 @@ jobs:
         with:
           fetch-depth: "0"
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         if: ${{ matrix.python-version != 'None' }}
         with:
           python-version: ${{ matrix.python-version }}
@@ -79,10 +79,6 @@ jobs:
       - name: Display Packages
         if: ${{ matrix.python-version != 'None' }}
         run: pip freeze
-      #- name: Setup Environment Variables
-      #  uses: c-py/action-dotenv-to-setenv@v2
-      #  with:
-      #    env-file: ./ci/weaver.env
       - name: Display Environment Variables
         run: |
           hash -r
@@ -110,7 +106,7 @@ jobs:
         with:
           fetch-depth: "0"
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v2
         with:
           python-version: "3.11"
       - name: Build Distribution Package
