@@ -4,6 +4,9 @@ Changes
 Unreleased
 ==========
 
+0.10.0 (2024-07-22)
+==================
+
 Changes:
 
 * Drop Python 3.6, 3.7 support.
