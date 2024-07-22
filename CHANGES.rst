@@ -4,6 +4,13 @@ Changes
 Unreleased
 ==========
 
+Changes:
+
+* Drop Python 3.6, 3.7 support.
+* Deprecate Python 3.8 (EOL 2024-10 planed, supported until then).
+* Add Python 3.12 support.
+* Update docker with latest ``python:3.11-alpine3.20`` base.
+
 0.9.0 (2023-02-08)
 ==================
 

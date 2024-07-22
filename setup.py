@@ -10,7 +10,10 @@ with open(os.path.join(here, 'twitcher', '__version__.py'), 'r') as f:
     exec(f.read(), about)
 
 reqs = [line.strip() for line in open('requirements.txt')]
-dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
+dev_reqs = [
+    line.strip() for line in open('requirements_dev.txt')
+    if not line.startswith("-r ")
+]
 
 setup(name='pyramid_twitcher',
       version=about['__version__'],
@@ -24,12 +27,11 @@ setup(name='pyramid_twitcher',
           "License :: OSI Approved :: Apache Software License",
           "Natural Language :: English",
           "Programming Language :: Python",
-          "Programming Language :: Python :: 3.6",
-          "Programming Language :: Python :: 3.7",
           "Programming Language :: Python :: 3.8",
           "Programming Language :: Python :: 3.9",
           "Programming Language :: Python :: 3.10",
           "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
           "Topic :: Internet :: WWW/HTTP",
           "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
       ],
@@ -42,7 +44,7 @@ setup(name='pyramid_twitcher',
       include_package_data=True,
       zip_safe=False,
       test_suite='twitcher',
-      python_requires=">=3.6, <4",
+      python_requires=">=3.8, <4",
       install_requires=reqs,
       extras_require={
           "dev": dev_reqs,              # pip install ".[dev]"
