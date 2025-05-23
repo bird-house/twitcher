@@ -32,6 +32,7 @@ oauthlib<3
 requests>=2.32.2
 requests_oauthlib<1.2.0
 PyJWT>=2
-setuptools>=71.0.3
+setuptools==75.3.2; python_version < "3.9"  # noqa
+setuptools>=78.1.1; python_version >= "3.9"
 urllib3>=2.2.2
 zipp>=3.19.1
