@@ -14,7 +14,8 @@ pyramid_debugtoolbar
 plaster_pastedeploy
 # wsgi
 gunicorn
-waitress
+waitress==3.0.0; python_version < "3.9"  # noqa
+waitress>=3.0.2; python_version >= "3.9"
 # database
 pyramid_retry
 pyramid_tm
