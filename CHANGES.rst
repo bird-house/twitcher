@@ -8,6 +8,7 @@ Changes:
 
 * Add Python 3.13 to CI and project setup.
 * Update docker base to `python:3.13.11-alpine3.23`.
+* Pin `requests>=2.32.5` and `urllib3>=2.6.0` for latest security vulnerability fixes.
 * Pin `requests>=2.32.4` to address security vulnerability
   (see `#143 <https://github.com/bird-house/twitcher/pull/143>`_).
 
