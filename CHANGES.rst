@@ -6,6 +6,7 @@ Unreleased
 
 Changes:
 
+* Pin `requests>=2.32.5` and `urllib3>=2.6.0` for latest security vulnerability fixes.
 * Pin `requests>=2.32.4` to address security vulnerability
   (see `#143 <https://github.com/bird-house/twitcher/pull/143>`_).
 
