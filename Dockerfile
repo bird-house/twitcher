@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM python:3.11-alpine3.20
+FROM python:3.13.11-alpine3.23
 LABEL Description="Twitcher" Vendor="Birdhouse" Maintainer="https://github.com/bird-house/twitcher"
 
 # Configure hostname and ports for services
