@@ -126,3 +126,30 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
           verbose: true  # For debugging 'twine upload' if a problem occurs.
+
+  deploy_docker:
+    needs: tests
+    if: ${{ success() && (contains(github.ref, 'refs/tags') || github.ref == 'refs/heads/master') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - name: Get Tag Version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+            echo "::set-output name=TAG_VERSION::latest"
+          else
+            echo "::set-output name=TAG_VERSION::${GITHUB_REF##*/}"
+          fi
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build Docker
+        run: make APP_VERSION=${{ steps.version.outputs.TAG_VERSION }} docker-build
+      - name: Push to DockerHub
+        run: make APP_VERSION=${{ steps.version.outputs.TAG_VERSION }} docker-push
