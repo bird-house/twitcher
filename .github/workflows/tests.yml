@@ -170,4 +170,4 @@ jobs:
         with:
           file: "Dockerfile"
           push: true
-          tags: birdhouse/twitcher:latest,birdhouse/twitcher:${{ GITHUB_REF##*/ }}
+          tags: birdhouse/twitcher:latest,birdhouse/twitcher:${{ github.ref_name }}
