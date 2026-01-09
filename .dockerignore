@@ -43,6 +43,7 @@ testdata.json
 
 # PyCharm
 **/*.idea
+.run
 
 # Intellij
 **/*.iml

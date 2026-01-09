@@ -35,6 +35,7 @@ coverage.*
 
 # PyCharm
 *.idea
+.run
 
 # Kate
 *.kate-swp

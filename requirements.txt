@@ -37,5 +37,5 @@ PyJWT>=2
 setuptools==75.3.2; python_version < "3.9"  # noqa
 setuptools>=78.1.1; python_version >= "3.9"
 urllib3>=2.2.2; python_version < "3.9"  # noqa
-urllib3>=2.6.0; python_version >= "3.9"
+urllib3>=2.6.3; python_version >= "3.9"
 zipp>=3.19.1
