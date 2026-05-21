@@ -171,6 +171,8 @@ def owsproxy_view(request: Request) -> Response:
         # in order to ensure both request/response operations are handled by the same logic
         adapter = request.adapter
         request = adapter.request_hook(request, service)
+        if isinstance(request, Response):
+            return request
         response = adapter.send_request(request, service)
         response = adapter.response_hook(response, service)
         return response

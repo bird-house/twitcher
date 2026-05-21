@@ -1,5 +1,7 @@
+from contextlib import contextmanager
 import json
 import mock
+from pyramid.response import Response
 
 from twitcher.adapter.default import DefaultAdapter
 from twitcher.owssecurity import OWSSecurityInterface
@@ -29,18 +31,25 @@ class AdapterWithHooks(DefaultAdapter):
         return response
 
 
-class TestAdapterWithHooks(FunctionalTest):
+class AdapterWithRequestReturnResponseHook(AdapterWithHooks):
+    def request_hook(self, request, service):
+        return Response(body="response test", status=203)
+
+
+class AdapterTestWithHooks(FunctionalTest):
+    adapter: DefaultAdapter
+
     @property
     def settings(self):
-        adapter_name = '{}.{}'.format(AdapterWithHooks.__module__, AdapterWithHooks.__name__)
-        settings = super(TestAdapterWithHooks, self).settings.copy()
+        adapter_name = '{}.{}'.format(self.adapter.__module__, self.adapter.__name__)
+        settings = super(AdapterTestWithHooks, self).settings.copy()
         settings.update({
             'twitcher.adapter': adapter_name
         })
         return settings
 
     def setUp(self):
-        super(TestAdapterWithHooks, self).setUp()
+        super(AdapterTestWithHooks, self).setUp()
         self.init_database()
         service_store = ServiceStore(dummy_request(dbsession=self.session))
         self.reg = OWSRegistry(servicestore=service_store)
@@ -60,7 +69,8 @@ class TestAdapterWithHooks(FunctionalTest):
         self.config.include('twitcher.owsproxy')
         self.app = self.get_test_app()
 
-    def test_request_response_hooks(self):
+    @contextmanager
+    def patched_request(self):
         test_request_handle = []
 
         def mocked_request(method, url, data, headers, **_):
@@ -79,13 +89,30 @@ class TestAdapterWithHooks(FunctionalTest):
             return _resp
 
         with mock.patch("requests.request", side_effect=mocked_request):
+            yield test_request_handle
+
+
+class TestAdapterWithHooks(AdapterTestWithHooks):
+    adapter = AdapterWithHooks
+
+    def test_request_response_hooks(self):
+        with self.patched_request() as test_request_handle:
             resp = self.app.get(f'/ows/proxy/{self.test_service_name}?service=wps&request=getcapabilities')
             assert resp.status_code == 200
             assert resp.content_type == "application/json"
-
         # check added header by request hook
         assert test_request_handle
         assert test_request_handle[0].headers.get("X-Hook-Test-Service") == self.test_service_name
 
         # check added body content by response hook
         assert resp.json == {"response": "ok", "Hook-Test-Service": self.test_service_name}
+
+
+class TestAdapterWithRequestResponseHooks(AdapterTestWithHooks):
+    adapter = AdapterWithRequestReturnResponseHook
+
+    def test_request_hook_returns_response(self):
+        with self.patched_request():
+            resp = self.app.get(f'/ows/proxy/{self.test_service_name}?service=wps&request=getcapabilities')
+            assert resp.status_code == 203
+            assert resp.body == b"response test"

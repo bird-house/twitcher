@@ -1,3 +1,5 @@
+from typing import Union
+
 from pyramid.config import Configurator
 from pyramid.request import Request
 from pyramid.response import Response
@@ -49,7 +51,7 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
-    def request_hook(self, request: Request, service: ServiceConfig) -> Request:
+    def request_hook(self, request: Request, service: ServiceConfig) -> Union[Request | Response]:
         """
         Apply modifications onto the request before sending it.
 

@@ -4,6 +4,11 @@ Changes
 Unreleased
 ====================================================================================================================
 
+Changes:
+
+* Allow request hooks to return a response which is returned immediately instead 
+  of getting the response from upstream.
+
 0.11.1 (2026-01-09)
 ====================================================================================================================
 
