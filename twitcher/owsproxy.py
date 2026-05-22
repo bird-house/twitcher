@@ -190,7 +190,9 @@ def owsverify_view(request: Request) -> Response:
     try:
         service_name = request.matchdict.get('service_name')
         service = request.owsregistry.get_service_by_name(service_name)
-        if service and request.is_verified:
+        adapter = request.adapter
+        hook_success = adapter.verify_hook(request, service)
+        if service and hook_success and request.is_verified:
             message, status, access = "allowed", 200, True
     except Exception as exc:
         LOGGER.exception("Security check failed due to unhandled error.", exc_info=exc)

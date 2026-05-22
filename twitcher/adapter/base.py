@@ -75,6 +75,17 @@ class AdapterInterface(object):
         """
         raise NotImplementedError
 
+    def verify_hook(self, request: Request, service: ServiceConfig) -> bool:
+        """
+        Apply additional logic used to verify whether a request should be rejected.
+
+        .. versionadded:: 0.11.2
+
+        Return False to indicate that the verify endpoint should return a "forbidden"
+        response regardless of whether the request is verified.
+        """
+        raise NotImplementedError
+
     def send_request(self, request: Request, service: ServiceConfig) -> Response:
         """
         Performs the provided request in order to obtain a proxied response.

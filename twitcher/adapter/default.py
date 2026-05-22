@@ -48,5 +48,8 @@ class DefaultAdapter(AdapterInterface):
     def response_hook(self, response, service):
         return response
 
+    def verify_hook(self, request, service):
+        return True
+
     def send_request(self, request: Request, service: ServiceConfig) -> Response:
         return send_request(request, service)
