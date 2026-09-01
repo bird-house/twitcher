@@ -8,6 +8,9 @@ Changes:
 
 * Pin ``setuptools<82`` to ensure that ``pkg_resources`` is installed (required until we upgrade to ``pyramid>2``).
 * Loosen pins to allow ``sqlalchemy>=2``.
+* Fix ``twitcher.oauth2.CustomTokenValidator`` allowing non-string or empty ``issuer`` and ``secret`` configuration.
+  This ended up raising an error ``CustomTokenValidator.generate_access_token()`` call since the parameters must be
+  valid and defined strings for the ``jwt.encode`` function.
 
 0.11.1 (2026-01-09)
 ====================================================================================================================
