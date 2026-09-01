@@ -7,6 +7,7 @@ Unreleased
 Changes:
 
 * Pin ``setuptools<82`` to ensure that ``pkg_resources`` is installed (required until we upgrade to ``pyramid>2``).
+* Loosen pins to allow ``sqlalchemy>=2``.
 
 0.11.1 (2026-01-09)
 ====================================================================================================================
