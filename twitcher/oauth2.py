@@ -168,6 +168,8 @@ class SignedTokenValidator(BaseValidator):
 
 class CustomTokenValidator(BaseValidator):
     def __init__(self, secret, issuer):
+        if not secret or not issuer or not isinstance(secret, str) or not isinstance(issuer, str):
+            raise ValueError('OAuth2 custom token secret and issuer must both be non-empty strings')
         self.secret = secret
         self.issuer = issuer
 

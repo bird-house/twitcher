@@ -26,6 +26,7 @@ class BaseTest(unittest.TestCase):
         'twitcher.password': 'testpassword',
         'twitcher.token.type': 'custom_token',
         'twitcher.token.secret': 'testsecret',
+        'twitcher.token.issuer': 'testissuer',
     }
 
     def setUp(self):
