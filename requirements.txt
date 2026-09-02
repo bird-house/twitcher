@@ -2,7 +2,8 @@ pyramid>=1.10,<2
 webob
 argcomplete
 pytz
-lxml
+lxml==6.1.2; python_version <= "3.8"
+lxml; python_version >= "3.9"
 pyopenssl
 # rest api
 cornice
