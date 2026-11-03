@@ -31,5 +31,5 @@ requests>=2.33.0
 requests_oauthlib<1.2.0
 setuptools>=78.1.1,<82
 PyJWT>=2
-urllib3>=2.6.3
+urllib3>=2.8.0
 zipp>=3.19.1
