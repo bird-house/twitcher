@@ -2,8 +2,7 @@ pyramid>=1.10,<2
 webob
 argcomplete
 pytz
-lxml==6.1.2; python_version <= "3.8"
-lxml; python_version >= "3.9"
+lxml
 pyopenssl
 # rest api
 cornice
@@ -15,8 +14,7 @@ pyramid_debugtoolbar
 plaster_pastedeploy
 # wsgi
 gunicorn
-waitress==3.0.0; python_version < "3.9"  # noqa
-waitress>=3.0.2; python_version >= "3.9"
+waitress>=3.0.2
 # database
 pyramid_retry
 pyramid_tm
@@ -29,12 +27,9 @@ zope.sqlalchemy>=3
 # oauth2
 pyramid_oauthlib>=0.4.1
 oauthlib<3
-requests>=2.32.4; python_version < "3.9"  # noqa
-requests>=2.32.5; python_version >= "3.9"
+requests>=2.32.5
 requests_oauthlib<1.2.0
+setuptools>=78.1.1,<82
 PyJWT>=2
-setuptools==75.3.2; python_version < "3.9"  # noqa
-setuptools>=78.1.1,<82; python_version >= "3.9"
-urllib3>=2.2.2; python_version < "3.9"  # noqa
-urllib3>=2.6.3; python_version >= "3.9"
+urllib3>=2.6.3
 zipp>=3.19.1
